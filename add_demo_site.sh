@@ -10,10 +10,11 @@ ln -sf /home/web2py /home/prod
 ln -sf /home/prod ~
 
 cd /home
-# @ToDo: Stable release?
-#wget http://www.web2py.com/examples/static/web2py_src.zip
-#unzip web2py_src.zip
 git clone --recursive git://github.com/web2py/web2py.git demo
+cd demo
+# 2.14.6
+git reset --hard cda35fd
+git submodule update --init --recursive
 ln -s /home/demo ~
 cat << EOF > "/home/demo/routes.py"
 #!/usr/bin/python
@@ -34,8 +35,7 @@ EOF
 # Sahana Eden
 ##############
 # Install Sahana Eden
-cd demo
-cd applications
+cd /home/demo/applications
 # @ToDo: Stable branch
 git clone git://github.com/flavour/eden.git
 # Fix permissions
