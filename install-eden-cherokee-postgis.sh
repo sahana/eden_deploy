@@ -90,6 +90,7 @@ adduser --system --disabled-password web2py
 addgroup web2py
 cd /home
 git clone --recursive git://github.com/web2py/web2py.git
+cd web2py
 # 2.14.6
 git reset --hard cda35fd
 git submodule update --init --recursive
