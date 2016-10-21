@@ -12,6 +12,9 @@ sitename=$hostname".$DOMAIN"
 
 echo -e "What template should we use? : \c "
 read template
+if [ ! -z "$template" ]; then
+    template="default"
+fi
 
 # @ToDo: Generate a random password
 echo Note that web2py will not work with passwords with an @ in them
