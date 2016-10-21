@@ -26,6 +26,12 @@ echo -e "What host name should we use? : \c "
 read hostname
 sitename=$hostname".$DOMAIN"
 
+echo -e "What template should we use? : \c "
+read template
+if [ ! -z "$template" ]; then
+    template="default"
+fi
+
 echo -e "What is the current root MySQL password: \c "
 read rootpw
 
@@ -182,6 +188,7 @@ echo "Setting up Sahana"
 # Copy Templates
 cp ~web2py/applications/eden/modules/templates/000_config.py ~web2py/applications/eden/models
 
+sed -i "s|settings.base.template = \"default\"|settings.base.template = \"$template\"|" ~web2py/applications/eden/models/000_config.py
 sed -i 's|EDITING_CONFIG_FILE = False|EDITING_CONFIG_FILE = True|' ~web2py/applications/eden/models/000_config.py
 sed -i "s|akeytochange|$sitename$password|" ~web2py/applications/eden/models/000_config.py
 sed -i "s|127.0.0.1:8000|$sitename|" ~web2py/applications/eden/models/000_config.py
