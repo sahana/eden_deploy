@@ -89,7 +89,7 @@ apt-get -y install libodbc1
 adduser --system --disabled-password web2py
 addgroup web2py
 cd /home
-git clone --recursive git://github.com/web2py/web2py.git
+env GIT_SSL_NO_VERIFY=true git clone --recursive https://github.com/web2py/web2py.git
 cd web2py
 # 2.14.6
 git reset --hard cda35fd
@@ -120,10 +120,10 @@ sed -i 's|TkAgg|Agg|' /etc/matplotlibrc
 # Sahana Eden
 ##############
 # Install Sahana Eden
-cd web2py
+cd /home/web2py
 cd applications
 # @ToDo: Stable branch
-git clone git://github.com/sahana/eden.git
+env GIT_SSL_NO_VERIFY=true git clone https://github.com/sahana/eden.git
 # Fix permissions
 chown web2py ~web2py
 chown web2py ~web2py/applications/admin/cache
@@ -166,7 +166,7 @@ ln -s /home/web2py/applications/eden ~
 #apt-get clean
 apt-get install -y autoconf automake libtool gettext rrdtool
 cd /tmp
-#git clone --recursive http://github.com/cherokee/webserver.git
+#env GIT_SSL_NO_VERIFY=true git clone --recursive https://github.com/cherokee/webserver.git
 #cd webserver
 wget https://github.com/cherokee/webserver/archive/master.zip
 unzip master.zip
