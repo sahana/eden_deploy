@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script to add a Test site to a server configured with CherokeePostGIS
 

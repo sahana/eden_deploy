@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script to configure an Eden server
 # - assumes that install-eden-cherokee-postgis.sh has been run
