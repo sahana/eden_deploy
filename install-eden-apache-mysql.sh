@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Script to turn a generic Debian Wheezy or Jessie box into an Eden server
 # with Apache & MySQL
