@@ -12,7 +12,7 @@ sitename=$hostname".$DOMAIN"
 
 echo -e "What template should we use? : \c "
 read template
-if [ ! -z "$template" ]; then
+if [[ ! "$template" ]]; then
     template="default"
 fi
 
