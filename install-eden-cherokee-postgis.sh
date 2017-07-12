@@ -24,7 +24,7 @@ apt-get clean
 # Install Admin Tools
 apt-get -y install unzip psmisc mlocate telnet lrzsz vim rcconf htop sudo p7zip dos2unix curl
 if [$DEBIAN == '9' ]; then
-    # pass
+    apt-get -y install elinks
 else
     apt-get -y install elinks-lite
 fi
@@ -40,7 +40,11 @@ apt-get clean
 # Python
 #########
 # Install Libraries
-apt-get -y install libgeos-c1
+if [$DEBIAN == '9' ]; then
+    apt-get -y install libgeos-c1v5
+else
+    apt-get -y install libgeos-c1
+fi
 
 # Install Python
 #apt-get -y install python2.7
