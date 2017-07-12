@@ -40,7 +40,7 @@ apt-get clean
 # Python
 #########
 # Install Libraries
-if [$DEBIAN == '9' ]; then
+if [ $DEBIAN == '9' ]; then
     apt-get -y install libgeos-c1v5
 else
     apt-get -y install libgeos-c1
