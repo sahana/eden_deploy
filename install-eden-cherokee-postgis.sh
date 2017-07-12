@@ -8,7 +8,9 @@
 # Which OS are we running?
 read -d . DEBIAN < /etc/debian_version
 
-if [ $DEBIAN == '8' ]; then
+if [ $DEBIAN == '9' ]; then
+    DEBIAN_NAME='stretch'
+elif [ $DEBIAN == '8' ]; then
     DEBIAN_NAME='jessie'
 else
     DEBIAN_NAME='wheezy'
@@ -20,7 +22,12 @@ apt-get -y upgrade
 apt-get clean
 
 # Install Admin Tools
-apt-get -y install unzip psmisc mlocate telnet lrzsz vim elinks-lite rcconf htop sudo p7zip dos2unix curl
+apt-get -y install unzip psmisc mlocate telnet lrzsz vim rcconf htop sudo p7zip dos2unix curl
+if [$DEBIAN == '9' ]; then
+    # pass
+else
+    apt-get -y install elinks-lite
+fi
 apt-get clean
 # Git
 apt-get -y install git-core
