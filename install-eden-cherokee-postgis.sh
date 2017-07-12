@@ -23,7 +23,7 @@ apt-get clean
 
 # Install Admin Tools
 apt-get -y install unzip psmisc mlocate telnet lrzsz vim rcconf htop sudo p7zip dos2unix curl
-if [$DEBIAN == '9' ]; then
+if [ $DEBIAN == '9' ]; then
     apt-get -y install elinks
 else
     apt-get -y install elinks-lite
