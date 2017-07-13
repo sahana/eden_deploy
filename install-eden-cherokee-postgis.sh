@@ -24,7 +24,7 @@ apt-get clean
 # Install Admin Tools
 apt-get -y install unzip psmisc mlocate telnet lrzsz vim rcconf htop sudo p7zip dos2unix curl
 if [ $DEBIAN == '9' ]; then
-    apt-get -y install elinks
+    apt-get -y install elinks net-tools
 else
     apt-get -y install elinks-lite
 fi
@@ -182,7 +182,9 @@ cd /tmp
 wget https://github.com/cherokee/webserver/archive/master.zip
 unzip master.zip
 cd webserver-master
-if [ $DEBIAN == '8' ]; then
+if [ $DEBIAN == '9' ]; then
+    apt-get install -y libtool-bin
+elif [ $DEBIAN == '8' ]; then
     apt-get install -y libtool-bin
 fi
 sh ./autogen.sh --prefix=/usr --localstatedir=/var --sysconfdir=/etc
