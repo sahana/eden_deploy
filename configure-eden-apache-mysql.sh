@@ -74,7 +74,7 @@ git pull
 # -----------------------------------------------------------------------------
 echo "Setting up Web server"
 
-rm -f /etc/apache2/sites-enabled/000-default
+rm -f /etc/apache2/sites-enabled/000-default$extension
 cat << EOF > "/etc/apache2/sites-available/production$extension"
 <VirtualHost *:80>
   ServerName $hostname.$DOMAIN
