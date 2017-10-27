@@ -610,7 +610,7 @@ apt-key add ACCC4CF8.asc
 apt-get update
 
 apt-get -y install postgresql-9.6 python-psycopg2 ptop
-apt-get -y install postgresql-9.6-postgis
+apt-get install postgresql-9.6-postgis-2.3
 
 # Tune PostgreSQL
 cat << EOF >> "/etc/sysctl.conf"
