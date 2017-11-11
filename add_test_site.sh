@@ -407,10 +407,11 @@ chmod +x /usr/local/bin/clean
 
 cat << EOF > "/tmp/update_clean.py"
 import hashlib
-(db_string, pool_size) = settings.get_database_string()
+db_string = settings.get_database_string()[1]
 prod_table_string = hashlib.md5(db_string).hexdigest()
+settings._db_params = None
 settings.database.database = "sahana-test"
-(db_string, pool_size) = settings.get_database_string()
+db_string = settings.get_database_string()[1]
 test_table_string = hashlib.md5(db_string).hexdigest()
 File = open("/usr/local/bin/clean", "r")
 file = File.readlines()
