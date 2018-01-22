@@ -7,7 +7,7 @@
 
 # Notes for other systems:
 # SQLite just requires a standard migration
-# MySQL upgrades are currently not supported
+# MySQL upgrades require a fake_migrate before the migration to avoid a long migration (>1 hour), script may come later if-required.
 
 # Prepare upgrade:
 # Stop server
