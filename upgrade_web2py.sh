@@ -25,6 +25,7 @@ rm -rf eden/compiled
 python web2py.py -S eden -M -R fieldnames.py
 
 # Update web2py to 2.16.1
+git pull
 git reset --hard 7035398
 git submodule update
 
