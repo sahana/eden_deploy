@@ -1,0 +1,43 @@
+# CLI script to upgrade Web2Py from 2.14.6 to 2.16.1
+# - this is designed to be used with a Cherokee/PostGIS installation
+
+# Procedure:
+# - copy fieldnames.py to the web2py folder
+# - bash upgrade_web2py.sh
+
+# Notes for other systems:
+# SQLite just requires a standard migration
+# MySQL upgrades are currently not supported
+
+# Prepare upgrade:
+# Stop server
+/etc/init.d/uwsgi-prod stop
+
+# Backup DB
+/usr/local/bin/backup
+
+cd ~web2py
+
+# Remove compiled
+rm -rf eden/compiled 
+
+# Execute this script with OLD web2py (2.14.6):
+python web2py.py -S eden -M -R fieldnames.py
+
+# Update web2py to 2.16.1
+git reset --hard 7035398
+git submodule update
+
+# Run a Migration with NEW web2py (2.16.1):
+cd ~web2py/applications/eden
+sed -i 's/settings.base.migrate = False/settings.base.migrate = True/g' models/000_config.py
+cd ~web2py
+python web2py.py -S eden -M -R applications/eden/static/script/tools/noop.py
+cd ~web2py/applications/eden
+sed -i 's/settings.base.migrate = True/settings.base.migrate = False/g' models/000_config.py
+
+# Compile
+python web2py.py -S eden -M -R applications/eden/static/scripts/tools/compile.py
+
+# Start server
+/etc/init.d/uwsgi-prod start
