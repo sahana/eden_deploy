@@ -29,6 +29,9 @@ git pull
 git reset --hard 7035398
 git submodule update
 
+# Patch PyDAL (Scheduler fix)
+sed -i 's/credential_decoder = lambda cred: urllib.unquote(cred)/credential_decoder = lambda cred: unquote(cred)/' gluon/packages/dal/pydal/base.py
+
 # Run a Migration with NEW web2py (2.16.1):
 cd ~web2py/applications/eden
 sed -i 's/settings.base.migrate = False/settings.base.migrate = True/g' models/000_config.py
