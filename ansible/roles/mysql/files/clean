@@ -1,0 +1,19 @@
+#!/bin/sh
+/usr/local/bin/maintenance
+cd /home/web2py/applications/eden
+rm -f databases/*
+rm -rf errors
+rm -rf sessions
+rm -rf uploads
+sed -i 's/settings.base.migrate = False/settings.base.migrate = True/g' models/000_config.py
+sed -i 's/settings.base.prepopulate = 0/#settings.base.prepopulate = 0/g' models/000_config.py
+rm -rf compiled
+mysqladmin -f drop sahana
+mysqladmin create sahana
+cd /home/web2py
+sudo -H -u web2py python web2py.py -S eden -M -R applications/eden/static/scripts/tools/noop.py
+cd /home/web2py/applications/eden
+sed -i 's/settings.base.migrate = True/settings.base.migrate = False/g' models/000_config.py
+sed -i 's/#settings.base.prepopulate = 0/settings.base.prepopulate = 0/g' models/000_config.py
+/usr/local/bin/maintenance off
+/usr/local/bin/compile

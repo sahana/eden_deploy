@@ -1,0 +1,62 @@
+---
+- name: Install apache
+  apt: name={{ item }} state=latest
+  with_items:
+    - libapache2-mod-wsgi
+    - apache2.2-common
+
+- name: a2enmod
+  command: "a2enmod {{ item }}"
+  with_items:
+    - rewrite
+    - deflate
+    - headers
+    - expires
+
+- name: Update wsgi.conf
+  lineinfile: dest=/etc/apache2/mods-enabled/wsgi.conf insertbefore='</IfModule>' line='WSGIPassAuthorization On'
+
+- name: Update apache2.conf
+  lineinfile: dest=/etc/apache2/apache2.conf
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: 'MaxRequestsPerChild   0', line: 'MaxRequestsPerChild 300' }
+    - { regexp: 'MinSpareServers       5', line: 'MinSpareServers 3' }
+    - { regexp: 'MaxSpareServers      10', line: 'MaxSpareServers 6' }
+
+- name: Restart apache
+  command: apache2ctl restart
+
+- name: Copy maintenance.html
+  copy: src=maintenance.html dest=/var/www/maintenance.html
+
+- name: Copy compile script
+  copy: src=compile dest=/usr/local/bin/compile mode=755
+
+- name: Copy maintenance script
+  copy: src=maintenance dest=/usr/local/bin/maintenance mode=755
+
+- name: Copy pull script
+  copy: src=pull dest=/usr/local/bin/pull mode=755
+
+- name: Copy w2p script
+  copy: src=w2p dest=/usr/local/bin/w2p mode=755
+
+- name: Remove sites-enabled/000-default
+  file: path=/etc/apache2/sites-enabled/000-default state=absent
+
+- name: Copy production and maintenance configs
+  template: src={{ item }} dest=/etc/apache2/sites-available/{{ item }}
+  with_items:
+    - production
+    - maintenance
+
+- name: Update rc.local
+  lineinfile: "dest=/etc/rc.local insertbefore='exit 0' line='cd /home/web2py && python web2py.py -K eden -Q >/dev/null 2>&1 &'"
+
+
+
+

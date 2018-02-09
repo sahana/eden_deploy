@@ -1,0 +1,19 @@
+#!/bin/sh
+# Script to activate/deactivate the maintenance site
+# Can provide the option 'off' to disable the maintenance site
+if [ "\$1" != "off" ]; then
+    # Stop the Scheduler
+    killall -u web2py python
+    # Deactivate the Production Site
+    a2dissite production
+    # Activate the Maintenance Site
+    a2ensite maintenance
+else
+    # Deactivate the Maintenance Site
+    a2dissite maintenance
+    # Activate the Production Site
+    a2ensite production
+    # Start the Scheduler
+    cd /home/web2py && sudo -H -u web2py nohup python web2py.py -K eden -Q >/dev/null 2>&1 &
+fi
+apache2ctl restart

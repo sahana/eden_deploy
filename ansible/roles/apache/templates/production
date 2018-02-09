@@ -1,0 +1,51 @@
+<VirtualHost *:80>
+  ServerName {{ sitename }}
+  ServerAdmin webmaster@{{ sitename }}
+  DocumentRoot /home/web2py/applications
+  WSGIScriptAlias / /home/web2py/wsgihandler.py
+  ## Edit the process and the maximum-requests to reflect your RAM
+  WSGIDaemonProcess web2py user=web2py group=web2py home=/home/web2py processes=4 maximum-requests=100
+  RewriteEngine On
+  # Stop GoogleBot from slowing us down
+  RewriteRule .*robots\.txt$ /eden/static/robots.txt [L]
+  # extract desired cookie value from multiple-cookie HTTP header
+  #RewriteCond %{HTTP_COOKIE} registered=([^;]+)
+  # check that cookie value is correct
+  #RewriteCond %1 ^yes$
+  #RewriteRule ^/$ /eden/ [R,L]
+  #RewriteRule ^/$ /eden/static/index.html [R,L]
+  RewriteCond %{REQUEST_URI}    !/phpmyadmin(.*)
+  RewriteCond %{REQUEST_URI}    !/eden/(.*)
+  RewriteCond %{REQUEST_URI}    !/eden_deployment/(.*)
+  RewriteRule /(.*) /eden/$1 [R]
+  ### static files do not need WSGI
+  <LocationMatch "^(/[\w_]*/static/.*)">
+    Order Allow,Deny
+    Allow from all
+    SetOutputFilter DEFLATE
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png)$ no-gzip dont-vary
+    Header append Vary User-Agent env=!dont-vary
+    ExpiresActive On
+    ExpiresByType text/html "access plus 1 day"
+    ExpiresByType text/javascript "access plus 1 week"
+    ExpiresByType text/css "access plus 2 weeks"
+    ExpiresByType image/ico "access plus 1 month"
+    ExpiresByType image/gif "access plus 1 month"
+    ExpiresByType image/jpeg "access plus 1 month"
+    ExpiresByType image/jpg "access plus 1 month"
+    ExpiresByType image/png "access plus 1 month"
+    ExpiresByType application/x-shockwave-flash "access plus 1 month"
+  </LocationMatch>
+  ### everything else goes over WSGI
+  <Location "/">
+    Order deny,allow
+    Allow from all
+    WSGIProcessGroup web2py
+  </Location>
+  ErrorLog /var/log/apache2/{{ hostname }}_error.log
+  LogLevel warn
+  CustomLog /var/log/apache2/{{ hostname }}.log combined
+</VirtualHost>

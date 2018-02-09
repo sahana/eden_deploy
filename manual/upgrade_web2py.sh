@@ -16,12 +16,15 @@
 # Backup DB
 /usr/local/bin/backup
 
-cd ~web2py
-
 # Remove compiled
-rm -rf eden/compiled 
+cd ~web2py/eden
+rm -rf compiled 
 
-# Execute this script with OLD web2py (2.14.6):
+# Upgrade Eden (to ensure you have the fixes for current Web2Py)
+git pull
+
+# PostgreSQL-only: Execute this script with OLD web2py (2.14.6):
+cd ~web2py
 python web2py.py -S eden -M -R fieldnames.py
 
 # Update web2py to 2.16.1
@@ -35,12 +38,17 @@ sed -i 's/credential_decoder = lambda cred: urllib.unquote(cred)/credential_deco
 # Run a Migration with NEW web2py (2.16.1):
 cd ~web2py/applications/eden
 sed -i 's/settings.base.migrate = False/settings.base.migrate = True/g' models/000_config.py
+# MySQL
+#sed -i 's/#settings.base.fake_migrate = True/settings.base.fake_migrate = True/g' models/000_config.py
 cd ~web2py
-python web2py.py -S eden -M -R applications/eden/static/script/tools/noop.py
+python web2py.py -S eden -M -R applications/eden/static/scripts/tools/noop.py
 cd ~web2py/applications/eden
 sed -i 's/settings.base.migrate = True/settings.base.migrate = False/g' models/000_config.py
+# MySQL
+#sed -i 's/settings.base.fake_migrate = True/#settings.base.fake_migrate = True/g' models/000_config.py
 
 # Compile
+cd ~web2py
 python web2py.py -S eden -M -R applications/eden/static/scripts/tools/compile.py
 
 # Start server

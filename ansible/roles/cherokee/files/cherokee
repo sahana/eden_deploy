@@ -1,0 +1,86 @@
+#! /bin/sh
+#
+# start/stop Cherokee web server
+### BEGIN INIT INFO
+# Provides:          cherokee
+# Required-Start:    $remote_fs $network $syslog
+# Required-Stop:     $remote_fs $network $syslog
+# Should-Start:      $named
+# Should-Stop:       $named
+# Default-Start:     2 3 4 5
+# Default-Stop:      0 1 6
+# Short-Description: Start the Cherokee Web server
+# Description:       Start the Cherokee Web server
+### END INIT INFO
+PATH=/sbin:/bin:/usr/sbin:/usr/bin
+DAEMON=/usr/sbin/cherokee
+NAME=cherokee
+PIDFILE=/var/run/cherokee.pid
+. /lib/lsb/init-functions
+set -e
+test -x $DAEMON || exit 0
+case "$1" in
+  start)
+        echo "Starting $NAME web server "
+        start-stop-daemon --start --oknodo --pidfile $PIDFILE --exec $DAEMON -b
+        ;;
+  stop)
+        echo "Stopping $NAME web server "
+        start-stop-daemon --stop --oknodo --pidfile $PIDFILE --exec $DAEMON
+        rm -f $PIDFILE
+        ;;
+  restart)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+  reload|force-reload)
+        echo "Reloading web server "
+        if [ -f $PIDFILE ]
+            then
+            PID=$(cat $PIDFILE)
+            if ps p $PID | grep $NAME >/dev/null 2>&1
+            then
+                kill -HUP $PID
+            else
+                echo "PID present, but $NAME not found at PID $PID - Cannot reload"
+                exit 1
+            fi
+        else
+            echo "No PID file present for $NAME - Cannot reload"
+            exit 1
+        fi
+        ;;
+  status)
+        # Strictly, LSB mandates us to return indicating the different statuses,
+        # but that's not exactly Debian compatible - For further information:
+        # http://www.freestandards.org/spec/refspecs/LSB_1.3.0/gLSB/gLSB/iniscrptact.html
+        # http://bugs.debian.org/cgi-bin/bugreport.cgi?bug=208010
+        # ...So we just inform to the invoker and return success.
+        echo "$NAME web server status"
+        if [ -e $PIDFILE ] ; then
+            PROCNAME=$(ps -p $(cat $PIDFILE) -o comm=)
+            if [ "x$PROCNAME" = "x" ]; then
+                echo "Not running, but PID file present"
+            else
+                if [ "$PROCNAME" = "$NAME" ]; then
+                    echo "Running"
+                else
+                    echo "PID file points to process '$PROCNAME', not '$NAME'"
+                fi
+            fi
+        else
+            if PID=$(pidofproc $DAEMON); then
+                echo "Running (PID $PID), but PIDFILE not present"
+            else
+                echo "Not running\t"
+            fi
+        fi
+        ;;
+  *)
+        N=/etc/init.d/$NAME
+        echo "Usage: $N {start|stop|restart|reload|force-reload|status}" >&2
+        exit 1
+        ;;
+esac
+exit 0

@@ -1,0 +1,79 @@
+---
+
+- name: Install dependencies
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - build-essential
+    - autoconf
+    - automake
+    - libtool
+    - gettext
+    - rrdtool
+
+- name: Clone Repo
+  git: repo=http://github.com/cherokee/webserver.git dest=/tmp/webserver
+
+- name: Build
+  command: "{{ item }} chdir=/tmp/webserver"
+  with_items:
+    - ./autogen.sh --prefix=/usr --localstatedir=/var --sysconfdir=/etc
+    - make
+    - make install
+
+- name: Create log dir
+  file: path=/var/log/cherokee state=directory owner=www-data group=www-data
+
+- name: Create graphs dir
+  file: path=/var/lib/cherokee/graphs state=directory owner=www-data group=www-data
+
+- name: Copy init.d script
+  copy: src=cherokee dest=/etc/init.d/cherokee mode=755
+
+- name: update-rc.d
+  command: update-rc.d cherokee defaults
+
+- name: Clone Eden for static files
+  git: repo=git://github.com/flavour/eden.git dest=~/eden
+  tags:
+    - test
+    - demo
+
+- name: Copy static files to /var/www
+  command: cp -R ~/eden/static /var/www/
+
+- name: Copying cherokee.conf
+  template: src=cherokee.conf dest=/etc/cherokee/cherokee.conf
+  tags:
+    - test
+    - demo
+
+- name: Copying update_cherokee.py
+  template: src=update_cherokee_test.py dest=/tmp/update_cherokee.py
+  when: type == 'test'
+  tags:
+    - test
+
+- name: Copying update_cherokee.py
+  template: src=update_cherokee_demo.py dest=/tmp/update_cherokee.py
+  when: type == 'demo'
+  tags:
+    - demo
+
+- name: Copying update_cherokee.py
+  template: src=update_cherokee_prod.py dest=/tmp/update_cherokee.py
+  when: type == 'prod'
+
+- name: Executing update_cherokee
+  command: python update_cherokee.py chdir=/tmp/
+  tags:
+    - test
+    - demo
+
+- name: Copy maintenance.html
+  copy: src=maintenance.html dest=/var/www/maintenance.html
+  tags:
+    - test
+    - demo
+
+- name: Restart Cherokee
+  service: name=cherokee state=restarted

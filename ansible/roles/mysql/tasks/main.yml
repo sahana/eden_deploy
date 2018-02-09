@@ -1,0 +1,52 @@
+---
+- name: Install MySQL
+  apt: name={{ item }} state=latest install_recommends=no
+  with_items:
+    - mysql-server
+    - python-mysqldb
+    - libmysqlclient-dev
+
+- name: Install phpmyadmin
+  apt: name={{ item }} state=latest install_recommends=no
+  with_items:
+    - php5-cgi
+    - php5-mysql
+    - phpmyadmin
+    - mytop
+
+- name: Create symbolic link
+  file: path=/usr/share/phpmyadmin dest=/var/www/phpmyadmin
+  when: web_server == "cherokee"
+
+- name: Editing my.cnf
+  lineinfile: dest=/etc/mysql/my.cnf
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^query_cache_size        = 16M', line: 'query_cache_size = 1M' }
+    - { regexp: '^key_buffer              = 16M', line: 'key_buffer = 1M' }
+    - { regexp: 'max_allowed_packet      = 16M', line: 'max_allowed_packet = 1M' }
+
+- name: Restarting MySQL
+  service: name=mysql state=restarted
+
+- name: Copy backup script
+  copy: src=backup dest=/usr/local/bin/backup mode=755
+
+- name: Copy clean script
+  copy: src=clean dest=/usr/local/bin/clean mode=755
+
+- name: Copy my.cnf for root user
+  template: src=my.cnf dest=/root/.my.cnf owner=root mode=600
+
+- name: Create Database
+  mysql_db: name=sahana state=present
+
+- name: Create sahana db user
+  mysql_user: "name=sahana password={{ password }} priv=*.*:ALL host=localhost state=present"
+
+- name: Copying 000_config.py
+  command: cp /home/web2py/applications/eden/modules/templates/000_config.py /home/web2py/applications/eden/models
+

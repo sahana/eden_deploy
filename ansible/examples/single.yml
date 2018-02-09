@@ -1,0 +1,22 @@
+- hosts: # host ip
+  roles:
+  - postgresql
+  - common
+  - uwsgi
+  - configure
+  - cherokee
+  sudo: true
+  vars:
+    distro:  # wheezy/precise
+    dtype: na # na/afterprod/beforeprod
+    password: # db_password
+    type: # prod/demo/test
+    db_ip: # host_ip
+    db_type: # postgresql/mysql
+    hostname: # hostname
+    prepop_options: # template:mandatory
+    sitename: # <siteurl>
+    template: # <template_name>
+    web_server: # cherokee - TODO: Apache
+    eden_ip: # <host_ip>
+

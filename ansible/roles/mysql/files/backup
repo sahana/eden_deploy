@@ -1,0 +1,6 @@
+#!/bin/sh
+NOW=\$(date +"%Y-%m-%d")
+mysqldump sahana > /root/backup-\$NOW.sql
+gzip -9 /root/backup-\$NOW.sql
+OLD=\$(date --date='7 day ago' +"%Y-%m-%d")
+rm -f /root/backup-\$OLD.sql.gz

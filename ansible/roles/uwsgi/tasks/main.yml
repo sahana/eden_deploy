@@ -1,0 +1,67 @@
+---
+- name: Get and extract source
+  shell: "{{ item }} chdir=/tmp"
+  with_items:
+    - wget http://projects.unbit.it/downloads/uwsgi-1.9.18.2.tar.gz
+    - tar zxvf uwsgi-1.9.18.2.tar.gz
+
+- name: Build
+  shell: "{{ item }} chdir=/tmp/uwsgi-1.9.18.2"
+  with_items:
+    - python uwsgiconfig.py --build pyonly.ini
+    - cp uwsgi /usr/local/bin
+
+- name: Copy Files
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: 'logrotate', dest: '/etc/logrotate.d/uwsgi' }
+    - { src: 'scheduler', dest: '/home/{{ type }}/run_scheduler.py' }
+  tags:
+    - test
+    - demo
+
+- name: Copy uwsgi.ini
+  template: src=uwsgi.ini dest=/home/{{ type }}/uwsgi.ini
+  tags:
+    - test
+    - demo
+
+- name: Create pid file
+  file: path=/tmp/uwsgi-{{ type }}.pid state=touch owner=web2py group=web2py
+  tags:
+    - test
+    - demo
+
+- name: Create log dir
+  file: path=/var/log/uwsgi state=directory owner=web2py group=web2py
+
+- name: Copy init.d script
+  template: src=uwsgi dest=/etc/init.d/uwsgi-{{ type }}
+  tags:
+    - test
+    - demo
+
+- name: Fix permissions for init.d script
+  file: path=/etc/init.d/uwsgi-{{ type }} state=file mode=755
+  tags:
+    - test
+    - demo
+
+- name: update-rc.d
+  command: update-rc.d uwsgi-{{ type }} defaults
+  tags:
+    - test
+    - demo
+
+- name: Copy clean_eden
+  copy: src=clean_eden.sh dest=/usr/bin/clean_eden mode=755
+  tags:
+    - test
+    - demo
+
+- name: Copy update_clean
+  copy: src=update_clean.py dest=/tmp/update_clean.py
+  when: type == 'test'
+  tags:
+    - test
+

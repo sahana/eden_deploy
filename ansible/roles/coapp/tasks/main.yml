@@ -1,0 +1,99 @@
+---
+- name: Installing Dependencies
+  apt: name={{ item }} state=latest update_cache=yes
+  with_items:
+    - python-lxml
+    - python-shapely
+    - python-dateutil
+    - python-xlrd
+    - python-xlwt
+    - python-dev
+    - python-pip
+    - libodbc1
+
+- name: Create web2py user
+  command: adduser --system --disabled-password web2py
+
+- name: Create web2py group
+  group: name=web2py state=present
+
+- name: Clone Web2py
+  git: repo=git://github.com/web2py/web2py.git dest=/home/web2py accept_hostkey=yes
+
+- name: Copy routes.py
+  copy: src=routes.py dest=/home/web2py/routes.py
+
+- name: Clone Coapp
+  git: repo=git://github.com/flavour/eden dest=/home/web2py/applications/eden_deployment accept_hostkey=yes
+
+- name: Move 000_config.py
+  command: cp /home/web2py/applications/eden_deployment/modules/templates/000_config.py /home/web2py/applications/eden_deployment/models
+
+- name: Editing 000_config.py
+  lineinfile: dest=/home/web2py/applications/eden_deployment/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = \"setup\"' }
+    - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
+    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = \"http://{{ sitename }}\"' }
+
+
+- name: Copy web2py init scripts
+  sudo: yes
+  copy: src={{ item}} dest=/etc/init.d/{{ item }} mode=755
+  with_items:
+    - web2py
+    - web2py-scheduler
+
+# - name: update-rc.d
+#   sudo: yes
+#   command: update-rc.d {{ item }} defaults
+#   with_items:
+#     - web2py
+#     - web2py-scheduler
+
+- name: Fix permissions
+  file: path=/home/{{item}} state=directory owner=web2py
+  with_items:
+    - web2py
+    - web2py/applications
+    - web2py/applications/admin/cache
+    - web2py/applications/admin/cron
+    - web2py/applications/admin/databases
+    - web2py/applications/admin/errors
+    - web2py/applications/admin/sessions
+    - web2py/applications/eden_deployment
+    - web2py/applications/eden_deployment/cache
+    - web2py/applications/eden_deployment/cron
+    - web2py/applications/eden_deployment/databases
+    - web2py/applications/eden_deployment/errors
+    - web2py/applications/eden_deployment/models
+    - web2py/applications/eden_deployment/sessions
+    - web2py/applications/eden_deployment/static/img/markers
+    - web2py/applications/eden_deployment/static/cache
+    - web2py/applications/eden_deployment/static/cache/chart
+    - web2py/applications/eden_deployment/uploads
+    - web2py/applications/eden_deployment/uploads/gis_cache
+    - web2py/applications/eden_deployment/uploads/images
+    - web2py/applications/eden_deployment/uploads/tracks
+
+- name: Prepopulate Database
+  shell: sudo -H -u web2py python web2py.py -S eden_deployment -M -R applications/eden/static/scripts/tools/noop.py chdir=/home/web2py
+
+- name: Create ansible dir
+  file: path=/etc/ansible state=directory
+
+- name: Copy ansible.cfg
+  copy: src=ansible.cfg dest=/etc/ansible/ansible.cfg
+
+- name: Redirect port 80 to 8000
+  shell: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+
+- name: Launch Coapp
+  service: name=web2py state=started
+
+- name: Launch Scheduler
+  service: name=web2py-scheduler state=started

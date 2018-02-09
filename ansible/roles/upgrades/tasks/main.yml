@@ -1,0 +1,12 @@
+---
+- name: Update System Packages
+  apt: name={{ item }} state=latest
+  with_items: system_packages
+
+- name: Update pip Packages
+  pip: name={{ item }} extra_args='--upgrade'
+  with_items: pip_packages
+
+- name: Pull from git remote
+  command: git pull chdir={{ item.chdir }}
+  with_items: git_packages
