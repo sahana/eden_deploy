@@ -15,9 +15,9 @@ sudo pip install PyYAML jinja2 paramiko
 sudo pip install ansible
 
 # Clone Ansible Playbooks
-git clone https://github.com/gnarula/eden_playbook
+git clone https://github.com/sahana/eden_deploy
 
 # Run the install
-cd eden_playbook
+cd eden_deploy/ansible
 
 bash bootstrap_coapp.sh
