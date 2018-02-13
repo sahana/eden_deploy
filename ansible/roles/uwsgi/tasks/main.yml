@@ -16,12 +16,8 @@
   with_items:
     - { src: 'logrotate', dest: '/etc/logrotate.d/uwsgi' }
     - { src: 'scheduler', dest: '/home/{{ type }}/run_scheduler.py' }
-  tags:
-    - test
-    - demo
-
-- name: Copy uwsgi.ini
-  template: src=uwsgi.ini dest=/home/{{ type }}/uwsgi.ini
+    - { src: 'uwsgi.ini', dest: '/home/{{ type }}/uwsgi.ini' }
+    - { src: 'uwsgi', dest: '/etc/init.d/uwsgi-{{ type }}' }
   tags:
     - test
     - demo
@@ -35,12 +31,6 @@
 - name: Create log dir
   file: path=/var/log/uwsgi state=directory owner=web2py group=web2py
 
-- name: Copy init.d script
-  template: src=uwsgi dest=/etc/init.d/uwsgi-{{ type }}
-  tags:
-    - test
-    - demo
-
 - name: Fix permissions for init.d script
   file: path=/etc/init.d/uwsgi-{{ type }} state=file mode=755
   tags:
@@ -52,16 +42,3 @@
   tags:
     - test
     - demo
-
-- name: Copy clean_eden
-  copy: src=clean_eden.sh dest=/usr/bin/clean_eden mode=755
-  tags:
-    - test
-    - demo
-
-- name: Copy update_clean
-  copy: src=update_clean.py dest=/tmp/update_clean.py
-  when: type == 'test'
-  tags:
-    - test
-

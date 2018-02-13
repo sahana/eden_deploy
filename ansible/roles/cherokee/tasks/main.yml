@@ -1,5 +1,5 @@
 ---
-
+# @ToDo: Split-off Debian-specific parts
 - name: Install dependencies
   apt: name={{ item }} state=latest update_cache=yes
   with_items:
@@ -10,11 +10,25 @@
     - gettext
     - rrdtool
 
-- name: Clone Repo
-  git: repo=http://github.com/cherokee/webserver.git dest=/tmp/webserver
+- name: Install libtool-bin (Debian 8 or 9)
+  apt: name=libtool-bin state=latest
+  when: "ansible_distribution_major_version != '7'"
+
+#- name: Clone Repo
+#  git: repo=http://github.com/cherokee/webserver.git dest=/tmp/webserver
+
+- name: Download
+  command: "{{ item }}"
+  args:
+    chdir: /tmp
+  with_items:
+    - wget https://github.com/cherokee/webserver/archive/master.zip
+    - unzip master.zip
 
 - name: Build
-  command: "{{ item }} chdir=/tmp/webserver"
+  command: "{{ item }}"
+  args:
+    chdir: /tmp/webserver
   with_items:
     - ./autogen.sh --prefix=/usr --localstatedir=/var --sysconfdir=/etc
     - make
@@ -31,15 +45,6 @@
 
 - name: update-rc.d
   command: update-rc.d cherokee defaults
-
-- name: Clone Eden for static files
-  git: repo=git://github.com/flavour/eden.git dest=~/eden
-  tags:
-    - test
-    - demo
-
-- name: Copy static files to /var/www
-  command: cp -R ~/eden/static /var/www/
 
 - name: Copying cherokee.conf
   template: src=cherokee.conf dest=/etc/cherokee/cherokee.conf

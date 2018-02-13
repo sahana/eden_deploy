@@ -1,0 +1,76 @@
+---
+# Check for correct Version
+- fail: msg="Exiting as this deployment method currently only supports Debian 7, 8 or 9"
+    when:
+        - "ansible_distribution_major_version" != "7"
+        - "ansible_distribution_major_version" != "8"
+        - "ansible_distribution_major_version" != "9"
+
+# Install Admin Tools
+- name: Install Admin Tools
+  apt: name={{item}} state=latest update_cache=yes # update-cache=yes is the equivalent of apt-get update
+  with_items:
+    - unzip
+    - psmisc
+    - mlocate
+    - telnet
+    - lrzsz
+    - vim
+    - rcconf
+    - htop
+    - sudo
+    - p7zip
+    - dos2unix
+    - curl
+
+- name: Install elinks (Debian 9)
+  apt: name={{item}} state=latest
+  when: "ansible_distribution_major_version == '9'"
+  with_items:
+    - elinks
+    - net-tools
+
+- name: Install elinks (Debian 7 or 8)
+  apt: name=elinks-lite state=latest
+  when: "ansible_distribution_major_version != '9'"
+
+# Git
+- name: Install git
+  apt: name=git-core state=latest
+
+# Email
+- name: Install Exim4
+  apt: name={{item}} state=latest
+  with_items:
+    - exim4-config
+    - exim4-daemon-light
+
+# Install Libraries
+- name: Install libodbc1 # Needed for Web2Py
+  apt: name=libodbc1 state=latest
+
+- name: Install libgeos (Debian 9)
+  apt: name=libgeos-c1v5 state=latest
+  when: "ansible_distribution_major_version == '9'"
+
+- name: Install libgeos (Debian 7 or 8)
+  apt: name=libgeos-c1 state=latest
+  when: "ansible_distribution_major_version != '9'"
+
+- name: Install python libs
+  apt: name={{item}} state=latest
+  with_items:
+    - python-dev
+    - python-lxml
+    - python-setuptools
+    - python-dateutil
+    - python-serial
+    - python-imaging
+    #- python-reportlab # Now using PIP version for Percentage support
+    #- python-matplotlib # Only used by deprecated survey module
+    - python-requests
+    - python-xlwt
+    - build-essential
+    - libgeos-dev
+    - python-pip
+

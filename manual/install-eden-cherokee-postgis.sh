@@ -609,7 +609,7 @@ wget --no-check-certificate https://www.postgresql.org/media/keys/ACCC4CF8.asc
 apt-key add ACCC4CF8.asc
 apt-get update
 
-apt-get -y install postgresql-9.6 python-psycopg2 ptop
+apt-get -y install postgresql-9.6 python-psycopg2 ptop pgtop
 apt-get -y install postgresql-9.6-postgis-2.3
 
 # Tune PostgreSQL
@@ -627,10 +627,10 @@ sysctl -w kernel.shmall=2097152
 
 sed -i 's|#track_counts = on|track_counts = on|' /etc/postgresql/9.6/main/postgresql.conf
 sed -i 's|#autovacuum = on|autovacuum = on|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|max_connections = 100|max_connections = 12|' /etc/postgresql/9.6/main/postgresql.conf
 # 512Mb RAM:
-sed -i 's|shared_buffers = 28MB|shared_buffers = 56MB|' /etc/postgresql/9.6/main/postgresql.conf
-sed -i 's|#effective_cache_size = 128MB|effective_cache_size = 256MB|' /etc/postgresql/9.6/main/postgresql.conf
-sed -i 's|#work_mem = 1MB|work_mem = 2MB|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|#effective_cache_size = 4GB|effective_cache_size = 256MB|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|#work_mem = 4MB|work_mem = 4MB|' /etc/postgresql/9.6/main/postgresql.conf
 # If 1Gb+ RAM, activate post-install via pg1024 script
 
 #####################
@@ -747,9 +747,9 @@ cat << EOF > "/usr/local/bin/pg1024"
 sed -i 's|kernel.shmmax = 279134208|#kernel.shmmax = 279134208|' /etc/sysctl.conf
 sed -i 's|#kernel.shmmax = 552992768|kernel.shmmax = 552992768|' /etc/sysctl.conf
 sysctl -w kernel.shmmax=552992768
-sed -i 's|shared_buffers = 56MB|shared_buffers = 160MB|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|shared_buffers = 128MB|shared_buffers = 256MB|' /etc/postgresql/9.6/main/postgresql.conf
 sed -i 's|effective_cache_size = 256MB|effective_cache_size = 512MB|' /etc/postgresql/9.6/main/postgresql.conf
-sed -i 's|work_mem = 2MB|work_mem = 4MB|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|work_mem = 4MB|work_mem = 8MB|' /etc/postgresql/9.6/main/postgresql.conf
 /etc/init.d/postgresql restart
 EOF
 chmod +x /usr/local/bin/pg1024
@@ -759,9 +759,9 @@ cat << EOF > "/usr/local/bin/pg512"
 sed -i 's|#kernel.shmmax = 279134208|kernel.shmmax = 279134208|' /etc/sysctl.conf
 sed -i 's|kernel.shmmax = 552992768|#kernel.shmmax = 552992768|' /etc/sysctl.conf
 sysctl -w kernel.shmmax=279134208
-sed -i 's|shared_buffers = 160MB|shared_buffers = 56MB|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|shared_buffers = 256MB|shared_buffers = 128MB|' /etc/postgresql/9.6/main/postgresql.conf
 sed -i 's|effective_cache_size = 512MB|effective_cache_size = 256MB|' /etc/postgresql/9.6/main/postgresql.conf
-sed -i 's|work_mem = 4MB|work_mem = 2MB|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|work_mem = 8MB|work_mem = 4MB|' /etc/postgresql/9.6/main/postgresql.conf
 /etc/init.d/postgresql restart
 EOF
 chmod +x /usr/local/bin/pg512

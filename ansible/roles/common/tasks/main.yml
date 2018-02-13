@@ -1,56 +1,31 @@
 ---
-- name: Install Admin Tools
-  apt: name={{item}} state=latest update_cache=yes
-  with_items:
-    - unzip
-    - psmisc
-    - mlocate
-    - telnet
-    - lrzsz
-    - vim
-    - elinks-lite
-    - rcconf
-    - htop
-    - sudo
-    - p7zip
-    - dos2unix
-    - curl
+# @ToDo: Select Template
+# ideally we want this done via the GUI, but this may be a useful interim step
+#vars_prompt:
+#    - name: "template"
+#      prompt: "Which template should we use?"
 
-- name: Install git
-  apt: name=git-core state=latest
+# @ToDo: Allow selection of alternate appname
 
-- name: Install libodbc1
-  apt: name=libodbc1 state=latest
+# Check for correct OS
+-  fail: msg="Exiting as this deployment method currently only supports Debian"
+   when: "ansible_distribution" != "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
-- name: Install Exim4
-  apt: name={{item}} state=latest
-  with_items:
-    - exim4-config
-    - exim4-daemon-light
+# Run Debian-specific tasks
+-  import_tasks: debian.yml
+   when: "ansible_distribution" == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
-- name: Install python libs
-  apt: name={{item}} state=latest
-  with_items:
-    - libgeos-c1
-    - python-dev
-    - python-lxml
-    - python-setuptools
-    - python-dateutil
-    - python-serial
-    - python-imaging
-    - python-reportlab
-    - python-matplotlib
-    - python-xlwt
-    - build-essential
-    - libgeos-dev
-    - python-pip
+# Python Libraries, where we need a more recent version than that provided by the OS
+- name: Install Reportlab # Want Percentage support
+  pip: name=reportlab
 
-- name: Install Shapely
+- name: Install Shapely # Want Simplify enhancements
   pip: name=Shapely
 
-- name: Install XLRD
+- name: Install XLRD # XLS import support
   pip: name=xlrd
 
+# Web2Py
 - name: Create web2py user
   #user: name=web2py system=true
   command: adduser --system --disabled-password web2py
@@ -59,12 +34,28 @@
   group: name=web2py state=present
 
 - name: Create symlink
-  file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
+  file: src=/home/prod dest=/home/web2py state=link owner=web2py group=web2py
   when: type == 'prod'
 
-- name: Clone web2py
-  git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}}
-  when: type != 'prod' or inventory_hostname != '127.0.0.1'
+- name: Clone web2py # recursive by default
+  git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}} version=cda35fd
+  tags:
+    - test
+    - demo
+
+# 2.14.6
+#- name: Checkout stable release of Web2Py
+#  command: git reset --hard cda35fd
+#  args:
+#    chdir: /home/{{ type }}
+#  tags:
+#    - test
+#    - demo
+
+- name: Checkout stable release of PyDAL
+  command: git submodule update --init --recursive
+  args:
+    chdir: /home/{{ type }}
   tags:
     - test
     - demo
@@ -81,26 +72,29 @@
     - test
     - demo
 
-- name: Create matplotlib directory
-  file: path=/home/{{ type }}/.matplotlib state=directory owner=web2py
-  tags:
-    - test
-    - demo
+# matplotlib
+# Only used by deprecated survey module
+#- name: Create matplotlib directory
+#  file: path=/home/{{ type }}/.matplotlib state=directory owner=web2py
 
-- name: Update wsgihandler.py
-  lineinfile: dest=/home/{{ type }}/wsgihandler.py
-              regexp=''
-              insertafter=EOF
-              line='os.environ["MPLCONFIGDIR"] = "/home/{{ type }}/.matplotlib"'
-  tags:
-    - test
-    - demo
+#- name: Update wsgihandler.py
+#  lineinfile: dest=/home/{{ type }}/wsgihandler.py
+#              regexp=''
+#              insertafter=EOF
+#              line='os.environ["MPLCONFIGDIR"] = "/home/{{ type }}/.matplotlib"'
 
 # - name: Edit matplotlibrc
 #   lineinfile: dest=/etc/matplotlibrc state=present backref=yes regexp='backend      : TkAgg' line='backend      : Agg'
 
+- name: Create symlink
+  file: src=/home/{{ type }} dest=/home state=link
+  tags:
+    - test
+    - demo
+
+# Eden
 - name: Clone Eden
-  git: repo=git://github.com/flavour/eden.git dest=/home/{{ type }}/applications/eden
+  git: repo=git://github.com/sahana/eden.git dest=/home/{{ type }}/applications/eden
   tags:
     - test
     - demo
@@ -122,9 +116,10 @@
     - "{{ type }}/applications/eden/errors"
     - "{{ type }}/applications/eden/models"
     - "{{ type }}/applications/eden/sessions"
-    - "{{ type }}/applications/eden/static/img/markers"
     - "{{ type }}/applications/eden/static/cache"
     - "{{ type }}/applications/eden/static/cache/chart"
+    - "{{ type }}/applications/eden/static/fonts"
+    - "{{ type }}/applications/eden/static/img/markers"
     - "{{ type }}/applications/eden/uploads"
     - "{{ type }}/applications/eden/uploads/gis_cache"
     - "{{ type }}/applications/eden/uploads/images"
@@ -132,3 +127,12 @@
   tags:
     - test
     - demo
+
+- name: Create symlink (eden in web2py)
+  file: src=/home/{{ type }}/applications/eden dest=/home/{{ type }} state=link
+  tags:
+    - test
+    - demo
+
+- name: Create symlink (eden in home)
+  file: src=/home/{{ type }}/applications/eden dest=/home state=link

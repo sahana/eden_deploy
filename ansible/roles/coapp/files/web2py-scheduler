@@ -3,7 +3,7 @@
 # startup script for Ubuntu and Debian Linux servers
 #
 # To use this file
-# cp ubuntu.sh /etc/init.d/web2py
+# cp web2py-scheduler /etc/init.d/web2py
 #
 # To automatically start at reboot
 # sudo update-rc.d web2py defaults
@@ -14,7 +14,7 @@
 # Default-Start:     2 3 4 5
 # Default-Stop:      S 0 1 6
 # Short-Description: web2py initscript
-# Description:       This file starts up the web2py server.
+# Description:       This file starts up the web2py scheduler.
 ### END INIT INFO
 
 # Author: Mark Moore <mark.moore@fonjax.com>
@@ -135,7 +135,7 @@ do_status()
         #   0 if daemon is responding and OK
         #   1 if daemon is not responding, but PIDFILE exists
         #   2 if daemon is not responding, but LOCKFILE exists
-        #   3 if deamon is not running
+        #   3 if daemon is not running
         #   4 if daemon status is unknown
 
         # Check to see if the daemon is already running.
