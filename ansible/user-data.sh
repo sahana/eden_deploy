@@ -2,17 +2,20 @@
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # Update
-sudo apt-get update
+apt-get update
 
 # Install git
-sudo apt-get install git-core
+apt-get install git-core
 
 # Install ansible dependencies
-sudo apt-get install python-pip python-dev git -y
-sudo pip install PyYAML jinja2 paramiko
+apt-get install python-pip python-dev git -y
+pip install PyYAML jinja2 paramiko
 
 # Install Ansible
-sudo pip install ansible
+pip install ansible
+
+# Go somewhere that the admin user can see
+cd /tmp
 
 # Clone Ansible Playbooks
 git clone https://github.com/sahana/eden_deploy
