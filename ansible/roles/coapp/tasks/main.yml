@@ -20,7 +20,7 @@
 - name: Clone Web2py
   git: repo=git://github.com/web2py/web2py.git dest=/home/web2py accept_hostkey=yes version=cda35fd
 
-- name: Checkout stable release of PyDAL
+- name: Configure PyDAL
   command: git submodule update --init --recursive
   args:
     chdir: /home/web2py
@@ -85,6 +85,7 @@
 
 - name: Prepopulate Database
   shell: sudo -H -u web2py python web2py.py -S eden_setup -M -R applications/eden_setup/static/scripts/tools/noop.py chdir=/home/web2py
+  ignore_errors: yes
 
 - name: Create ansible dir
   file: path=/etc/ansible state=directory
