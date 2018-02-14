@@ -97,7 +97,10 @@
   shell: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
 
 - name: Launch Coapp
-  service: name=web2py state=started
+  # https://github.com/ansible/ansible/issues/22171
+  #service: name=web2py state=started
+  shell: service web2py start
 
 - name: Launch Scheduler
-  service: name=web2py-scheduler state=started
+  #service: name=web2py-scheduler state=started
+  shell: service web2py-scheduler start
