@@ -10,7 +10,7 @@ cat << EOF > "deploy_coapp.yml"
 ---
 - hosts: 127.0.0.1
   connection: local
-  remote_user: root
+  remote_user: admin
 
   vars:
     sitename: '$pubDNS' # usually hostname.domain
@@ -21,4 +21,5 @@ EOF
 
 echo "Now running ansible-playbook"
 
-/usr/local/bin/ansible-playbook -i inventory deploy_coapp.yml
+# HOME=/root required due to https://github.com/ansible/ansible/issues/21562
+HOME=/root /usr/local/bin/ansible-playbook -i inventory deploy_coapp.yml
