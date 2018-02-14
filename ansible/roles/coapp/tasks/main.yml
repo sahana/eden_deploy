@@ -23,7 +23,7 @@
 - name: Checkout stable release of PyDAL
   command: git submodule update --init --recursive
   args:
-    chdir: /home/{{ type }}
+    chdir: /home/web2py
   
 - name: Copy routes.py
   copy: src=routes.py dest=/home/web2py/routes.py
