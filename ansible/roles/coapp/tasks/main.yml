@@ -18,8 +18,13 @@
   group: name=web2py state=present
 
 - name: Clone Web2py
-  git: repo=git://github.com/web2py/web2py.git dest=/home/web2py accept_hostkey=yes
+  git: repo=git://github.com/web2py/web2py.git dest=/home/web2py accept_hostkey=yes version=cda35fd
 
+- name: Checkout stable release of PyDAL
+  command: git submodule update --init --recursive
+  args:
+    chdir: /home/{{ type }}
+  
 - name: Copy routes.py
   copy: src=routes.py dest=/home/web2py/routes.py
 
@@ -42,14 +47,12 @@
 
 
 - name: Copy web2py init scripts
-  sudo: yes
   copy: src={{ item}} dest=/etc/init.d/{{ item }} mode=755
   with_items:
     - web2py
     - web2py-scheduler
 
 # - name: update-rc.d
-#   sudo: yes
 #   command: update-rc.d {{ item }} defaults
 #   with_items:
 #     - web2py
@@ -81,7 +84,7 @@
     - web2py/applications/eden_setup/uploads/tracks
 
 - name: Prepopulate Database
-  shell: sudo -H -u web2py python web2py.py -S eden_setup -M -R applications/eden/static/scripts/tools/noop.py chdir=/home/web2py
+  shell: sudo -H -u web2py python web2py.py -S eden_setup -M -R applications/eden_setup/static/scripts/tools/noop.py chdir=/home/web2py
 
 - name: Create ansible dir
   file: path=/etc/ansible state=directory
