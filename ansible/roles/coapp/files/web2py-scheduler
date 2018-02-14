@@ -3,17 +3,17 @@
 # startup script for Ubuntu and Debian Linux servers
 #
 # To use this file
-# cp web2py-scheduler /etc/init.d/web2py
+# cp web2py-scheduler /etc/init.d/web2py-scheduler
 #
 # To automatically start at reboot
-# sudo update-rc.d web2py defaults
+# sudo update-rc.d web2py-scheduler defaults
 #
-# Provides:          web2py
+# Provides:          web2py-scheduler
 # Required-Start:    $local_fs $remote_fs
 # Required-Stop:     $local_fs $remote_fs
 # Default-Start:     2 3 4 5
 # Default-Stop:      S 0 1 6
-# Short-Description: web2py initscript
+# Short-Description: web2py-scheduler initscript
 # Description:       This file starts up the web2py scheduler.
 ### END INIT INFO
 
@@ -27,7 +27,7 @@ PIDFILE=$PIDDIR/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 DAEMON=/usr/bin/python
 DAEMON_DIR=/home/web2py
-DAEMON_ARGS="web2py.py --pid_filename=$PIDFILE -K eden_deployment"
+DAEMON_ARGS="web2py.py --pid_filename=$PIDFILE -K eden_deploy"
 DAEMON_USER=web2py
 
 # Exit if the package is not installed

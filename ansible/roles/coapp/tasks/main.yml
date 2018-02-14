@@ -99,8 +99,8 @@
 - name: Launch Coapp
   # https://github.com/ansible/ansible/issues/22171
   #service: name=web2py state=started
-  shell: service web2py start
+  shell: /etc/init.d/web2py start
 
 - name: Launch Scheduler
   #service: name=web2py-scheduler state=started
-  shell: service web2py-scheduler start
+  shell: /etc/init.d/web2py-scheduler start
