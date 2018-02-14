@@ -14,9 +14,6 @@ pip install PyYAML jinja2 paramiko
 # Install Ansible
 pip install ansible
 
-# Go somewhere that the admin user can see
-cd /tmp
-
 # Clone Ansible Playbooks
 git clone https://github.com/sahana/eden_deploy
 
