@@ -11,6 +11,10 @@
     - python-pip
     - libodbc1
 
+# Python Libraries, where we need a more recent version than that provided by the OS
+- name: Install Reportlab # Want Percentage support
+  pip: name=reportlab
+
 - name: Create web2py user
   command: adduser --system --disabled-password web2py
 
@@ -41,9 +45,9 @@
               line="{{ item.line }}"
               state=present
   with_items:
-    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = \"setup\"' }
+    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = "setup"' }
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
-    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = \"http://{{ sitename }}\"' }
+    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "http://{{ sitename }}"' }
 
 
 - name: Copy web2py init scripts
