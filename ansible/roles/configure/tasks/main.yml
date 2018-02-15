@@ -8,7 +8,8 @@
 
 - name: Copying 000_config.py from Production for Test (need same HMAC for passwords)
   command: cp /home/web2py/applications/eden/models/000_config.py /home/{{ type }}/applications/eden/models
-  when: type == 'test'# or dtype == 'afterprod'
+  #when: type == 'test' or dtype == 'afterprod'
+  when: type == 'test'
   tags:
     - test
 
