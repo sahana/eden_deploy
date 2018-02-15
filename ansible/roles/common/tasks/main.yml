@@ -33,10 +33,6 @@
 - name: Create web2py group
   group: name=web2py state=present
 
-- name: Create symlink
-  file: src=/home/prod dest=/home/web2py state=link owner=web2py group=web2py
-  when: type == 'prod'
-
 - name: Clone web2py # recursive by default
   git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}} version=cda35fd
   tags:
@@ -51,6 +47,10 @@
 #  tags:
 #    - test
 #    - demo
+
+- name: Create symlink
+  file: src=/home/prod dest=/home/web2py state=link owner=web2py group=web2py
+  when: type == 'prod'
 
 - name: Configure PyDAL
   command: git submodule update --init --recursive
