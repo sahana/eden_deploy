@@ -1,10 +1,10 @@
 ---
 # Check for correct Version
 - fail: msg="Exiting as this deployment method currently only supports Debian 7, 8 or 9"
-    when:
-        - ansible_distribution_major_version != "7"
-        - ansible_distribution_major_version != "8"
-        - ansible_distribution_major_version != "9"
+  when:
+    - ansible_distribution_major_version != "7"
+    - ansible_distribution_major_version != "8"
+    - ansible_distribution_major_version != "9"
 
 # Install Admin Tools
 - name: Install Admin Tools
