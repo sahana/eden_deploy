@@ -52,20 +52,10 @@
     - demo
 
 - name: Copying update_cherokee.py
-  template: src=update_cherokee_test.py dest=/tmp/update_cherokee.py
-  when: type == 'test'
-  tags:
-    - test
-
-- name: Copying update_cherokee.py
-  template: src=update_cherokee_demo.py dest=/tmp/update_cherokee.py
-  when: type == 'demo'
+  template: src=update_cherokee_{{ type }}.py dest=/tmp/update_cherokee.py
   tags:
     - demo
-
-- name: Copying update_cherokee.py
-  template: src=update_cherokee_prod.py dest=/tmp/update_cherokee.py
-  when: type == 'prod'
+    - test
 
 - name: Executing update_cherokee
   command: python update_cherokee.py chdir=/tmp/
