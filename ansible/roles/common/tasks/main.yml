@@ -96,7 +96,6 @@
 - name: Fix permissions
   file: path=/home/{{item}} state=directory owner=web2py
   with_items:
-    - "{{ type }}"
     - "{{ type }}/applications"
     - "{{ type }}/applications/admin/cache"
     - "{{ type }}/applications/admin/cron"
