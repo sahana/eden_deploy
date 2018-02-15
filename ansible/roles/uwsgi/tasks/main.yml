@@ -1,9 +1,9 @@
 ---
-- name: Get and extract source
-  shell: "{{ item }} chdir=/tmp"
-  with_items:
-    - wget http://projects.unbit.it/downloads/uwsgi-1.9.18.2.tar.gz
-    - tar zxvf uwsgi-1.9.18.2.tar.gz
+- name: Download & Unzip
+  unarchive:
+    src: http://projects.unbit.it/downloads/uwsgi-1.9.18.2.tar.gz
+    dest: /tmp
+    remote_src: yes
 
 - name: Build
   shell: "{{ item }} chdir=/tmp/uwsgi-1.9.18.2"
@@ -16,8 +16,18 @@
   with_items:
     - { src: 'logrotate', dest: '/etc/logrotate.d/uwsgi' }
     - { src: 'scheduler', dest: '/home/{{ type }}/run_scheduler.py' }
-    - { src: 'uwsgi.ini', dest: '/home/{{ type }}/uwsgi.ini' }
-    - { src: 'uwsgi', dest: '/etc/init.d/uwsgi-{{ type }}' }
+  tags:
+    - test
+    - demo
+
+- name: uwsgi.ini
+  template: src='uwsgi.ini.j2' dest='/home/{{ type }}/uwsgi.ini'
+  tags:
+    - test
+    - demo
+
+- name: service script
+  template: src='uwsgi.j2' dest='/etc/init.d/uwsgi-{{ type }}'
   tags:
     - test
     - demo
