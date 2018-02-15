@@ -30,6 +30,7 @@ cat << EOF > "deploy.yml"
     domain: '$pubDNS'
     sitename: '$pubDNS' # usually hostname.domain
     template: '$template'
+    type: 'prod'
 
   roles:
     - common
