@@ -17,18 +17,17 @@
 #- name: Clone Repo
 #  git: repo=http://github.com/cherokee/webserver.git dest=/tmp/webserver
 
-- name: Download
-  command: "{{ item }}"
-  args:
-    chdir: /tmp
-  with_items:
-    - wget https://github.com/cherokee/webserver/archive/master.zip
-    - unzip master.zip
+- name: Download & Unzip
+  unarchive:
+    src: https://github.com/cherokee/webserver/archive/master.zip
+    dest: /tmp
+    remote_src: yes
 
 - name: Build
   command: "{{ item }}"
   args:
-    chdir: /tmp/webserver
+    #chdir: /tmp/webserver
+    chdir: /tmp/webserver-master
   with_items:
     - ./autogen.sh --prefix=/usr --localstatedir=/var --sysconfdir=/etc
     - make
