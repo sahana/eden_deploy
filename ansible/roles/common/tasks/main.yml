@@ -9,11 +9,11 @@
 
 # Check for correct OS
 -  fail: msg="Exiting as this deployment method currently only supports Debian"
-   when: "ansible_distribution" != "Debian" # Doesn't include Ubuntu (ansible_os_family does))
+   when: ansible_distribution != "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 # Run Debian-specific tasks
 -  import_tasks: debian.yml
-   when: "ansible_distribution" == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
+   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 # Python Libraries, where we need a more recent version than that provided by the OS
 - name: Install Reportlab # Want Percentage support

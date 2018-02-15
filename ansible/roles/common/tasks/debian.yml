@@ -2,9 +2,9 @@
 # Check for correct Version
 - fail: msg="Exiting as this deployment method currently only supports Debian 7, 8 or 9"
     when:
-        - "ansible_distribution_major_version" != "7"
-        - "ansible_distribution_major_version" != "8"
-        - "ansible_distribution_major_version" != "9"
+        - ansible_distribution_major_version != "7"
+        - ansible_distribution_major_version != "8"
+        - ansible_distribution_major_version != "9"
 
 # Install Admin Tools
 - name: Install Admin Tools
@@ -25,14 +25,14 @@
 
 - name: Install elinks (Debian 9)
   apt: name={{item}} state=latest
-  when: "ansible_distribution_major_version == '9'"
+  when: ansible_distribution_major_version == '9'
   with_items:
     - elinks
     - net-tools
 
 - name: Install elinks (Debian 7 or 8)
   apt: name=elinks-lite state=latest
-  when: "ansible_distribution_major_version != '9'"
+  when: ansible_distribution_major_version != '9'
 
 # Git
 - name: Install git
@@ -51,11 +51,11 @@
 
 - name: Install libgeos (Debian 9)
   apt: name=libgeos-c1v5 state=latest
-  when: "ansible_distribution_major_version == '9'"
+  when: ansible_distribution_major_version == '9'
 
 - name: Install libgeos (Debian 7 or 8)
   apt: name=libgeos-c1 state=latest
-  when: "ansible_distribution_major_version != '9'"
+  when: ansible_distribution_major_version != '9'
 
 - name: Install python libs
   apt: name={{item}} state=latest

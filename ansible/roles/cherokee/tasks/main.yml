@@ -12,7 +12,7 @@
 
 - name: Install libtool-bin (Debian 8 or 9)
   apt: name=libtool-bin state=latest
-  when: "ansible_distribution_major_version != '7'"
+  when: ansible_distribution_major_version != '7'
 
 #- name: Clone Repo
 #  git: repo=http://github.com/cherokee/webserver.git dest=/tmp/webserver
