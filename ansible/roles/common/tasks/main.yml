@@ -81,7 +81,7 @@
 #   lineinfile: dest=/etc/matplotlibrc state=present backref=yes regexp='backend      : TkAgg' line='backend      : Agg'
 
 - name: Create symlink
-  file: src=/home/{{ type }} dest=/home state=link
+  file: src=/home/{{ type }} dest=/root/{{ type }} state=link
   tags:
     - test
     - demo
@@ -123,10 +123,11 @@
     - demo
 
 - name: Create symlink (eden in web2py)
-  file: src=/home/{{ type }}/applications/eden dest=/home/{{ type }} state=link
+  file: src=/home/{{ type }}/applications/eden dest=/home/{{ type }}/eden state=link
   tags:
     - test
     - demo
 
 - name: Create symlink (eden in home)
-  file: src=/home/{{ type }}/applications/eden dest=/home state=link
+  file: src=/home/{{ type }}/applications/eden dest=/root/eden state=link
+  when: type == 'prod'
