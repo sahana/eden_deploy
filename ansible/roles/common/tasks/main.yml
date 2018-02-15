@@ -122,6 +122,17 @@
     - test
     - demo
 
+- name: Fix permissions
+  file: path=/home/web2py state=directory owner=web2py
+  when: type == 'prod'
+
+- name: Fix permissions
+  file: path="/home/{{ type }}" state=directory owner=web2py
+  when: type != 'prod'
+  tags:
+    - test
+    - demo
+
 - name: Create symlink (eden in web2py)
   file: src=/home/{{ type }}/applications/eden dest=/home/{{ type }}/eden state=link
   tags:
