@@ -133,7 +133,7 @@
     - demo
     - test
 
-- name:Listen externally
+- name: Listen externally
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp="#listen_addresses = \'localhost\'"
               backrefs=yes
