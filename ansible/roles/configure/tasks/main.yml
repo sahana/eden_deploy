@@ -1,17 +1,18 @@
 ---
 
-- name: Copying 000_config.py for Production
+- name: Copying template 000_config.py
   command: cp /home/{{ type }}/applications/eden/modules/templates/000_config.py /home/{{ type }}/applications/eden/models
-  when: type == 'prod' or dtype == 'beforeprod'
-
-- name: Copying 000_config.py
-  command: cp /home/web2py/applications/eden/models/000_config.py /home/{{ type }}/applications/eden/models
-  when: type == 'test' or dtype == 'afterprod'
+  #when: type == 'prod' or dtype == 'beforeprod'
   tags:
-    - test
     - demo
 
-- name: Configure DB
+- name: Copying 000_config.py from Production for Test (need same HMAC for passwords)
+  command: cp /home/web2py/applications/eden/models/000_config.py /home/{{ type }}/applications/eden/models
+  when: type == 'test'# or dtype == 'afterprod'
+  tags:
+    - test
+
+- name: Configure DB access for PostgreSQL
   lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
@@ -25,10 +26,9 @@
     - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
   when: db_type == 'postgresql'
   tags:
-    - test
     - demo
 
-- name: Configure DB
+- name: Configure DB access for MySQL
   lineinfile: dest=/home/web2py/applications/eden/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
@@ -54,78 +54,84 @@
     - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = \"sahana-{{ type }}\"' }
   when: type != 'prod'
   tags:
-    - test
     - demo
+    - test
 
-- name: Updating hosts file
+- name: Update hosts file
   lineinfile: dest=/etc/hosts
               regexp="^localhost.localdomain localhost"
               insertafter="^localhost.localdomain localhost"
               line="{{ sitename }} {{ hostname }} localhost.localdomain localhost"
               state=present
 
-- name: Updating hostname file
+- name: Update hostname file
   template: src=hostname dest=/etc/hostname
 
-- name: Updating mailname file
+- name: Update mailname file
   template: src=mailname dest=/etc/mailname
 
 - name: Configure for Internet Mail Delivery
   command: dpkg-reconfigure -f noninteractive exim4-config
 
-- name: Editing 000_config.py
+- name: Editing 000_config.py (Prod / Demo)
   lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
               line="{{ item.line }}"
               state=present
   with_items:
-    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = \"{{ template }}\"' }
-    - { regexp: '^#settings.base.prepopulate = \[\"demo\"\]', line: 'settings.base.prepopulate = (\"{{ prepop_options }}\")' }
+    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = "{{ template }}"' }
+    # @ToDo: Remove Demo prepop folder for Prod
+    #- { regexp: '^#settings.base.prepopulate = \[\"demo\"\]', line: 'settings.base.prepopulate = (\"{{ prepop_options }}\")' }
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
-    - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = \"{{ sitename }}{{ password }}\"' }
-    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = \"{{ sitename }}\"' }
+    - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ sitename }}{{ password }}"' }
+    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ sitename }}"' }
     - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
   tags:
-    - test
     - demo
 
-# clean tasks
+- name: Editing 000_config.py (Test)
+  lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^settings.mail.sender', line: '#settings.mail.sender = disabled' }
+  when: type == 'test'
+  tags:
+    - test
+
+# Clean tasks
+- name: Copy update_clean
+  copy: src=update_clean.py dest=/tmp/update_clean.py
+  when:
+    - type == 'test'
+  tags:
+    - test
 
 - name: Run update_clean
   command: python web2py.py -S eden -M -R /tmp/update_clean.py chdir=/home/web2py
-  when: type == 'test'
+  when:
+    - type == 'test'
+    - db_type == 'postgresql' # MySQL clean script not yet multi-instance
   tags:
     - test
 
 - name: Run clean script
-  command: "{{ item }}"
-  with_items:
-      - clean test
-      - clean_eden test
-  when: type == 'test'
+  command: clean test
+  when:
+    - type == 'test'
+    - db_type == 'postgresql' # MySQL clean script not yet multi-instance
   tags:
     - test
 
-# other management scripts
-
-- name: Copying management scripts
-  copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
-  with_items:
-    - { src: 'compile', dest: '/usr/local/bin/compile' }
-    - { src: 'pull', dest: '/usr/local/bin/pull' }
-    - { src: 'revert', dest: '/usr/local/bin/revert' }
-    - { src: 'w2p', dest: '/usr/local/bin/w2p' }
-  tags:
-    - test
-    - demo
-
-- name: Run web2py
+- name: Create Tables & Prepopulate
   command: sudo -H -u web2py python web2py.py -S eden -M -R applications/eden/static/scripts/tools/noop.py chdir=/home/{{ type }}
   tags:
     - demo
 
-- name: Configuring for Production
+- name: Configure for Production
   lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
@@ -134,14 +140,34 @@
   with_items:
     - { regexp: '^#settings.base.prepopulate = 0', line: 'settings.base.prepopulate = 0' }
     - { regexp: '^settings.base.migrate = True', line: 'settings.base.migrate = False' }
+  tags:
+    - demo
+    - test
 
-- name: Run web2py
+- name: Compile
   command: sudo -H -u web2py python web2py.py -S eden -M -R applications/eden/static/scripts/tools/compile.py chdir=/home/{{ type }}
   tags:
     - demo
+    - test
 
 - name: Update crontab
   copy: src=cron dest=/etc/crontab
+
+- name: Copy management scripts
+  copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
+  with_items:
+    - { src: 'compile', dest: '/usr/local/bin/compile' }
+    - { src: 'pull', dest: '/usr/local/bin/pull' }
+    - { src: 'revert', dest: '/usr/local/bin/revert' }
+    - { src: 'w2p', dest: '/usr/local/bin/w2p' }
+
+- name: Stop Rocket Server
+  service: name=web2py  state=stopped
+  when: inventory_hostname == '127.0.0.1'
+
+- name: Remove port 80 redirection rule
+  shell: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  when: inventory_hostname == '127.0.0.1'
 
 - name: Start services
   service: name={{ item.name }} state={{ item.state }}
@@ -152,15 +178,7 @@
     - test
     - demo
 
-- name: Stop Rocket Server
-  service: name=web2py  state=stopped
-  when: inventory_hostname == '127.0.0.1'
-
-- name: Remove port 80 redirection rule
-  shell: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
-  when: inventory_hostname == '127.0.0.1'
-
-# Todo: Move this to apache role
+# @ToDo: Move this to apache role
 - name: Enable production VirtualHost
   command: a2ensite production
   when: web_server == "apache"

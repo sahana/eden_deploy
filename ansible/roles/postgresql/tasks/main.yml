@@ -3,6 +3,14 @@
 -  import_tasks: debian.yml
    when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
+- name: Copy management scripts
+  copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
+  with_items:
+    - { src: 'backup', dest: '/usr/local/bin/backup' }
+    - { src: 'clean', dest: '/usr/local/bin/clean' }
+    - { src: 'pg512', dest: '/usr/local/bin/pg512' }
+    - { src: 'pg1024', dest: '/usr/local/bin/pg1024' }
+
 # Tuning
 - name: Set track_counts=on
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
@@ -25,13 +33,12 @@
               line='max_connections = 12'
               state=present
 
-- name: Copying management scripts
-  copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
-  with_items:
-    - { src: 'backup', dest: '/usr/local/bin/backup' }
-    - { src: 'pg512', dest: '/usr/local/bin/pg512' }
-    - { src: 'pg1024', dest: '/usr/local/bin/pg1024' }
-
+# @ToDo: Provide more granular tuning & vary if dedicated DB host vs shared
+# Levels we want to support are:
+# t2.micro = 1Gb, 1 vCPU
+# t2.small = 2Gb, 1 vCPU
+# t2.medium = 4Gb, 2 vCPU
+# m5.large = 8Gb, 2 vCPU
 - name: Tune for 1024Mb RAM. effective_cache_size
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp='^effective_cache_size = 4GB'
@@ -126,18 +133,20 @@
     - demo
     - test
 
-#- name: @ToDo: Listen externally (when separating DB host)
-#  lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
-#              regexp="#listen_addresses = \'localhost\'"
-#              backrefs=yes
-#              line="listen_addresses = '*'"
-#              state=present
+- name:Listen externally
+  lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
+              regexp="#listen_addresses = \'localhost\'"
+              backrefs=yes
+              line="listen_addresses = '*'"
+              state=present
+  when: db_ip != '127.0.0.1'
 
-#- name: Allow external connections
-#  lineinfile: dest=/etc/postgresql/9.6/main/pg_hba.conf
-#              insertafter=EOF
-#              line="host all all 0.0.0.0/0 md5"
-#              state=present
+- name: Allow external connections
+  lineinfile: dest=/etc/postgresql/9.6/main/pg_hba.conf
+              insertafter=EOF
+              line="host all all 0.0.0.0/0 md5"
+              state=present
+  when: db_ip != '127.0.0.1'
 
 - name: Restart service
   service: name=postgresql state=restarted

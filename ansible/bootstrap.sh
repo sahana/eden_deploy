@@ -1,7 +1,7 @@
 #!/bin/bash
 
 password=`date +%s | sha256sum | base64 | head -c 32 ; echo`
-privDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/hostname | sed "s/.ec2.internal//"`
+#privDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/hostname | sed "s/.ec2.internal//"`
 
 if [ -z "$1" ]; then
     template="default"
@@ -27,10 +27,13 @@ cat << EOF > "deploy.yml"
   vars:
     hostname: '$privDNS'
     password: '$password'
-    domain: '$pubDNS'
+    #domain: '$pubDNS'
     sitename: '$pubDNS' # usually hostname.domain
     template: '$template'
     type: 'prod'
+    web_server: 'cherokee'
+    db_type: 'postgresql'
+    db_ip: '127.0.0.1'
 
   roles:
     - common
