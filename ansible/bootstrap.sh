@@ -2,8 +2,18 @@
 
 password=`date +%s | sha256sum | base64 | head -c 32 ; echo`
 privDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/hostname | sed "s/.ec2.internal//"`
-pubDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/public-hostname`
-template="default"
+
+if [ -z "$1" ]; then
+    template="default"
+else
+    template="$1"
+fi
+
+if [ -z "$1" ]; then
+    pubDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/public-hostname`
+else
+    pubDNS="$2"
+fi
 
 cat << EOF > inventory
 127.0.0.1
@@ -13,7 +23,6 @@ cat << EOF > "deploy.yml"
 ---
 - hosts: 127.0.0.1
   connection: local
-  sudo: yes
 
   vars:
     hostname: '$privDNS'
@@ -32,4 +41,5 @@ EOF
 
 echo "Now running ansible-playbook"
 
-/usr/local/bin/ansible-playbook -i inventory deploy.yml
+# HOME=/root required due to https://github.com/ansible/ansible/issues/21562
+HOME=/root /usr/local/bin/ansible-playbook -i inventory deploy.yml

@@ -10,7 +10,6 @@ cat << EOF > "deploy_coapp.yml"
 ---
 - hosts: 127.0.0.1
   connection: local
-  remote_user: admin
 
   vars:
     sitename: '$pubDNS' # usually hostname.domain

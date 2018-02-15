@@ -52,7 +52,7 @@
 #    - test
 #    - demo
 
-- name: Checkout stable release of PyDAL
+- name: Configure PyDAL
   command: git submodule update --init --recursive
   args:
     chdir: /home/{{ type }}

@@ -20,4 +20,6 @@ git clone https://github.com/sahana/eden_deploy
 # Run the install
 cd eden_deploy/ansible
 
+#bash bootstrap.sh template hostname.domain
+# or
 bash bootstrap_coapp.sh
