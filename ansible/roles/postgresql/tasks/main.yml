@@ -46,7 +46,7 @@
     - { src: 'pg512', dest: '/usr/local/bin/pg512' }
     - { src: 'pg1024', dest: '/usr/local/bin/pg1024' }
 
-- name: Tune for 1024Mb RAM: effective_cache_size
+- name: Tune for 1024Mb RAM. effective_cache_size
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp='^effective_cache_size = 4GB'
               insertafter='^#effective_cache_size = 4GB'
@@ -54,7 +54,7 @@
               state=present
   when: ansible_memtotal_mb|int > 1023
     
-- name: Tune for 512Mb RAM: effective_cache_size
+- name: Tune for 512Mb RAM. effective_cache_size
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp='^effective_cache_size = 4GB'
               insertafter='^#effective_cache_size = 4GB'
@@ -62,7 +62,7 @@
               state=present
   when: ansible_memtotal_mb|int < 1023
 
-- name: Tune for 1024Mb RAM: shared_buffers
+- name: Tune for 1024Mb RAM. shared_buffers
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp='^shared_buffers = 128MB'
               insertafter='^shared_buffers = 128MB'
@@ -70,7 +70,7 @@
               state=present
   when: ansible_memtotal_mb|int > 1023
     
-#- name: Tune for 512Mb RAM: shared_buffers
+#- name: Tune for 512Mb RAM. shared_buffers
 #  lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
 #              regexp='^shared_buffers = 128MB'
 #              insertafter='^#shared_buffers = 128MB'
@@ -78,7 +78,7 @@
 #              state=present
 #  when: ansible_memtotal_mb|int < 1023
 
-- name: Tune for 1024Mb RAM: work_mem
+- name: Tune for 1024Mb RAM. work_mem
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp='^work_mem = 4MB'
               insertafter='^#work_mem = 4MB'
@@ -86,7 +86,7 @@
               state=present
   when: ansible_memtotal_mb|int > 1023
     
-- name: Tune for 512Mb RAM: work_mem
+- name: Tune for 512Mb RAM. work_mem
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp='^work_mem = 4MB'
               insertafter='^#work_mem = 4MB'
@@ -132,21 +132,12 @@
 - name: PostGIS DB Config
   command: "{{ item }}"
   with_items:
-    - su -c - postgres "psql -q -d sahana-demo CREATE EXTENSION postgis;'"
-    - su -c - postgres "psql -q -d sahana-demo -c 'grant all on geometry_columns to sahana;'"
-    - su -c - postgres "psql -q -d sahana-demo -c 'grant all on spatial_ref_sys to sahana;'"
-  when: type == 'demo'
+    - su -c - postgres "psql -q -d sahana-{{ type }} CREATE EXTENSION postgis;'"
+    - su -c - postgres "psql -q -d sahana-{{ type }} -c 'grant all on geometry_columns to sahana;'"
+    - su -c - postgres "psql -q -d sahana-{{ type }} -c 'grant all on spatial_ref_sys to sahana;'"
+  when: type != 'prod'
   tags:
     - demo
-
-- name: PostGIS DB Config
-  command: "{{ item }}"
-  with_items:
-    - su -c - postgres "psql -q -d sahana-test CREATE EXTENSION postgis;'"
-    - su -c - postgres "psql -q -d sahana-test -c 'grant all on geometry_columns to sahana;'"
-    - su -c - postgres "psql -q -d sahana-test -c 'grant all on spatial_ref_sys to sahana;'"
-  when: type == 'test'
-  tags:
     - test
 
 #- name: Listen externally
