@@ -26,11 +26,12 @@
               line='autovacuum = on'
               state=present
 
+# 6 for each of Prod/Demo/Test (4 workers + mule) + superuser reserved connections
 - name: Set max_connections
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
-              regexp='^max_connections = 12'
+              regexp='^max_connections = 20'
               insertafter='^max_connections = 100'
-              line='max_connections = 12'
+              line='max_connections = 20'
               state=present
 
 # @ToDo: Provide more granular tuning & vary if dedicated DB host vs shared

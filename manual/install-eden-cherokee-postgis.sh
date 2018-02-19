@@ -616,22 +616,22 @@ apt-get -y install postgresql-9.6-postgis-2.3
 cat << EOF >> "/etc/sysctl.conf"
 ## Increase Shared Memory available for PostgreSQL
 # 512Mb
-kernel.shmmax = 279134208
+#kernel.shmmax = 279134208
 # 1024Mb (may need more)
-#kernel.shmmax = 552992768
+kernel.shmmax = 552992768
 kernel.shmall = 2097152
 EOF
-sysctl -w kernel.shmmax=279134208 # For 512 MB RAM
-#sysctl -w kernel.shmmax=552992768 # For 1024 MB RAM
+#sysctl -w kernel.shmmax=279134208 # For 512 MB RAM
+sysctl -w kernel.shmmax=552992768 # For 1024 MB RAM
 sysctl -w kernel.shmall=2097152
 
 sed -i 's|#track_counts = on|track_counts = on|' /etc/postgresql/9.6/main/postgresql.conf
 sed -i 's|#autovacuum = on|autovacuum = on|' /etc/postgresql/9.6/main/postgresql.conf
-sed -i 's|max_connections = 100|max_connections = 12|' /etc/postgresql/9.6/main/postgresql.conf
-# 512Mb RAM:
-sed -i 's|#effective_cache_size = 4GB|effective_cache_size = 256MB|' /etc/postgresql/9.6/main/postgresql.conf
-sed -i 's|#work_mem = 4MB|work_mem = 4MB|' /etc/postgresql/9.6/main/postgresql.conf
-# If 1Gb+ RAM, activate post-install via pg1024 script
+sed -i 's|max_connections = 100|max_connections = 20|' /etc/postgresql/9.6/main/postgresql.conf
+# 1024Mb RAM: (e.g. t2.micro)
+sed -i 's|#effective_cache_size = 4GB|effective_cache_size = 512MB|' /etc/postgresql/9.6/main/postgresql.conf
+sed -i 's|#work_mem = 4MB|work_mem = 8MB|' /etc/postgresql/9.6/main/postgresql.conf
+# If only 512 RAM, activate post-install via pg512 script
 
 #####################
 # Management scripts
