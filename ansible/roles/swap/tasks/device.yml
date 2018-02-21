@@ -1,0 +1,14 @@
+- name: creating new LVM volume group 
+  lvg: vg=swap pvs=/dev/xvdc state=present
+
+# Normally assigned swap size is two times of memory
+- name: creating new LVM logical volume 
+  lvol: vg=swap lv=lvswap size='{{ swap_space }}'
+
+- name: Format swap device
+  command: mkswap /dev/swap/lvswap
+  when: ansible_swaptotal_mb < 1
+
+- name: activate swap device
+  command: swapon /dev/swap/lvswap
+  when: ansible_swaptotal_mb < 1

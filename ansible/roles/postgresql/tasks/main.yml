@@ -1,7 +1,7 @@
 ---
 # Run Debian-specific tasks
--  import_tasks: debian.yml
-   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
+- import_tasks: debian.yml
+  when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 - name: Copy management scripts
   copy: "src={{ item.src }} dest={{ item.dest }} mode=755"

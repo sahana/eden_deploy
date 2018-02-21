@@ -36,6 +36,7 @@ cat << EOF > "deploy.yml"
     db_ip: '127.0.0.1'
 
   roles:
+    - swap
     - common
     - cherokee
     - uwsgi
