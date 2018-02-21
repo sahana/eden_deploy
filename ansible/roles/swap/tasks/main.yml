@@ -1,13 +1,13 @@
 # Normally assigned swap size is two times of memory, but this is high for a default t2.micro with 8Gb disk
 - name: set swap_space variable
   set_fact:
-    #swap_space: {{ ansible_memtotal_mb|int * 2 }}
-    swap_space: 1024
+    #swap_space: {{ ansible_memtotal_mb|int * 2000000 }}
+    swap_space: 1024000000
 
 # @ToDo: Use swap device where possible
 - name: set swap_file variable
   set_fact:
-    swap_file: /mnt/{{ swap_space }}.swap
+    swap_file: /mnt/swapfile.swap
 
 - name: check if swap file exists
   stat:
