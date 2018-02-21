@@ -76,9 +76,9 @@
 
 - name: Disable update_etc_hosts
   lineinfile: dest=/etc/cloud/cloud.cfg
-              regexp="^- update_etc_hosts"
-              insertafter="^- update_etc_hosts"
-              line="#- update_etc_hosts"
+              regexp="^ - update_etc_hosts"
+              insertafter="^ - update_etc_hosts"
+              line="# - update_etc_hosts"
               state=present
   when: cloud_cfg.stat.exists
 
@@ -87,9 +87,9 @@
 
 - name: Disable update_hostname
   lineinfile: dest=/etc/cloud/cloud.cfg
-              regexp="^- update_hostname"
-              insertafter="^- update_hostname"
-              line="#- update_hostname"
+              regexp="^ - update_hostname"
+              insertafter="^ - update_hostname"
+              line="# - update_hostname"
               state=present
   when: cloud_cfg.stat.exists
 
