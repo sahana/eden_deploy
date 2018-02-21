@@ -190,17 +190,19 @@
     - { src: 'w2p', dest: '/usr/local/bin/w2p' }
 
 - name: Stop Rocket Server
-  service: name=web2py  state=stopped
-  when: inventory_hostname == '127.0.0.1'
+  #service: name=web2py  state=stopped
+  shell: /etc/init.d/web2py stop
+  ignore_errors: True
 
 - name: Remove port 80 redirection rule
   shell: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
-  when: inventory_hostname == '127.0.0.1'
+  ignore_errors: True
 
 - name: Start services
-  service: name={{ item.name }} state={{ item.state }}
-  with_items:
-    - { name: 'uwsgi-{{ type }}', state: 'started' }
+  #service: name={{ item.name }} state={{ item.state }}
+  #with_items:
+  #  - { name: 'uwsgi-{{ type }}', state: 'started' }
+  shell: /etc/init.d/uwsgi-{{ type }} start
   when: web_server == "cherokee"
   tags:
     - test
