@@ -20,9 +20,9 @@
               line="{{ item.line }}"
               state=present
   with_items:
-    - { regexp: '^#settings.database.db_type = \"postgres\"', line: 'settings.database.db_type = \"postgres\"' }
-    - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.host = \"{{ db_ip }}\"' }
-    - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = \"{{ password }}\"' }
+    - { regexp: '^#settings.database.db_type = \"postgres\"', line: 'settings.database.db_type = "postgres"' }
+    - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.host = "{{ db_ip }}"' }
+    - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = "{{ password }}"' }
     - { regexp: '^#settings.gis.spatialdb = True', line: 'settings.gis.spatialdb = True' }
     - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
   when: db_type == 'postgresql'
@@ -36,9 +36,9 @@
               line="{{ item.line }}"
               state=present
   with_items:
-    - { regexp: '^#settings.database.db_type = \"mysql\"', line: 'settings.database.db_type = \"mysql\"' }
-    - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.db_type = \"{{ db_ip }}\"' }
-    - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = \"{{ password }}\"' }
+    - { regexp: '^#settings.database.db_type = \"mysql\"', line: 'settings.database.db_type = "mysql"' }
+    - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.db_type = "{{ db_ip }}"' }
+    - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = "{{ password }}"' }
     - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
   when: db_type == 'mysql'
   tags:
@@ -52,7 +52,7 @@
               line="{{ item.line }}"
               state=present
   with_items:
-    - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = \"sahana-{{ type }}\"' }
+    - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "sahana-{{ type }}"' }
   when: type != 'prod'
   tags:
     - demo
@@ -60,9 +60,9 @@
 
 - name: Update hosts file
   lineinfile: dest=/etc/hosts
-              regexp="^localhost.localdomain localhost"
-              insertafter="^localhost.localdomain localhost"
-              line="{{ sitename }} {{ hostname }} localhost.localdomain localhost"
+              regexp="^127.0.0.1 localhost"
+              insertafter="^127.0.0.1 localhost"
+              line="127.0.0.1 {{ sitename }} {{ hostname }} localhost"
               state=present
 
 - name: check if we're running on EC2
@@ -153,7 +153,9 @@
     - test
 
 - name: Create Tables & Prepopulate
-  command: sudo -H -u web2py python web2py.py -S eden -M -R applications/eden/static/scripts/tools/noop.py chdir=/home/{{ type }}
+  command: sudo -H -u web2py python web2py.py -S eden -M -R applications/eden/static/scripts/tools/noop.py
+  args:
+    chdir: /home/{{ type }}
   tags:
     - demo
 

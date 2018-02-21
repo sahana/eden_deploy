@@ -1,7 +1,6 @@
 #!/bin/bash
 
 password=`date +%s | sha256sum | base64 | head -c 32 ; echo`
-#privDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/hostname | sed "s/.ec2.internal//"`
 
 if [ -z "$1" ]; then
     template="default"
@@ -9,10 +8,13 @@ else
     template="$1"
 fi
 
-if [ -z "$1" ]; then
+if [ -z "$2" ]; then
     pubDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/public-hostname`
+    privDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/hostname | sed "s/.compute.internal//"`
 else
+    # hostname.domain
     pubDNS="$2"
+    privDNS=`echo "$2" | sed "s/\..*$//"`
 fi
 
 cat << EOF > inventory
@@ -28,7 +30,7 @@ cat << EOF > "deploy.yml"
     hostname: '$privDNS'
     password: '$password'
     #domain: '$pubDNS'
-    sitename: '$pubDNS' # usually hostname.domain
+    sitename: '$pubDNS'
     template: '$template'
     type: 'prod'
     web_server: 'cherokee'
