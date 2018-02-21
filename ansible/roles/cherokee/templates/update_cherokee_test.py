@@ -1,7 +1,6 @@
 import re
 
-vserver = """
-vserver!#!collector!enabled = 1
+vserver = """vserver!#!collector!enabled = 1
 vserver!#!directory_index = index.html
 vserver!#!document_root = /var/www
 vserver!#!error_handler = error_redir
@@ -28,7 +27,7 @@ vserver!#!rule!700!handler!allow_dirlist = 0
 vserver!#!rule!700!handler!allow_pathinfo = 0
 vserver!#!rule!700!match = fullpath
 vserver!#!rule!700!match!fullpath!1 = /maintenance.html
-vserver!#!rule!500!document_root = /var/www/static
+vserver!#!rule!500!document_root = /home/test/applications/eden/static
 vserver!#!rule!500!encoder!deflate = allow
 vserver!#!rule!500!encoder!gzip = allow
 vserver!#!rule!500!expiration = time
@@ -38,7 +37,7 @@ vserver!#!rule!500!match = fullpath
 vserver!#!rule!500!match!fullpath!1 = /favicon.ico
 vserver!#!rule!500!match!fullpath!2 = /robots.txt
 vserver!#!rule!500!match!fullpath!3 = /crossdomain.xml
-vserver!#!rule!400!document_root = /var/www/static/img
+vserver!#!rule!400!document_root = /home/test/applications/eden/static/img
 vserver!#!rule!400!encoder!deflate = forbid
 vserver!#!rule!400!encoder!gzip = forbid
 vserver!#!rule!400!expiration = time
@@ -52,7 +51,7 @@ vserver!#!rule!400!handler = file
 vserver!#!rule!400!match = directory
 vserver!#!rule!400!match!directory = /eden/static/img/
 vserver!#!rule!400!match!final = 1
-vserver!#!rule!300!document_root = /var/www/static
+vserver!#!rule!300!document_root = /home/test/applications/eden/static
 vserver!#!rule!300!encoder!deflate = allow
 vserver!#!rule!300!encoder!gzip = allow
 vserver!#!rule!300!expiration = epoch
@@ -81,11 +80,10 @@ vserver!#!rule!100!handler = common
 vserver!#!rule!100!handler!iocache = 1
 vserver!#!rule!100!match = default
 """
-source = """
-source!#!env_inherited = 1
+source = """source!#!env_inherited = 1
 source!#!group = web2py
 source!#!host = 127.0.0.1:59026
-source!#!interpreter = /usr/local/bin/uwsgi -s 127.0.0.1:59026 -x /home/test/uwsgi.xml
+source!#!interpreter = /usr/local/bin/uwsgi -s 127.0.0.1:59026 --ini /home/test/uwsgi.ini
 source!#!nick = uWSGI #
 source!#!timeout = 1000
 source!#!type = host
