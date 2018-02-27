@@ -106,13 +106,22 @@
               line="{{ item.line }}"
               state=present
   with_items:
-    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = "{{ template }}"' }
-    # @ToDo: Remove Demo prepop folder for Prod
-    #- { regexp: '^#settings.base.prepopulate = \[\"demo\"\]', line: 'settings.base.prepopulate = (\"{{ prepop_options }}\")' }
+    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = {{ template | join(" ") }}' }
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
     - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ sitename }}{{ password }}"' }
     - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ sitename }}"' }
     - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
+  tags:
+    - demo
+
+- name: Editing 000_config.py (Prod)
+  lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^#settings.base.prepopulate_demo = 0', line: 'settings.base.prepopulate_demo = 0' }
   tags:
     - demo
 
