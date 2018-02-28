@@ -15,7 +15,8 @@ cat << EOF > "deploy_coapp.yml"
     sitename: '$pubDNS' # usually hostname.domain
 
   roles:
-   - coapp
+    - swap
+    - coapp
 EOF
 
 echo "Now running ansible-playbook"

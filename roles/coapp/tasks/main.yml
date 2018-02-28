@@ -21,7 +21,7 @@
 - name: Create web2py group
   group: name=web2py state=present
 
-- name: Clone Web2py
+- name: Clone Web2py # recursive by default
   git: repo=git://github.com/web2py/web2py.git dest=/home/web2py accept_hostkey=yes version=cda35fd
 
 - name: Configure PyDAL
@@ -32,7 +32,7 @@
 - name: Copy routes.py
   copy: src=routes.py dest=/home/web2py/routes.py
 
-- name: Clone Coapp
+- name: Clone Coapp # recursive by default
   git: repo=git://github.com/sahana/eden dest=/home/web2py/applications/eden_setup accept_hostkey=yes
 
 - name: Move 000_config.py
@@ -48,7 +48,7 @@
     - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = "setup"' }
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
     - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "http://{{ sitename }}"' }
-
+    - { regexp: '^#settings.base.prepopulate_demo = 0', line: 'settings.base.prepopulate_demo = 0' }
 
 - name: Copy web2py init scripts
   copy: src={{ item}} dest=/etc/init.d/{{ item }} mode=755
