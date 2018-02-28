@@ -87,7 +87,7 @@
     - demo
 
 # Eden
-- name: Clone Eden
+- name: Clone Eden # recursive by default
   git: repo=git://github.com/sahana/eden.git dest=/home/{{ type }}/applications/eden
   tags:
     - test
