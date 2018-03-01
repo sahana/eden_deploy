@@ -1,5 +1,9 @@
 #!/usr/bin/env python2
 
+#
+# This was written for Ansible 1.6, so probably needs rewriting for the Ansible 2.0+ API
+#
+
 import subprocess
 import json
 import re
