@@ -61,9 +61,9 @@
   apt: name={{item}} state=latest
   with_items:
     - python-dev
+    - python-dateutil
     - python-lxml
     - python-setuptools
-    - python-dateutil
     - python-serial
     - python-imaging
     #- python-reportlab # Now using PIP version for Percentage support
