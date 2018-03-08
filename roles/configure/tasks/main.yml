@@ -106,36 +106,36 @@
               line="{{ item.line }}"
               state=present
   with_items:
-    - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = {{ template | join(" ") }}' }
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
     - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ sitename }}{{ password }}"' }
-    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ sitename }}"' }
+    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ protocol }}://{{ sitename }}"' }
     - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
   tags:
     - demo
 
 - name: Editing 000_config.py (Prod)
   lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
-              regexp="{{ item.regexp }}"
+              regexp='^#settings.base.prepopulate_demo = 0'
               backrefs=yes
-              line="{{ item.line }}"
+              line='settings.base.prepopulate_demo = 0'
               state=present
-  with_items:
-    - { regexp: '^#settings.base.prepopulate_demo = 0', line: 'settings.base.prepopulate_demo = 0' }
+    
+- name: Setting Template (Prod / Demo)
+  lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
+              regexp='^settings.base.template = \"default\"'
+              backrefs=yes
+              line='settings.base.template = ["{{ template | join('", "') }}"]'
+              state=present
   tags:
     - demo
 
-- name: Editing 000_config.py (Test)
+- name: Setting Sender (Prod)
   lineinfile: dest=/home/{{ type }}/applications/eden/models/000_config.py
-              regexp="{{ item.regexp }}"
+              regexp='^#settings.mail.sender = \"'Sahana' <sahana@example.org>\"'
               backrefs=yes
-              line="{{ item.line }}"
+              line='settings.mail.sender = "<{{ sender }}>"'
               state=present
-  with_items:
-    - { regexp: '^settings.mail.sender', line: '#settings.mail.sender = disabled' }
-  when: type == 'test'
-  tags:
-    - test
+  when: not((sender is undefined) or (sender is none) or (sender|trim == ''))
 
 # Clean tasks
 - name: Copy update_clean

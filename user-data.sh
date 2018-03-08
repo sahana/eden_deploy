@@ -20,6 +20,6 @@ git clone https://github.com/sahana/eden_deploy
 # Run the install
 cd eden_deploy
 
-#bash bootstrap.sh template hostname.domain
+#bash bootstrap.sh template hostname.domain sender@domain
 # or
 bash bootstrap_coapp.sh

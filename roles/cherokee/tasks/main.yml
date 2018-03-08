@@ -45,6 +45,7 @@
 - name: update-rc.d
   command: update-rc.d cherokee defaults
 
+# @ToDo: Handle SSL
 - name: Copying cherokee.conf
   template: src=cherokee.conf dest=/etc/cherokee/cherokee.conf
   tags:

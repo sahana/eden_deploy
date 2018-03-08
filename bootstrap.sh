@@ -17,6 +17,12 @@ else
     privDNS=`echo "$2" | sed "s/\..*$//"`
 fi
 
+if [ -z "$3" ]; then
+    sender=""
+else
+    sender="$3"
+fi
+
 cat << EOF > inventory
 127.0.0.1
 EOF
@@ -29,9 +35,9 @@ cat << EOF > "deploy.yml"
   vars:
     hostname: '$privDNS'
     password: '$password'
-    #domain: '$pubDNS'
-    sitename: '$pubDNS'
     template: '$template'
+    sitename: '$pubDNS'
+    protocol: 'http'
     type: 'prod'
     web_server: 'cherokee'
     db_type: 'postgresql'
