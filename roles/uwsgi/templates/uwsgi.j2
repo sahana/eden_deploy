@@ -1,5 +1,5 @@
 #! /bin/bash
-# /etc/init.d/uwsgi-prod
+# /etc/init.d/uwsgi-{{ type }}
 #
 daemon=/usr/local/bin/uwsgi
 pid=/tmp/uwsgi-{{ type }}.pid
@@ -24,7 +24,7 @@ case "$1" in
         kill -HUP `cat $pid`
         ;;
     *)
-        echo "Usage: /etc/init.d/uwsgi {start|stop|restart|reload}"
+        echo "Usage: /etc/init.d/uwsgi-{{ type }} {start|stop|restart|reload}"
         exit 1
     ;;
 esac

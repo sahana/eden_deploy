@@ -26,7 +26,9 @@
               line='autovacuum = on'
               state=present
 
-# 6 for each of Prod/Demo/Test (4 workers + mule) + superuser reserved connections
+# 6 for Prod/Demo/Test (4 workers + mule)
+# 4 each for Demo/Test/Setup (2 workers + mule)
+# superuser reserved connections
 - name: Set max_connections
   lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
               regexp='^max_connections = 20'

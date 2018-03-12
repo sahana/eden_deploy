@@ -101,7 +101,7 @@ try:
     vnumber = re.findall(r"vserver\!([0-9]{2})", content)[-1]
     vserver = vserver.replace("vserver!#", "vserver!%s" % str(int(vnumber) + 10))
 except IndexError:
-    vserver = vserver.replace("vserver!#", "vserver!30")
+    vserver = vserver.replace("vserver!#", "vserver!50")
 
 # Search for last source number
 try:
@@ -110,9 +110,9 @@ try:
     source = source.replace("uWSGI #", "uWSGI %s" % str(int(snumber) + 1))
     vserver = vserver.replace("balancer!source!10 =", "balancer!source!10 = %s" % str(int(snumber) + 1))
 except IndexError:
-    source = source.replace("source!#", "source!1")
-    source = source.replace("uWSGI #", "uWSGI 1")
-    vserver = vserver.replace("balancer!source!10 =", "balancer!source!10 = 1")
+    source = source.replace("source!#", "source!4")
+    source = source.replace("uWSGI #", "uWSGI 4")
+    vserver = vserver.replace("balancer!source!10 =", "balancer!source!10 = 4")
 
 File = open("/etc/cherokee/cherokee.conf", "w")
 if "env_inherited" in content:

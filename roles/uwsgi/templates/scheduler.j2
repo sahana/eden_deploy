@@ -13,4 +13,4 @@ import gluon.widget
 from gluon.shell import run
 # Start Web2py Scheduler -- Note the app name is hardcoded!
 if __name__ == '__main__':
-    run('eden',True,True,None,False,"from gluon import current; current._scheduler.loop()")
+    run('{{ (name == "setup") | ternary("eden_setup","eden") }}',True,True,None,False,"from gluon import current; current._scheduler.loop()")

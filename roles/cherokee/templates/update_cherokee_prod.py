@@ -66,6 +66,55 @@ vserver!#!rule!300!handler = file
 vserver!#!rule!300!match = directory
 vserver!#!rule!300!match!directory = /eden/static/
 vserver!#!rule!300!match!final = 1
+vserver!#!rule!250!document_root = /home/setup/applications/eden_setup/static
+vserver!#!rule!250!encoder!deflate = allow
+vserver!#!rule!250!encoder!gzip = allow
+vserver!#!rule!250!expiration = time
+vserver!#!rule!250!expiration!time = 7d
+vserver!#!rule!250!handler = file
+vserver!#!rule!250!match = fullpath
+vserver!#!rule!250!match!fullpath!1 = /favicon.ico
+vserver!#!rule!250!match!fullpath!2 = /robots.txt
+vserver!#!rule!250!match!fullpath!3 = /crossdomain.xml
+vserver!#!rule!240!document_root = /home/setup/applications/eden_setup/static/img
+vserver!#!rule!240!encoder!deflate = forbid
+vserver!#!rule!240!encoder!gzip = forbid
+vserver!#!rule!240!expiration = time
+vserver!#!rule!240!expiration!caching = public
+vserver!#!rule!240!expiration!caching!must-revalidate = 0
+vserver!#!rule!240!expiration!caching!no-store = 0
+vserver!#!rule!240!expiration!caching!no-transform = 0
+vserver!#!rule!240!expiration!caching!proxy-revalidate = 0
+vserver!#!rule!240!expiration!time = 7d
+vserver!#!rule!240!handler = file
+vserver!#!rule!240!match = directory
+vserver!#!rule!240!match!directory = /eden/static/img/
+vserver!#!rule!240!match!final = 1
+vserver!#!rule!230!document_root = /home/setup/applications/eden_setup/static
+vserver!#!rule!230!encoder!deflate = allow
+vserver!#!rule!230!encoder!gzip = allow
+vserver!#!rule!230!expiration = epoch
+vserver!#!rule!230!expiration!caching = public
+vserver!#!rule!230!expiration!caching!must-revalidate = 1
+vserver!#!rule!230!expiration!caching!no-store = 0
+vserver!#!rule!230!expiration!caching!no-transform = 0
+vserver!#!rule!230!expiration!caching!proxy-revalidate = 1
+vserver!#!rule!230!handler = file
+vserver!#!rule!230!match = directory
+vserver!#!rule!230!match!directory = /eden_setup/static/
+vserver!#!rule!230!match!final = 1
+vserver!#!rule!220!encoder!deflate = allow
+vserver!#!rule!220!encoder!gzip = allow
+vserver!#!rule!220!handler = uwsgi
+vserver!#!rule!220!handler!balancer = round_robin
+vserver!#!rule!220!handler!balancer!source!20 = 1
+vserver!#!rule!220!handler!check_file = 0
+vserver!#!rule!220!handler!error_handler = 1
+vserver!#!rule!220!handler!modifier1 = 0
+vserver!#!rule!220!handler!modifier2 = 0
+vserver!#!rule!220!handler!pass_req_headers = 1
+vserver!#!rule!220!match = directory
+vserver!#!rule!220!match!directory = /eden_setup
 vserver!#!rule!200!encoder!deflate = allow
 vserver!#!rule!200!encoder!gzip = allow
 vserver!#!rule!200!handler = uwsgi
@@ -113,9 +162,9 @@ try:
     source = source.replace("uWSGI #", "uWSGI %s" % str(int(snumber) + 1))
     vserver = vserver.replace("balancer!source!10 =", "balancer!source!10 = %s" % str(int(snumber) + 1))
 except IndexError:
-    source = source.replace("source!#", "source!1")
-    source = source.replace("uWSGI #", "uWSGI 1")
-    vserver = vserver.replace("balancer!source!10 =", "balancer!source!10 = 1")
+    source = source.replace("source!#", "source!2")
+    source = source.replace("uWSGI #", "uWSGI 2")
+    vserver = vserver.replace("balancer!source!10 =", "balancer!source!10 = 2")
 
 File = open("/etc/cherokee/cherokee.conf", "w")
 if "env_inherited" in content:

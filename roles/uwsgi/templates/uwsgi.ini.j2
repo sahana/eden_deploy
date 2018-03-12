@@ -4,7 +4,7 @@ gid = web2py
 chdir = /home/{{ type }}/
 module = wsgihandler
 mule = run_scheduler.py
-workers = 4
+workers = {{ (type == "prod") | ternary(4,2) }}
 cheap = true
 idle = 1000
 harakiri = 1000
@@ -16,5 +16,7 @@ socket = 127.0.0.1:59025
 socket = 127.0.0.1:59026
 {% elif type == 'demo' %}
 socket = 127.0.0.1:59027
+{% elif type == 'setup' %}
+socket = 127.0.0.1:59028
 {% endif %}
 master = true

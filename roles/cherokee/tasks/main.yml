@@ -48,9 +48,6 @@
 # @ToDo: Handle SSL
 - name: Copying cherokee.conf
   template: src=cherokee.conf dest=/etc/cherokee/cherokee.conf
-  tags:
-    - test
-    - demo
 
 - name: Copying update_cherokee.py
   template: src=update_cherokee_{{ type }}.py dest=/tmp/update_cherokee.py
