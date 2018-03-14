@@ -39,17 +39,19 @@ cat << EOF > "deploy.yml"
     sitename: '$pubDNS'
     protocol: 'http'
     type: 'prod'
+    appname: 'eden',
     web_server: 'cherokee'
     db_type: 'postgresql'
     db_ip: '127.0.0.1'
 
   roles:
     - swap
+    - ansible
     - common
     - cherokee
     - uwsgi
     - postgresql
-    - configure
+    - final
 EOF
 
 echo "Now running ansible-playbook"

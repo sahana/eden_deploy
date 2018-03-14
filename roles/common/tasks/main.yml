@@ -1,6 +1,4 @@
 ---
-# @ToDo: Allow selection of alternate appname (low priority)
-
 # Check for correct OS
 -  fail: msg="Exiting as this deployment method currently only supports Debian"
    when: ansible_distribution != "Debian" # Doesn't include Ubuntu (ansible_os_family does))
@@ -36,6 +34,7 @@
   tags:
     - test
     - demo
+    - setup
 
 # 2.14.6
 #- name: Checkout stable release of Web2Py
@@ -45,6 +44,7 @@
 #  tags:
 #    - test
 #    - demo
+#    - setup
 
 - name: Configure PyDAL
   command: git submodule update --init --recursive
@@ -53,18 +53,21 @@
   tags:
     - test
     - demo
+    - setup
 
 - name: Copy wsgihandler
   command: cp -f /home/{{ type }}/handlers/wsgihandler.py /home/{{ type }}
   tags:
     - test
     - demo
+    - setup
 
 - name: Copy routes.py
-  copy: src=routes.py dest=/home/{{ type }}/routes.py
+  template: src=routes.py dest=/home/{{ type }}/routes.py
   tags:
     - test
     - demo
+    - setup
 
 # matplotlib
 # Only used by deprecated survey module
@@ -85,13 +88,15 @@
   tags:
     - test
     - demo
+    - setup
 
 # Eden
 - name: Clone Eden # recursive by default
-  git: repo=git://github.com/sahana/eden.git dest=/home/{{ type }}/applications/eden
+  git: repo=git://github.com/sahana/eden.git dest=/home/{{ type }}/applications/{{ appname }}
   tags:
     - test
     - demo
+    - setup
 
 - name: Fix permissions
   file: path=/home/{{item}} state=directory owner=web2py
@@ -102,24 +107,25 @@
     - "{{ type }}/applications/admin/databases"
     - "{{ type }}/applications/admin/errors"
     - "{{ type }}/applications/admin/sessions"
-    - "{{ type }}/applications/eden"
-    - "{{ type }}/applications/eden/cache"
-    - "{{ type }}/applications/eden/cron"
-    - "{{ type }}/applications/eden/databases"
-    - "{{ type }}/applications/eden/errors"
-    - "{{ type }}/applications/eden/models"
-    - "{{ type }}/applications/eden/sessions"
-    - "{{ type }}/applications/eden/static/cache"
-    - "{{ type }}/applications/eden/static/cache/chart"
-    - "{{ type }}/applications/eden/static/fonts"
-    - "{{ type }}/applications/eden/static/img/markers"
-    - "{{ type }}/applications/eden/uploads"
-    - "{{ type }}/applications/eden/uploads/gis_cache"
-    - "{{ type }}/applications/eden/uploads/images"
-    - "{{ type }}/applications/eden/uploads/tracks"
+    - "{{ type }}/applications/{{ appname }}"
+    - "{{ type }}/applications/{{ appname }}/cache"
+    - "{{ type }}/applications/{{ appname }}/cron"
+    - "{{ type }}/applications/{{ appname }}/databases"
+    - "{{ type }}/applications/{{ appname }}/errors"
+    - "{{ type }}/applications/{{ appname }}/models"
+    - "{{ type }}/applications/{{ appname }}/sessions"
+    - "{{ type }}/applications/{{ appname }}/static/cache"
+    - "{{ type }}/applications/{{ appname }}/static/cache/chart"
+    - "{{ type }}/applications/{{ appname }}/static/fonts"
+    - "{{ type }}/applications/{{ appname }}/static/img/markers"
+    - "{{ type }}/applications/{{ appname }}/uploads"
+    - "{{ type }}/applications/{{ appname }}/uploads/gis_cache"
+    - "{{ type }}/applications/{{ appname }}/uploads/images"
+    - "{{ type }}/applications/{{ appname }}/uploads/tracks"
   tags:
     - test
     - demo
+    - setup
 
 - name: Fix permissions
   file: path=/home/web2py state=directory owner=web2py
@@ -131,13 +137,141 @@
   tags:
     - test
     - demo
+    - setup
 
 - name: Create symlink (eden in web2py)
-  file: src=/home/{{ type }}/applications/eden dest=/home/{{ type }}/eden state=link
+  file: src=/home/{{ type }}/applications/{{ appname }} dest=/home/{{ type }}/eden state=link
   tags:
     - test
     - demo
+    - setup
 
 - name: Create symlink (eden in home)
   file: src=/home/{{ type }}/applications/eden dest=/root/eden state=link
   when: type == 'prod'
+
+- name: Copying template 000_config.py
+  command: cp /home/{{ type }}/applications/eden/modules/templates/000_config.py /home/{{ type }}/applications/eden/models
+  #when: type == 'prod' or dtype == 'beforeprod'
+  tags:
+    - demo
+    - setup
+
+- name: Copying 000_config.py from Production for Test (need same HMAC for passwords and settings should match)
+  command: cp /home/web2py/applications/eden/models/000_config.py /home/{{ type }}/applications/eden/models
+  #when: type == 'test' or dtype == 'afterprod'
+  when: type == 'test'
+  tags:
+    - test
+
+- name: Update hosts file
+  lineinfile: dest=/etc/hosts
+              regexp="^127.0.0.1 localhost"
+              insertafter="^127.0.0.1 localhost"
+              line="127.0.0.1 {{ sitename }} {{ hostname }} localhost"
+              state=present
+
+- name: check if we're running on EC2
+  stat:
+    path: "/etc/cloud/cloud.cfg"
+    get_attributes: False
+    get_checksum:   False
+    get_md5:        False
+    get_mime:       False
+  register: cloud_cfg
+
+- name: Disable update_etc_hosts
+  lineinfile: dest=/etc/cloud/cloud.cfg
+              regexp="^ - update_etc_hosts"
+              insertafter="^ - update_etc_hosts"
+              line="# - update_etc_hosts"
+              state=present
+  when: cloud_cfg.stat.exists
+
+- name: Update hostname file
+  template: src=hostname dest=/etc/hostname
+
+- name: Disable update_hostname
+  lineinfile: dest=/etc/cloud/cloud.cfg
+              regexp="^ - update_hostname"
+              insertafter="^ - update_hostname"
+              line="# - update_hostname"
+              state=present
+  when: cloud_cfg.stat.exists
+
+- name: Update mailname file
+  template: src=mailname dest=/etc/mailname
+
+- name: Configure for Internet Mail Delivery
+  command: dpkg-reconfigure -f noninteractive exim4-config
+   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
+
+- name: Update crontab
+  copy: src=cron dest=/etc/crontab
+
+- name: Editing 000_config.py (Prod / Demo / Setup)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
+    - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ sitename }}{{ password }}"' }
+    - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ protocol }}://{{ sitename }}"' }
+    - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
+  tags:
+    - demo
+    - setup
+
+- name: Editing 000_config.py (Prod / Setup)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp='^#settings.base.prepopulate_demo = 0'
+              backrefs=yes
+              line='settings.base.prepopulate_demo = 0'
+              state=present
+  tags:
+    - setup
+    
+- name: Editing 000_config.py (Test)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp='^#settings.base.public_url = \"http://127.0.0.1:8000\"'
+              backrefs=yes
+              line='settings.base.public_url = "{{ protocol }}://{{ sitename }}"'
+              state=present
+    
+- name: Setting Template (Prod / Demo)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp='^settings.base.template = \"default\"'
+              backrefs=yes
+              line='settings.base.template = ["{{ template | join('", "') }}"]'
+              state=present
+  tags:
+    - demo
+
+- name: Setting Template (Setup)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp='^settings.base.template = \"default\"'
+              backrefs=yes
+              line='settings.base.template = "setup"'
+              state=present
+  when:
+    - type != 'prod'
+  tags:
+    - setup
+
+- name: Setting Sender (Prod)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp='^#settings.mail.sender = \"'Sahana' <sahana@example.org>\"'
+              backrefs=yes
+              line='settings.mail.sender = "<{{ sender }}>"'
+              state=present
+  when: not((sender is undefined) or (sender is none) or (sender|trim == ''))
+
+- name: Copy management scripts
+  copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
+  with_items:
+    - { src: 'compile', dest: '/usr/local/bin/compile' }
+    - { src: 'pull', dest: '/usr/local/bin/pull' }
+    - { src: 'revert', dest: '/usr/local/bin/revert' }
+    - { src: 'w2p', dest: '/usr/local/bin/w2p' }

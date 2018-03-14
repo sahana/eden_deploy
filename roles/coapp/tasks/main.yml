@@ -82,12 +82,6 @@
   shell: sudo -H -u web2py python web2py.py -S eden_setup -M -R applications/eden_setup/static/scripts/tools/noop.py chdir=/home/setup
   ignore_errors: yes
 
-- name: Create ansible dir
-  file: path=/etc/ansible state=directory
-
-- name: Copy ansible.cfg
-  copy: src=ansible.cfg dest=/etc/ansible/ansible.cfg
-
 - name: Redirect port 80 to 8000
   shell: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
 

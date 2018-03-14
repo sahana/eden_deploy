@@ -101,7 +101,7 @@ try:
     vnumber = re.findall(r"vserver\!([0-9]{2})", content)[-1]
     vserver = vserver.replace("vserver!#", "vserver!%s" % str(int(vnumber) + 10))
 except IndexError:
-    vserver = vserver.replace("vserver!#", "vserver!50")
+    vserver = vserver.replace("vserver!#", "vserver!60")
 
 # Search for last source number
 try:

@@ -101,23 +101,17 @@
   file: path=/tmp/pgpass.sql state=absent
 
 # Create Database
-- name: Create DB
+- name: Create DB (Prod)
   command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 sahana -T template0"
-  when: type == 'prod'
 
-- name: Create DB
-  command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 sahana-demo -T template0"
-  when: type == 'demo'
-  tags:
-   - demo
-
-- name: Create DB
-  command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 sahana-test -T template0"
-  when: type == 'test'
+- name: Create DB (Demo / Test)
+  command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 sahana-{{ type }} -T template0"
+  when: type != 'prod'
   tags:
    - test
+   - demo
 
-- name: PostGIS DB Config
+- name: PostGIS DB Config (Prod)
   command: "{{ item }}"
   with_items:
     - su -c - postgres "psql -q -d sahana -c 'CREATE EXTENSION postgis;'"
@@ -125,7 +119,7 @@
     - su -c - postgres "psql -q -d sahana -c 'grant all on spatial_ref_sys to sahana;'"
   when: type == 'prod'
 
-- name: PostGIS DB Config
+- name: PostGIS DB Config (Demo / Test)
   command: "{{ item }}"
   with_items:
     - su -c - postgres "psql -q -d sahana-{{ type }} CREATE EXTENSION postgis;'"
@@ -153,6 +147,46 @@
 
 - name: Restart service
   service: name=postgresql state=restarted
+
+- name: Configure Eden to access Database (Common)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^#settings.database.db_type = \"postgres\"', line: 'settings.database.db_type = "postgres"' }
+    - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.host = "{{ db_ip }}"' }
+    - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = "{{ password }}"' }
+    - { regexp: '^#settings.gis.spatialdb = True', line: 'settings.gis.spatialdb = True' }
+    - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
+  tags:
+    - demo
+
+- name: Configure Eden to access Database (Demo / Test)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "sahana-{{ type }}"' }
+  when: type != 'prod'
+  tags:
+    - demo
+    - test
+
+# Clean tasks
+- name: Copy update_clean
+  copy: src=update_clean.py dest=/tmp/update_clean.py
+  when:
+    - type == 'test'
   tags:
     - test
-    - demo
+
+- name: Run update_clean
+  command: python web2py.py -S {{ appname }} -M -R /tmp/update_clean.py chdir=/home/web2py
+  when:
+    - type == 'test'
+  tags:
+    - test

@@ -16,6 +16,7 @@ cat << EOF > "deploy_coapp.yml"
 
   roles:
     - swap
+    - ansible
     - coapp
 EOF
 

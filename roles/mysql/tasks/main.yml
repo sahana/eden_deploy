@@ -41,12 +41,42 @@
 - name: Copy my.cnf for root user
   template: src=my.cnf dest=/root/.my.cnf owner=root mode=600
 
-- name: Create Database
+- name: Create Database (Prod)
   mysql_db: name=sahana state=present
+
+- name: Create Database (Demo / Test)
+  mysql_db: name=sahana-{{ type }} state=present
+  when: type != 'prod'
+  tags:
+    - demo
+    - test
 
 - name: Create sahana db user
   mysql_user: "name=sahana password={{ password }} priv=*.*:ALL host=localhost state=present"
 
-- name: Copying 000_config.py
-  command: cp /home/web2py/applications/eden/modules/templates/000_config.py /home/web2py/applications/eden/models
+- name: Configure Eden to access Database (Common)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^#settings.database.db_type = \"mysql\"', line: 'settings.database.db_type = "mysql"' }
+    - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.db_type = "{{ db_ip }}"' }
+    - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = "{{ password }}"' }
+    - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
+  tags:
+    - demo
 
+- name: Configure Eden to access Database (Demo / Test)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "sahana-{{ type }}"' }
+  when: type != 'prod'
+  tags:
+    - demo
+    - test

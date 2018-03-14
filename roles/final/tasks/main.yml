@@ -1,0 +1,47 @@
+---
+- name: Run clean script (Test)
+  command: clean test
+  when:
+    - type == 'test'
+    - db_type == 'postgresql' # MySQL clean script not yet multi-instance
+  tags:
+    - test
+
+- name: Create Tables & Prepopulate (Prod / Demo / Setup)
+  command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py
+  args:
+    chdir: /home/{{ type }}
+  tags:
+    - demo
+    - setup
+
+- name: Configure for Production
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^#settings.base.prepopulate = 0', line: 'settings.base.prepopulate = 0' }
+    - { regexp: '^settings.base.migrate = True', line: 'settings.base.migrate = False' }
+  tags:
+    - demo
+    - test
+    - setup
+
+- name: Compile
+  command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
+  notify: Restart Webserver
+  tags:
+    - demo
+    - test
+    - setup
+
+- name: Stop Rocket Server (if deploying from co-app bootstrap)
+  #service: name=web2py  state=stopped
+  shell: /etc/init.d/web2py stop
+  ignore_errors: True
+
+- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
+  shell: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  ignore_errors: True

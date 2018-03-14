@@ -1,0 +1,9 @@
+---
+- name: Create ansible cfg dir
+  file: path=/etc/ansible state=directory
+
+- name: Create ansible log dir
+  file: path=/var/log/ansible state=directory
+
+- name: Copy ansible.cfg
+  copy: src=ansible.cfg dest=/etc/ansible/ansible.cfg

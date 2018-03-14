@@ -54,18 +54,17 @@
   tags:
     - demo
     - test
+    - setup
 
 - name: Executing update_cherokee
   command: python update_cherokee.py chdir=/tmp/
   tags:
     - test
     - demo
+    - setup
 
 - name: Copy maintenance.html
   copy: src=maintenance.html dest=/var/www/maintenance.html
-  tags:
-    - test
-    - demo
 
 - name: Restart Cherokee
   service: name=cherokee state=restarted

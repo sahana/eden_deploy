@@ -1,6 +1,0 @@
----
-- name: restart cherokee
-  service: name=cherokee state=restarted
-
-- name: start uwsgi-prod
-  service: name=uwsgi-prod state=started
