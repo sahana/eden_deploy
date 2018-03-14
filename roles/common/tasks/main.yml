@@ -238,6 +238,7 @@
   set_fact:
     template_type: "{{ template | type_debug }}"
 
+# Coming from Setup module
 - name: Setting Templates (Prod / Demo)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^settings.base.template = \"default\"'
@@ -249,6 +250,7 @@
   tags:
     - demo
 
+# Coming from bootstrap
 - name: Setting Template (Prod / Demo)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^settings.base.template = \"default\"'

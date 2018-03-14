@@ -8,7 +8,7 @@ elif [[ ! -d "/home/$1" ]]; then
     exit 1
 fi
 INSTANCE=$1
-if [ "$INSTANCE" -eq "setup" ]; then
+if [ "$INSTANCE" = "setup" ]; then
     APPNAME=eden_setup
 else
     APPNAME=eden
