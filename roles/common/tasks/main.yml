@@ -3,9 +3,51 @@
 -  fail: msg="Exiting as this deployment method currently only supports Debian"
    when: ansible_distribution != "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
+- name: check if we're running on EC2
+  stat:
+    path: "/etc/cloud/cloud.cfg"
+    get_attributes: False
+    get_checksum:   False
+    get_md5:        False
+    get_mime:       False
+  register: cloud_cfg
+
+- name: Disable update_etc_hosts
+  lineinfile: dest=/etc/cloud/cloud.cfg
+              regexp="^ - update_etc_hosts"
+              insertafter="^ - update_etc_hosts"
+              line="# - update_etc_hosts"
+              state=present
+  when: cloud_cfg.stat.exists
+
+- name: Disable update_hostname
+  lineinfile: dest=/etc/cloud/cloud.cfg
+              regexp="^ - update_hostname"
+              insertafter="^ - update_hostname"
+              line="# - update_hostname"
+              state=present
+  when: cloud_cfg.stat.exists
+
+- name: Update hostname file
+  template: src=hostname dest=/etc/hostname
+
+- name: Update hosts file
+  lineinfile: dest=/etc/hosts
+              regexp="^127.0.0.1 localhost"
+              insertafter="^127.0.0.1 localhost"
+              line="127.0.0.1 {{ sitename }} {{ hostname }} localhost"
+              state=present
+
 # Run Debian-specific tasks
 -  import_tasks: debian.yml
    when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
+
+- name: Update mailname file
+  template: src=mailname dest=/etc/mailname
+
+- name: Configure for Internet Mail Delivery
+  command: dpkg-reconfigure -f noninteractive exim4-config
+  when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 # Python Libraries, where we need a more recent version than that provided by the OS
 - name: Install Reportlab # Want Percentage support
@@ -163,48 +205,6 @@
   when: type == 'test'
   tags:
     - test
-
-- name: Update hosts file
-  lineinfile: dest=/etc/hosts
-              regexp="^127.0.0.1 localhost"
-              insertafter="^127.0.0.1 localhost"
-              line="127.0.0.1 {{ sitename }} {{ hostname }} localhost"
-              state=present
-
-- name: check if we're running on EC2
-  stat:
-    path: "/etc/cloud/cloud.cfg"
-    get_attributes: False
-    get_checksum:   False
-    get_md5:        False
-    get_mime:       False
-  register: cloud_cfg
-
-- name: Disable update_etc_hosts
-  lineinfile: dest=/etc/cloud/cloud.cfg
-              regexp="^ - update_etc_hosts"
-              insertafter="^ - update_etc_hosts"
-              line="# - update_etc_hosts"
-              state=present
-  when: cloud_cfg.stat.exists
-
-- name: Update hostname file
-  template: src=hostname dest=/etc/hostname
-
-- name: Disable update_hostname
-  lineinfile: dest=/etc/cloud/cloud.cfg
-              regexp="^ - update_hostname"
-              insertafter="^ - update_hostname"
-              line="# - update_hostname"
-              state=present
-  when: cloud_cfg.stat.exists
-
-- name: Update mailname file
-  template: src=mailname dest=/etc/mailname
-
-- name: Configure for Internet Mail Delivery
-  command: dpkg-reconfigure -f noninteractive exim4-config
-   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 - name: Update crontab
   copy: src=cron dest=/etc/crontab
