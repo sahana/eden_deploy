@@ -38,16 +38,12 @@
               line="127.0.0.1 {{ sitename }} {{ hostname }} localhost"
               state=present
 
-# Run Debian-specific tasks
--  import_tasks: debian.yml
-   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
-
 - name: Update mailname file
   template: src=mailname dest=/etc/mailname
 
-- name: Configure for Internet Mail Delivery
-  command: dpkg-reconfigure -f noninteractive exim4-config
-  when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
+# Run Debian-specific tasks
+-  import_tasks: debian.yml
+   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 # Python Libraries, where we need a more recent version than that provided by the OS
 - name: Install Reportlab # Want Percentage support
@@ -189,19 +185,17 @@
     - setup
 
 - name: Create symlink (eden in home)
-  file: src=/home/{{ type }}/applications/eden dest=/root/eden state=link
+  file: src=/home/{{ type }}/applications/{{ appname }} dest=/root/eden state=link
   when: type == 'prod'
 
-- name: Copying template 000_config.py
-  command: cp /home/{{ type }}/applications/eden/modules/templates/000_config.py /home/{{ type }}/applications/eden/models
-  #when: type == 'prod' or dtype == 'beforeprod'
+- name: Copying default 000_config.py
+  command: cp /home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py /home/{{ type }}/applications/{{ appname }}/models
   tags:
     - demo
     - setup
 
 - name: Copying 000_config.py from Production for Test (need same HMAC for passwords and settings should match)
-  command: cp /home/web2py/applications/eden/models/000_config.py /home/{{ type }}/applications/eden/models
-  #when: type == 'test' or dtype == 'afterprod'
+  command: cp /home/web2py/applications/{{ appname }}/models/000_config.py /home/{{ type }}/applications/{{ appname }}/models
   when: type == 'test'
   tags:
     - test
@@ -239,13 +233,30 @@
               backrefs=yes
               line='settings.base.public_url = "{{ protocol }}://{{ sitename }}"'
               state=present
-    
-- name: Setting Template (Prod / Demo)
+
+- name: set template_type variable
+  set_fact:
+    template_type: "{{ template | type_debug }}"
+
+- name: Setting Templates (Prod / Demo)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^settings.base.template = \"default\"'
               backrefs=yes
               line='settings.base.template = ["{{ template | join('", "') }}"]'
               state=present
+  when:
+    - template_type == 'list'
+  tags:
+    - demo
+
+- name: Setting Template (Prod / Demo)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp='^settings.base.template = \"default\"'
+              backrefs=yes
+              line='settings.base.template = "{{ template }}"'
+              state=present
+  when:
+    - template_type == 'AnsibleUnicode'
   tags:
     - demo
 
@@ -268,6 +279,8 @@
               state=present
   when: not((sender is undefined) or (sender is none) or (sender|trim == ''))
 
+# NB These are all designed for a single-host setup
+# @ToDo: Replace with Ansible methods which are multi-host aware
 - name: Copy management scripts
   copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
   with_items:

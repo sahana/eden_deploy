@@ -45,6 +45,9 @@
     - exim4-config
     - exim4-daemon-light
 
+- name: Configure for Internet Mail Delivery
+  command: dpkg-reconfigure -f noninteractive exim4-config
+
 # Install Libraries
 - name: Install libodbc1 # Needed for Web2Py
   apt: name=libodbc1 state=latest
