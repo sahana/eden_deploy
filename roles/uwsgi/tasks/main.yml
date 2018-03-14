@@ -26,24 +26,14 @@
   tags:
     - test
     - demo
-
-- name: Copy Templates (Setup)
-  template: src="{{ item.src }}" dest="{{ item.dest }}"
-  with_items:
-    - { src: 'scheduler.j2', dest: '/home/setup/run_scheduler.py' }
-    - { src: 'uwsgi.ini.j2', dest: '/home/setup/uwsgi.ini' }
-    - { src: 'uwsgi.j2', dest: '/etc/init.d/uwsgi-setup' }
-  vars:
-    type: setup
+    - setup
 
 - name: Create pid file
   file: path=/tmp/uwsgi-{{ type }}.pid state=touch owner=web2py group=web2py
   tags:
     - test
     - demo
-
-- name: Create pid file (Setup)
-  file: path=/tmp/uwsgi-setup.pid state=touch owner=web2py group=web2py
+    - setup
 
 - name: Create log dir
   file: path=/var/log/uwsgi state=directory owner=web2py group=web2py
@@ -53,15 +43,11 @@
   tags:
     - test
     - demo
-
-- name: Fix permissions for init.d script (Setup)
-  file: path=/etc/init.d/uwsgi-setup state=file mode=755
+    - setup
 
 - name: update-rc.d
   command: update-rc.d uwsgi-{{ type }} defaults
   tags:
     - test
     - demo
-
-- name: update-rc.d (Setup)
-  command: update-rc.d uwsgi-setup defaults
+    - setup
