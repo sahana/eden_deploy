@@ -39,7 +39,7 @@ cat << EOF > "deploy.yml"
     sitename: '$pubDNS'
     protocol: 'http'
     type: 'prod'
-    appname: 'eden',
+    appname: 'eden'
     web_server: 'cherokee'
     db_type: 'postgresql'
     db_ip: '127.0.0.1'
