@@ -204,7 +204,11 @@
   become_user: web2py
   #become_flags: '-H'
 
-# Will read from existing file if-available
+- name: Set hmac_key variable
+  set_fact:
+    hmac_key: "{{ lookup('file', '/tmp/hmac_key') }}"
+    when: setup.stat.exists == True
+
 - name: Generate & set hmac_key variable
   set_fact:
     hmac_key: "{{ lookup('password', '/tmp/hmac_key chars=ascii_letters,digits,.-_,,') }}" # Cannot include : or "
