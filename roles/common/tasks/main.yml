@@ -199,10 +199,11 @@
 - name: Read hmac_key from Setup for Prod
   # Assumes default appname for setup
   command: python web2py.py -S eden -M -R /tmp/read_hmac_key.py chdir=/home/setup
-  ignore_errors: yes
   become: true
+  become_method: sudo
   become_user: web2py
   #become_flags: '-H'
+  ignore_errors: yes
   when: setup.stat.exists == True
 
 - name: Set hmac_key variable
