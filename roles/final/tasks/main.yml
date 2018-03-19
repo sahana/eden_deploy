@@ -8,7 +8,11 @@
     - test
 
 - name: Create Tables & Prepopulate (Prod / Demo / Setup)
-  command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py
+  #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py
+  command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py
+  become: true
+  become_user: web2py
+  #become_flags: '-H'
   args:
     chdir: /home/{{ type }}
   tags:
@@ -30,7 +34,11 @@
     - setup
 
 - name: Compile
-  command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
+  #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
+  command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
+  become: true
+  become_user: web2py
+  #become_flags: '-H'
   notify: Restart Webserver
   tags:
     - demo
@@ -38,20 +46,24 @@
     - setup
 
 - name: Create script to Import Admin User from coapp -> Prod
-  template: src="/tmp/import_admin_user.py.j2" dest="/tmp/import_admin_user.py"
+  template: src="import_admin_user.py.j2" dest="/tmp/import_admin_user.py"
 #  tags: # or from Prod -> Co-app
 #    - setup
 
 - name: Import Admin User from coapp -> Prod
-  command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R /tmp/import_admin_user.py chdir=/home/{{ type }}
+  #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R /tmp/import_admin_user.py chdir=/home/{{ type }}
+  command: python web2py.py -S {{ appname }} -M -R /tmp/import_admin_user.py chdir=/home/{{ type }}
+  become: true
+  become_user: web2py
+  #become_flags: '-H'
 #  tags: # or from Prod -> Co-app
 #    - setup
 
 - name: Stop Rocket Server (if deploying from co-app bootstrap)
   #service: name=web2py  state=stopped
-  shell: /etc/init.d/web2py stop
+  command: /etc/init.d/web2py stop
   ignore_errors: True
 
 - name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
-  shell: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
   ignore_errors: True

@@ -95,20 +95,20 @@
 
 - name: Prepopulate Database
   #shell: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/setup
-  shell: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/setup
+  command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/setup
   ignore_errors: yes
   become: true
   become_user: web2py
   #become_flags: '-H'
 
 - name: Redirect port 80 to 8000
-  shell: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  command: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
 
 - name: Launch Coapp
   # https://github.com/ansible/ansible/issues/22171
   #service: name=web2py state=started
-  shell: /etc/init.d/web2py start
+  command: /etc/init.d/web2py start
 
 - name: Launch Scheduler
   #service: name=web2py-scheduler state=started
-  shell: /etc/init.d/web2py-scheduler start
+  command: /etc/init.d/web2py-scheduler start

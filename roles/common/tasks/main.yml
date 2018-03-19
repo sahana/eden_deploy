@@ -197,7 +197,7 @@
   when: setup.stat.exists == True
 
 - name: Read hmac_key from Setup for Prod
-  shell: python web2py.py -S {{ appname }} -M -R /tmp/read_hmac_key.py chdir=/home/{{ type }}
+  command: python web2py.py -S {{ appname }} -M -R /tmp/read_hmac_key.py chdir=/home/{{ type }}
   ignore_errors: yes
   become: true
   become_user: web2py

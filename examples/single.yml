@@ -5,7 +5,7 @@
   - uwsgi
   - configure
   - cherokee
-  sudo: true
+  #sudo: true
   vars:
     #dtype: na # na/afterprod/beforeprod
     password: # db_password

@@ -6,7 +6,7 @@
     remote_src: yes
 
 - name: Build
-  shell: "{{ item }} chdir=/tmp/uwsgi-1.9.18.2"
+  command: "{{ item }} chdir=/tmp/uwsgi-1.9.18.2"
   with_items:
     - python uwsgiconfig.py --build pyonly.ini
     - cp uwsgi /usr/local/bin
