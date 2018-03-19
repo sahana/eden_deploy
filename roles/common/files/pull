@@ -8,11 +8,12 @@ elif [[ ! -d "/home/$1" ]]; then
     exit 1
 fi
 INSTANCE=$1
-if [ "$INSTANCE" = "setup" ]; then
-    APPNAME=eden_setup
-else
-    APPNAME=eden
-fi
+#if [ "$INSTANCE" = "setup" ]; then
+#    APPNAME=eden_setup
+#else
+#    APPNAME=eden
+#fi
+APPNAME=eden
 /etc/init.d/uwsgi-$INSTANCE stop
 cd /home/$INSTANCE/applications/$APPNAME
 sed -i 's/settings.base.migrate = False/settings.base.migrate = True/g' models/000_config.py

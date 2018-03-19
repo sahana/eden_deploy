@@ -185,26 +185,53 @@
 
 - name: Create symlink (eden in home)
   file: src=/home/{{ type }}/applications/{{ appname }} dest=/root/eden state=link
-  when: type == 'prod'
+
+- name: Update crontab
+  copy: src=cron dest=/etc/crontab
+
+- stat: path=/home/setup/applications/eden/models/000_config.py
+  register: setup
+  
+- name: Copy read_hmac_key.py
+  copy: "src=read_hmac_key.py dest=/tmp/read_hmac_key.py"
+  when: setup.stat.exists == True
+
+- name: Read hmac_key from Setup for Prod
+  shell: python web2py.py -S {{ appname }} -M -R /tmp/read_hmac_key.py chdir=/home/{{ type }}
+  ignore_errors: yes
+  become: true
+  become_user: web2py
+  #become_flags: '-H'
+  when: setup.stat.exists == True
+
+# Will read from existsing file if-available
+- name: Generate & set hmac_key variable
+  set_fact:
+    hmac_key: "{{ lookup('password', '/tmp/hmac_key chars=ascii_letters,digits,.-_,,') }}" # Cannot include : or "
+  tags:
+    - demo
+    - setup
+
+- name: Remove hmac_key file
+  file: path=/tmp/hmac_key state=absent
+  tags:
+    - demo
+    - setup
 
 - name: Copying default 000_config.py
-  command: cp /home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py /home/{{ type }}/applications/{{ appname }}/models
+  copy: src=/home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py dest=/home/{{ type }}/applications/{{ appname }}/models
+  remote_src: yes
   tags:
     - demo
     - setup
 
 - name: Copying 000_config.py from Production for Test (need same HMAC for passwords and settings should match)
-  command: cp /home/web2py/applications/{{ appname }}/models/000_config.py /home/{{ type }}/applications/{{ appname }}/models
+  # Assumes that appname for Prod is the same as Test!
+  copy: src=/home/prod/applications/{{ appname }}/models/000_config.py dest=/home/{{ type }}/applications/{{ appname }}/models
+  remote_src: yes
   when: type == 'test'
   tags:
     - test
-
-- name: Update crontab
-  copy: src=cron dest=/etc/crontab
-
-- name: Generate & set hmac_key variable
-  set_fact:
-    hmac_key: "{{ lookup('password', '/tmp/hmac_key') }}"
 
 - name: Editing 000_config.py (Prod / Demo / Setup)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py

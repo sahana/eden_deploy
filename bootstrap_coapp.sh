@@ -13,6 +13,7 @@ cat << EOF > "deploy_coapp.yml"
 
   vars:
     sitename: '$pubDNS' # usually hostname.domain
+    appname: eden
 
   roles:
     - swap

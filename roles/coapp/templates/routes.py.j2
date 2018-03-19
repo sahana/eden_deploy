@@ -1,0 +1,10 @@
+#!/usr/bin/python
+default_application = '{{ appname }}'
+default_controller = 'setup'
+default_function = 'index'
+routes_onerror = [
+        ('{{ appname }}/400', '!'),
+        ('{{ appname }}/401', '!'),
+        ('{{ appname }}/*', '/{{ appname }}/errors/index'),
+        ('*/*', '/{{ appname }}/errors/index'),
+    ]

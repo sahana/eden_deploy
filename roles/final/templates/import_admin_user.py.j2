@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 if "{{ type }}" == "prod":
     # We're setting up Prod from co-app
-    db2 = DAL("sqlite://storage.db", folder=os.path.join("/", "home", "setup", "applications", "eden_setup", "databases"))
+    # Assumes default appname for setup!
+    db2 = DAL("sqlite://storage.db", folder=os.path.join("/", "home", "setup", "applications", "eden", "databases"))
     utable = db2.auth_user
     user = db2(utable.id > 0).select(utable.first_name, utable.last_name, utable.email, utable.password).last()
 # @ToDo

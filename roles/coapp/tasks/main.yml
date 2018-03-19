@@ -22,20 +22,23 @@
     chdir: /home/setup
   
 - name: Copy routes.py
-  copy: src=routes.py dest=/home/setup/routes.py
+  template: src=routes.py.j2 dest=/home/setup/routes.py
 
 - name: Clone Coapp # recursive by default
-  git: repo=git://github.com/sahana/eden dest=/home/setup/applications/eden_setup accept_hostkey=yes
+  git: repo=git://github.com/sahana/eden dest=/home/setup/applications/{{ appname }} accept_hostkey=yes
 
 - name: Move 000_config.py
-  command: cp /home/setup/applications/eden_setup/modules/templates/000_config.py /home/setup/applications/eden_setup/models
+  command: cp /home/setup/applications/{{ appname }}/modules/templates/000_config.py /home/setup/applications/{{ appname }}/models
 
 - name: Generate & set hmac_key variable
   set_fact:
-    hmac_key: "{{ lookup('password', '/tmp/hmac_key') }}"
+    hmac_key: "{{ lookup('password', '/tmp/hmac_key chars=ascii_letters,digits,.-_,,') }}" # Cannot include : or "
+
+- name: Remove hmac_key file
+  file: path=/tmp/hmac_key state=absent
 
 - name: Editing 000_config.py
-  lineinfile: dest=/home/setup/applications/eden_setup/models/000_config.py
+  lineinfile: dest=/home/setup/applications/{{ appname }}/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
               line="{{ item.line }}"
@@ -48,10 +51,10 @@
     - { regexp: '^#settings.base.prepopulate_demo = 0', line: 'settings.base.prepopulate_demo = 0' }
 
 - name: Copy web2py init scripts
-  copy: src={{ item}} dest=/etc/init.d/{{ item }} mode=755
-  with_items:
-    - web2py
-    - web2py-scheduler
+  copy: src=web2py dest=/etc/init.d/web2py mode=755
+
+- name: Copy web2py init scripts
+  template: src=web2py-scheduler.j2 dest=/etc/init.d/web2py-scheduler mode=755
 
 # - name: update-rc.d
 #   command: update-rc.d {{ item }} defaults
@@ -69,24 +72,34 @@
     - setup/applications/admin/databases
     - setup/applications/admin/errors
     - setup/applications/admin/sessions
-    - setup/applications/eden_setup
-    - setup/applications/eden_setup/cache
-    - setup/applications/eden_setup/cron
-    - setup/applications/eden_setup/databases
-    - setup/applications/eden_setup/errors
-    - setup/applications/eden_setup/models
-    - setup/applications/eden_setup/sessions
-    - setup/applications/eden_setup/static/img/markers
-    - setup/applications/eden_setup/static/cache
-    - setup/applications/eden_setup/static/cache/chart
-    - setup/applications/eden_setup/uploads
-    - setup/applications/eden_setup/uploads/gis_cache
-    - setup/applications/eden_setup/uploads/images
-    - setup/applications/eden_setup/uploads/tracks
+    - setup/applications/{{ appname }}
+    - setup/applications/{{ appname }}/cache
+    - setup/applications/{{ appname }}/cron
+    - setup/applications/{{ appname }}/databases
+    - setup/applications/{{ appname }}/errors
+    - setup/applications/{{ appname }}/models
+    - setup/applications/{{ appname }}/sessions
+    - setup/applications/{{ appname }}/static/img/markers
+    - setup/applications/{{ appname }}/static/cache
+    - setup/applications/{{ appname }}/static/cache/chart
+    - setup/applications/{{ appname }}/uploads
+    - setup/applications/{{ appname }}/uploads/gis_cache
+    - setup/applications/{{ appname }}/uploads/images
+    - setup/applications/{{ appname }}/uploads/tracks
+
+- name: Create symlink
+  file: src=/home/setup dest=/root/setup state=link
+
+- name: Create symlink (eden in web2py)
+  file: src=/home/setup/applications/{{ appname }} dest=/home/setup/eden state=link
 
 - name: Prepopulate Database
-  shell: sudo -H -u web2py python web2py.py -S eden_setup -M -R applications/eden_setup/static/scripts/tools/noop.py chdir=/home/setup
+  #shell: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/setup
+  shell: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/setup
   ignore_errors: yes
+  become: true
+  become_user: web2py
+  #become_flags: '-H'
 
 - name: Redirect port 80 to 8000
   shell: iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000

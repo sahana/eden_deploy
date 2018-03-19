@@ -90,11 +90,11 @@
               state=present
   when: ansible_memtotal_mb|int < 1023
 
-# Password
+# Create Sahana user & set Password
 - name: Transfer pgpass.sql
   template: src=pgpass.sql dest=/tmp/pgpass.sql
 
-- name: Update PostgreSQL password
+- name: Create Sahana user & set Password
   command: su -c - postgres "psql -q -d template1 -f /tmp/pgpass.sql"
 
 - name: Remove pgpass.sql

@@ -8,11 +8,12 @@ elif [[ ! -d "/home/$1" ]]; then
     exit 1
 fi
 INSTANCE=$1
-if [ "$INSTANCE" = "setup" ]; then
-    APPNAME=eden_setup
-else
-    APPNAME=eden
-fi
+#if [ "$INSTANCE" = "setup" ]; then
+#    APPNAME=eden_setup
+#else
+#    APPNAME=eden
+#fi
+APPNAME=eden
 cd /home/$INSTANCE
 /etc/init.d/uwsgi-$INSTANCE stop
 python web2py.py -S $APPNAME -M -R applications/$APPNAME/static/scripts/tools/compile.py
