@@ -208,7 +208,7 @@
 - name: Generate & set hmac_key variable
   set_fact:
     hmac_key: "{{ lookup('password', '/tmp/hmac_key chars=ascii_letters,digits,.-_,,') }}" # Cannot include : or "
-  when: (type == 'prod' and setup.stat.exists == Truesetup.stat.exists == False) or 
+  when: (type == 'prod' and setup.stat.exists == False) or 
         (type != 'prod')
   tags:
     - demo
