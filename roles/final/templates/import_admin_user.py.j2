@@ -15,5 +15,9 @@ else:
 
 user_id = db.auth_user.insert(first_name=user.first_name, last_name=user.last_name, email=user.email, password=user.password)
 user.id = user_id
+user.organisation_id = None
+user.org_group_id = None
+user.link_user_to = None
 auth.s3_approve_user(user)
+auth.add_membership(1, user_id)
 db.commit()
