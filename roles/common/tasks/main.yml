@@ -65,7 +65,6 @@
 
 - name: Create symlink
   file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
-  when: type == 'prod'
 
 - name: Clone web2py # recursive by default
   git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}} version=cda35fd
@@ -203,6 +202,10 @@
 - name: Update crontab
   copy: src=cron dest=/etc/crontab
 
+- name: Generate & set hmac_key variable
+  set_fact:
+    hmac_key: "{{ lookup('password', '/tmp/hmac_key') }}"
+
 - name: Editing 000_config.py (Prod / Demo / Setup)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp="{{ item.regexp }}"
@@ -211,7 +214,7 @@
               state=present
   with_items:
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
-    - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ sitename }}{{ password }}"' }
+    - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ hmac_key }}"' }
     - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ protocol }}://{{ sitename }}"' }
     - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
   tags:

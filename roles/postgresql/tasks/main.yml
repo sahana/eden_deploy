@@ -100,32 +100,32 @@
 - name: Remove pgpass.sql
   file: path=/tmp/pgpass.sql state=absent
 
-# Create Database
-- name: Create DB (Prod)
-  command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 sahana -T template0"
+# Database name
+- name: set db_name variable (Prod)
+  set_fact:
+    db_name: sahana
 
-- name: Create DB (Demo / Test)
-  command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 sahana-{{ type }} -T template0"
+- name: set db_name variable (Demo / Test)
+  set_fact:
+    db_name: sahana-{{ type }}
   when: type != 'prod'
+  tags:
+    - demo
+    - test
+
+# Create Database
+- name: Create DB
+  command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 {{ db_name }} -T template0"
   tags:
    - test
    - demo
 
-- name: PostGIS DB Config (Prod)
+- name: PostGIS DB Config
   command: "{{ item }}"
   with_items:
-    - su -c - postgres "psql -q -d sahana -c 'CREATE EXTENSION postgis;'"
-    - su -c - postgres "psql -q -d sahana -c 'grant all on geometry_columns to sahana;'"
-    - su -c - postgres "psql -q -d sahana -c 'grant all on spatial_ref_sys to sahana;'"
-  when: type == 'prod'
-
-- name: PostGIS DB Config (Demo / Test)
-  command: "{{ item }}"
-  with_items:
-    - su -c - postgres "psql -q -d sahana-{{ type }} CREATE EXTENSION postgis;'"
-    - su -c - postgres "psql -q -d sahana-{{ type }} -c 'grant all on geometry_columns to sahana;'"
-    - su -c - postgres "psql -q -d sahana-{{ type }} -c 'grant all on spatial_ref_sys to sahana;'"
-  when: type != 'prod'
+    - su -c - postgres "psql -q -d {{ db_name }} -c 'CREATE EXTENSION postgis;'"
+    - su -c - postgres "psql -q -d {{ db_name }} -c 'grant all on geometry_columns to sahana;'"
+    - su -c - postgres "psql -q -d {{ db_name }} -c 'grant all on spatial_ref_sys to sahana;'"
   tags:
     - demo
     - test
@@ -148,7 +148,7 @@
 - name: Restart service
   service: name=postgresql state=restarted
 
-- name: Configure Eden to access Database (Common)
+- name: Configure Eden to access Database
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
@@ -160,23 +160,12 @@
     - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = "{{ password }}"' }
     - { regexp: '^#settings.gis.spatialdb = True', line: 'settings.gis.spatialdb = True' }
     - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
-  tags:
-    - demo
-
-- name: Configure Eden to access Database (Demo / Test)
-  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
-              regexp="{{ item.regexp }}"
-              backrefs=yes
-              line="{{ item.line }}"
-              state=present
-  with_items:
-    - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "sahana-{{ type }}"' }
-  when: type != 'prod'
+    - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "{{ db_name }}"' }
   tags:
     - demo
     - test
 
-# Clean tasks
+# Clean tasks (Test)
 - name: Copy update_clean
   copy: src=update_clean.py dest=/tmp/update_clean.py
   when:

@@ -37,6 +37,16 @@
     - test
     - setup
 
+- name: Create script to Import Admin User from coapp -> Prod
+  template: src="/tmp/import_admin_user.py.j2" dest="/tmp/import_admin_user.py"
+#  tags: # or from Prod -> Co-app
+#    - setup
+
+- name: Import Admin User from coapp -> Prod
+  command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R /tmp/import_admin_user.py chdir=/home/{{ type }}
+#  tags: # or from Prod -> Co-app
+#    - setup
+
 - name: Stop Rocket Server (if deploying from co-app bootstrap)
   #service: name=web2py  state=stopped
   shell: /etc/init.d/web2py stop

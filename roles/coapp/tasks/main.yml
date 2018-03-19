@@ -1,4 +1,5 @@
 ---
+# @ToDo: Split off Debian-specific parts
 - name: Installing Dependencies
   apt: name={{ item }} state=latest update_cache=yes
   with_items:
@@ -29,6 +30,10 @@
 - name: Move 000_config.py
   command: cp /home/setup/applications/eden_setup/modules/templates/000_config.py /home/setup/applications/eden_setup/models
 
+- name: Generate & set hmac_key variable
+  set_fact:
+    hmac_key: "{{ lookup('password', '/tmp/hmac_key') }}"
+
 - name: Editing 000_config.py
   lineinfile: dest=/home/setup/applications/eden_setup/models/000_config.py
               regexp="{{ item.regexp }}"
@@ -38,6 +43,7 @@
   with_items:
     - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = "setup"' }
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
+    - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ hmac_key }}"' }
     - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "http://{{ sitename }}"' }
     - { regexp: '^#settings.base.prepopulate_demo = 0', line: 'settings.base.prepopulate_demo = 0' }
 
