@@ -11,6 +11,7 @@
   #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py
   command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/{{ type }}
   become: true
+  become_method: sudo
   become_user: web2py
   #become_flags: '-H'
   tags:
@@ -35,6 +36,7 @@
   #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
   command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
   become: true
+  become_method: sudo
   become_user: web2py
   #become_flags: '-H'
   notify: Restart Webserver
@@ -52,6 +54,7 @@
   #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R /tmp/import_admin_user.py chdir=/home/{{ type }}
   command: python web2py.py -S {{ appname }} -M -R /tmp/import_admin_user.py chdir=/home/{{ type }}
   become: true
+  become_method: sudo
   become_user: web2py
   #become_flags: '-H'
 #  tags: # or from Prod -> Co-app
