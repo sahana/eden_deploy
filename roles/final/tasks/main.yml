@@ -9,12 +9,10 @@
 
 - name: Create Tables & Prepopulate (Prod / Demo / Setup)
   #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py
-  command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py
+  command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/{{ type }}
   become: true
   become_user: web2py
   #become_flags: '-H'
-  args:
-    chdir: /home/{{ type }}
   tags:
     - demo
     - setup

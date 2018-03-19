@@ -199,15 +199,17 @@
 - name: Read hmac_key from Setup for Prod
   command: python web2py.py -S {{ appname }} -M -R /tmp/read_hmac_key.py chdir=/home/{{ type }}
   ignore_errors: yes
+  when: setup.stat.exists == True
   become: true
   become_user: web2py
   #become_flags: '-H'
-  when: setup.stat.exists == True
 
-# Will read from existsing file if-available
+# Will read from existing file if-available
 - name: Generate & set hmac_key variable
   set_fact:
     hmac_key: "{{ lookup('password', '/tmp/hmac_key chars=ascii_letters,digits,.-_,,') }}" # Cannot include : or "
+  when: (type == 'prod' and setup.stat.exists == Truesetup.stat.exists == False) or 
+        (type != 'prod')
   tags:
     - demo
     - setup
