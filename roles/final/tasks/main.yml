@@ -1,6 +1,7 @@
 ---
 - name: Run clean script (Test)
   command: clean test
+  ignore_errors: yes
   when:
     - type == 'test'
     - db_type == 'postgresql' # MySQL clean script not yet multi-instance

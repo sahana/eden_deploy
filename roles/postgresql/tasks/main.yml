@@ -175,6 +175,10 @@
 
 - name: Run update_clean
   command: python web2py.py -S {{ appname }} -M -R /tmp/update_clean.py chdir=/home/web2py
+  become: true
+  become_method: sudo
+  become_user: web2py
+  #become_flags: '-H'
   when:
     - type == 'test'
   tags:
