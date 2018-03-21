@@ -135,6 +135,7 @@
 - name: Create DB
   command: createdb -O sahana -E UTF8 -l en_US.UTF-8 {{ db_name }} -T template0
   become: yes
+  # Needs allow_world_readable_tmpfiles in ansible.cfg when running as web2py
   become_user: postgres
   tags:
    - test
