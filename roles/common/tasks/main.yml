@@ -227,16 +227,20 @@
     - setup
 
 - name: Copying default 000_config.py
-  copy: src=/home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py dest=/home/{{ type }}/applications/{{ appname }}/models
-  remote_src: yes
+  copy:
+    src: /home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py
+    dest: /home/{{ type }}/applications/{{ appname }}/models
+    remote_src: yes
   tags:
     - demo
     - setup
 
 - name: Copying 000_config.py from Production for Test (need same HMAC for passwords and settings should match)
   # Assumes that appname for Prod is the same as Test!
-  copy: src=/home/prod/applications/{{ appname }}/models/000_config.py dest=/home/{{ type }}/applications/{{ appname }}/models
-  remote_src: yes
+  copy:
+    src: /home/prod/applications/{{ appname }}/models/000_config.py
+    dest: /home/{{ type }}/applications/{{ appname }}/models
+    remote_src: yes
   when: type == 'test'
   tags:
     - test
