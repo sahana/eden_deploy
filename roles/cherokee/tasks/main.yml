@@ -68,3 +68,7 @@
 
 - name: Restart Cherokee
   service: name=cherokee state=restarted
+  tags:
+    - test
+    - demo
+    - setup

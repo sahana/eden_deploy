@@ -18,7 +18,7 @@ NAME=cherokee
 PIDFILE=/var/run/cherokee.pid
 . /lib/lsb/init-functions
 set -e
-test -x $DAEMON || exit 0
+#test -x $DAEMON || exit 0
 case "$1" in
   start)
         echo "Starting $NAME web server "

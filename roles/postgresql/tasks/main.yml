@@ -90,6 +90,24 @@
               state=present
   when: ansible_memtotal_mb|int < 1023
 
+- name: Listen externally
+  lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
+              regexp="#listen_addresses = \'localhost\'"
+              backrefs=yes
+              line="listen_addresses = '*'"
+              state=present
+  when: db_ip != '127.0.0.1'
+
+- name: Allow external connections
+  lineinfile: dest=/etc/postgresql/9.6/main/pg_hba.conf
+              insertafter=EOF
+              line="host all all 0.0.0.0/0 md5"
+              state=present
+  when: db_ip != '127.0.0.1'
+
+- name: Restart service
+  service: name=postgresql state=restarted
+
 # Create Sahana user & set Password
 - name: Transfer pgpass.sql
   template: src=pgpass.sql dest=/tmp/pgpass.sql
@@ -130,25 +148,7 @@
     - demo
     - test
 
-- name: Listen externally
-  lineinfile: dest=/etc/postgresql/9.6/main/postgresql.conf
-              regexp="#listen_addresses = \'localhost\'"
-              backrefs=yes
-              line="listen_addresses = '*'"
-              state=present
-  when: db_ip != '127.0.0.1'
-
-- name: Allow external connections
-  lineinfile: dest=/etc/postgresql/9.6/main/pg_hba.conf
-              insertafter=EOF
-              line="host all all 0.0.0.0/0 md5"
-              state=present
-  when: db_ip != '127.0.0.1'
-
-- name: Restart service
-  service: name=postgresql state=restarted
-
-- name: Configure Eden to access Database
+- name: Configure Eden to access Database (Prod/Demo)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
@@ -163,6 +163,18 @@
     - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "{{ db_name }}"' }
   tags:
     - demo
+
+- name: Configure Eden to access Database (Test)
+  lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
+              regexp="{{ item.regexp }}"
+              backrefs=yes
+              line="{{ item.line }}"
+              state=present
+  with_items:
+    - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
+    - { regexp: '^settings.database.database = \"sahana\"', line: 'settings.database.database = "{{ db_name }}"' }
+  when: type != 'prod'
+  tags:
     - test
 
 # Clean tasks (Test)
