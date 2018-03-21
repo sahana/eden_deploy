@@ -51,6 +51,8 @@
 
 - name: Copying update_cherokee.py
   template: src=update_cherokee_{{ type }}.py dest=/tmp/update_cherokee.py
+  # File may exist already & be owned by root
+  become: yes
   tags:
     - demo
     - test
