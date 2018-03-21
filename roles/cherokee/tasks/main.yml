@@ -58,6 +58,7 @@
 
 - name: Executing update_cherokee
   command: python update_cherokee.py chdir=/tmp/
+  become: yes
   tags:
     - test
     - demo
@@ -68,6 +69,7 @@
 
 - name: Restart Cherokee
   service: name=cherokee state=restarted
+  become: yes
   tags:
     - test
     - demo

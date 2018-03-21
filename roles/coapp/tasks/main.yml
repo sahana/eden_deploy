@@ -97,7 +97,7 @@
   #shell: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/setup
   command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/noop.py chdir=/home/setup
   ignore_errors: yes
-  become: true
+  become: yes
   become_user: web2py
   #become_flags: '-H'
 

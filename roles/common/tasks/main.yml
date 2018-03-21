@@ -58,16 +58,21 @@
 # Web2Py
 - name: Create web2py user
   #user: name=web2py system=true
-  command: adduser --system --disabled-password web2py
+  command: adduser --system --group --disabled-password web2py
 
-- name: Create web2py group
-  group: name=web2py state=present
+#- name: Create web2py group
+#  group: name=web2py state=present
+
+# Needed for ability to use Ansible to do system stuff 
+- name: Add web2py user to sudo group
+  command: adduser web2py sudo
 
 - name: Create symlink
   file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
 
 - name: Clone web2py # recursive by default
   git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}} version=cda35fd
+  become: yes
   tags:
     - test
     - demo
@@ -87,13 +92,18 @@
   command: git submodule update --init --recursive
   args:
     chdir: /home/{{ type }}
+  become: yes
   tags:
     - test
     - demo
     - setup
 
 - name: Copy wsgihandler
-  command: cp -f /home/{{ type }}/handlers/wsgihandler.py /home/{{ type }}
+  copy:
+    src: /home/{{ type }}/handlers/wsgihandler.py
+    dest: /home/{{ type }}/wsgihandler.py
+    remote_src: yes
+  become: yes
   tags:
     - test
     - demo
@@ -101,6 +111,7 @@
 
 - name: Copy routes.py
   template: src=routes.py dest=/home/{{ type }}/routes.py
+  become: yes
   tags:
     - test
     - demo
@@ -122,6 +133,7 @@
 
 - name: Create symlink
   file: src=/home/{{ type }} dest=/root/{{ type }} state=link
+  become: yes
   tags:
     - test
     - demo
@@ -130,13 +142,34 @@
 # Eden
 - name: Clone Eden # recursive by default
   git: repo=git://github.com/sahana/eden.git dest=/home/{{ type }}/applications/{{ appname }}
+  become: yes
   tags:
     - test
     - demo
     - setup
 
+- name: Copy default 000_config.py
+  copy:
+    src: /home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py
+    dest: /home/{{ type }}/applications/{{ appname }}/models
+    remote_src: yes
+  tags:
+    - demo
+    - setup
+
+- name: Copy 000_config.py from Production for Test (need same HMAC for passwords and settings should match)
+  # Assumes that appname for Prod is the same as Test!
+  copy:
+    src: /home/prod/applications/{{ appname }}/models/000_config.py
+    dest: /home/{{ type }}/applications/{{ appname }}/models
+    remote_src: yes
+  when: type == 'test'
+  tags:
+    - test
+
 - name: Fix permissions
   file: path=/home/{{item}} state=directory owner=web2py
+  become: yes
   with_items:
     - "{{ type }}/applications"
     - "{{ type }}/applications/admin/cache"
@@ -170,6 +203,7 @@
 
 - name: Fix permissions
   file: path="/home/{{ type }}" state=directory owner=web2py
+  become: yes
   when: type != 'prod'
   tags:
     - test
@@ -178,6 +212,7 @@
 
 - name: Create symlink (eden in web2py)
   file: src=/home/{{ type }}/applications/{{ appname }} dest=/home/{{ type }}/eden state=link
+  become: yes
   tags:
     - test
     - demo
@@ -198,9 +233,9 @@
 
 - name: Read hmac_key from Setup for Prod
   # Assumes default appname for setup
+  #command: sudo -H -u web2py python web2py.py -S eden -M -R /tmp/read_hmac_key.py chdir=/home/setup
   command: python web2py.py -S eden -M -R /tmp/read_hmac_key.py chdir=/home/setup
-  become: true
-  become_method: sudo
+  become: yes
   become_user: web2py
   #become_flags: '-H'
   ignore_errors: yes
@@ -226,26 +261,7 @@
     - demo
     - setup
 
-- name: Copying default 000_config.py
-  copy:
-    src: /home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py
-    dest: /home/{{ type }}/applications/{{ appname }}/models
-    remote_src: yes
-  tags:
-    - demo
-    - setup
-
-- name: Copying 000_config.py from Production for Test (need same HMAC for passwords and settings should match)
-  # Assumes that appname for Prod is the same as Test!
-  copy:
-    src: /home/prod/applications/{{ appname }}/models/000_config.py
-    dest: /home/{{ type }}/applications/{{ appname }}/models
-    remote_src: yes
-  when: type == 'test'
-  tags:
-    - test
-
-- name: Editing 000_config.py (Prod / Demo / Setup)
+- name: Edit 000_config.py (Prod / Demo / Setup)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp="{{ item.regexp }}"
               backrefs=yes
@@ -260,7 +276,7 @@
     - demo
     - setup
 
-- name: Editing 000_config.py (Prod / Setup)
+- name: Edit 000_config.py (Prod / Setup)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^#settings.base.prepopulate_demo = 0'
               backrefs=yes
@@ -269,7 +285,7 @@
   tags:
     - setup
     
-- name: Editing 000_config.py (Test)
+- name: Edit 000_config.py (Test)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^#settings.base.public_url = \"http://127.0.0.1:8000\"'
               backrefs=yes
@@ -311,7 +327,7 @@
               line='settings.base.template = "setup"'
               state=present
   when:
-    - type != 'prod'
+    - type == 'setup'
   tags:
     - setup
 

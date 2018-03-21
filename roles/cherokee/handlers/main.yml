@@ -1,3 +1,4 @@
 ---
 - name: Restart Webserver
   service: name=uwsgi-{{type}} state=started
+  become: yes

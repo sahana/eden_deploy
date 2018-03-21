@@ -1,3 +1,4 @@
 ---
 - name: Restart Webserver
   command: apache2ctl restart
+  become: yes

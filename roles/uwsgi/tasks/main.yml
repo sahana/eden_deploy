@@ -6,16 +6,16 @@
     remote_src: yes
 
 - name: Build
-  command: "{{ item }} chdir=/tmp/uwsgi-1.9.18.2"
-  with_items:
-    - python uwsgiconfig.py --build pyonly.ini
-    - cp uwsgi /usr/local/bin
+  command: python uwsgiconfig.py --build pyonly.ini chdir=/tmp/uwsgi-1.9.18.2
+
+- name: Copy uwsgi bin
+  copy:
+    src: /tmp/uwsgi-1.9.18.2/uwsgi
+    dest: /usr/local/bin/uwsgi
+    remote_src: yes
 
 - name: Copy logrotate File
   copy: src='logrotate' dest='/etc/logrotate.d/uwsgi'
-  tags:
-    - test
-    - demo
 
 - name: Copy Templates
   template: src="{{ item.src }}" dest="{{ item.dest }}"
@@ -23,6 +23,7 @@
     - { src: 'scheduler.j2', dest: '/home/{{ type }}/run_scheduler.py' }
     - { src: 'uwsgi.ini.j2', dest: '/home/{{ type }}/uwsgi.ini' }
     - { src: 'uwsgi.j2', dest: '/etc/init.d/uwsgi-{{ type }}' }
+  become: yes
   tags:
     - test
     - demo
@@ -30,6 +31,7 @@
 
 - name: Create pid file
   file: path=/tmp/uwsgi-{{ type }}.pid state=touch owner=web2py group=web2py
+  become: yes
   tags:
     - test
     - demo
@@ -40,6 +42,7 @@
 
 - name: Fix permissions for init.d script
   file: path=/etc/init.d/uwsgi-{{ type }} state=file mode=755
+  become: yes
   tags:
     - test
     - demo
@@ -47,6 +50,7 @@
 
 - name: update-rc.d
   command: update-rc.d uwsgi-{{ type }} defaults
+  become: yes
   tags:
     - test
     - demo

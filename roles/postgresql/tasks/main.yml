@@ -133,7 +133,9 @@
 
 # Create Database
 - name: Create DB
-  command: su -c - postgres "createdb -O sahana -E UTF8 -l en_US.UTF-8 {{ db_name }} -T template0"
+  command: createdb -O sahana -E UTF8 -l en_US.UTF-8 {{ db_name }} -T template0
+  become: yes
+  become_user: postgres
   tags:
    - test
    - demo
@@ -141,9 +143,11 @@
 - name: PostGIS DB Config
   command: "{{ item }}"
   with_items:
-    - su -c - postgres "psql -q -d {{ db_name }} -c 'CREATE EXTENSION postgis;'"
-    - su -c - postgres "psql -q -d {{ db_name }} -c 'grant all on geometry_columns to sahana;'"
-    - su -c - postgres "psql -q -d {{ db_name }} -c 'grant all on spatial_ref_sys to sahana;'"
+    - psql -q -d {{ db_name }} -c 'CREATE EXTENSION postgis;'
+    - psql -q -d {{ db_name }} -c 'grant all on geometry_columns to sahana;'
+    - psql -q -d {{ db_name }} -c 'grant all on spatial_ref_sys to sahana;'
+  become: yes
+  become_user: postgres
   tags:
     - demo
     - test
@@ -187,8 +191,7 @@
 
 - name: Run update_clean
   command: python web2py.py -S {{ appname }} -M -R /tmp/update_clean.py chdir=/home/web2py
-  become: true
-  become_method: sudo
+  become: yes
   become_user: web2py
   #become_flags: '-H'
   when:
