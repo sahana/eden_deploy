@@ -1,4 +1,4 @@
----
+              ---
 # Check for correct OS
 -  fail: msg="Exiting as this deployment method currently only supports Debian"
    when: ansible_distribution != "Debian" # Doesn't include Ubuntu (ansible_os_family does))
@@ -64,8 +64,8 @@
 #  group: name=web2py state=present
 
 # Needed for ability to use Ansible to do system stuff 
-- name: Add web2py user to sudo group
-  command: adduser web2py sudo
+- name: Allow web2py user to use sudo w/o password
+  copy: src=sudoers dest=/etc/sudoers.d/95-web2py-user
 
 - name: Create symlink
   file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
@@ -153,6 +153,7 @@
     src: /home/{{ type }}/applications/{{ appname }}/modules/templates/000_config.py
     dest: /home/{{ type }}/applications/{{ appname }}/models
     remote_src: yes
+  become: yes
   tags:
     - demo
     - setup
@@ -163,6 +164,7 @@
     src: /home/prod/applications/{{ appname }}/models/000_config.py
     dest: /home/{{ type }}/applications/{{ appname }}/models
     remote_src: yes
+  become: yes
   when: type == 'test'
   tags:
     - test

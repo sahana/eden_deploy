@@ -12,6 +12,7 @@
   copy:
     src: /tmp/uwsgi-1.9.18.2/uwsgi
     dest: /usr/local/bin/uwsgi
+    mode: 0755
     remote_src: yes
 
 - name: Copy logrotate File

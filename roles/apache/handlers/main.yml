@@ -2,3 +2,5 @@
 - name: Restart Webserver
   command: apache2ctl restart
   become: yes
+  # Needs to be explicit as otherwise inherits from the caller
+  become_user: root
