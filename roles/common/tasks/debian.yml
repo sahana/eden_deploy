@@ -22,6 +22,7 @@
     - p7zip
     - dos2unix
     - curl
+    - at
 
 - name: Install elinks (Debian 9)
   apt: name={{item}} state=latest

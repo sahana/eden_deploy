@@ -39,6 +39,7 @@
   become: yes
   become_user: web2py
   #become_flags: '-H'
+  # Notify doesn't work if we kill the Scheduler task before it can run ;)
   notify: Restart Webserver
   tags:
     - demo
@@ -66,14 +67,20 @@
   command: /etc/init.d/web2py stop
   ignore_errors: True
 
+- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
+  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  ignore_errors: True
+
+# Notify doesn't work if we kill the Scheduler task before it can run ;)
+- name: Start uwsgi
+  service: name=uwsgi-{{type}} state=started
+
+# Note this needs to be last as it kills us ;)
 - name: Stop standalone Scheduler (if deploying from co-app bootstrap)
   #service: name=web2py-scheduler  state=stopped
   #command: /etc/init.d/web2py-scheduler stop
-  shell: kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')
-  ignore_errors: True
-
-- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
-  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  #shell: kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')
+  shell: echo "sleep 10 ; kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')" | at now
   ignore_errors: True
 
 # Shouldn't be required
