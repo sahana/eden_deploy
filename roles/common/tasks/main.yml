@@ -80,6 +80,10 @@
     get_md5:        False
     get_mime:       False
   register: coapp
+  tags:
+    - test
+    - demo
+    - setup
 
 - name: Clone web2py # recursive by default
   git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}} version=cda35fd
