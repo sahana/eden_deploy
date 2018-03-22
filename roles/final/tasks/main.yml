@@ -67,3 +67,10 @@
 - name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
   command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
   ignore_errors: True
+
+# Shouldn't be required but currently is:
+# - to handle cherokee restart
+# - to allow additional deploys
+- name: Reboot
+  command: shutdown -r +1
+  ignore_errors: True

@@ -50,6 +50,7 @@
     - setup
 
 - name: update-rc.d
+  #command: insserv uwsgi-{{ type }}
   command: update-rc.d uwsgi-{{ type }} defaults
   become: yes
   tags:
