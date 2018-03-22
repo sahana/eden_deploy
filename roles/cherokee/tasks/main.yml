@@ -70,10 +70,14 @@
 - name: Copy maintenance.html
   copy: src=maintenance.html dest=/var/www/maintenance.html
 
-- name: Restart Cherokee
-  #service: name=cherokee state=restarted
-  command: /etc/init.d/cherokee restart
+# @ToDo: Starts ok if not yet started, but doesn't restart if was started earlier
+- name: Start Cherokee
+  service: name=cherokee state=restarted
+
+- name: Reload Cherokee
+  command: /etc/init.d/cherokee reload
   become: yes
+  when: type != 'prod'
   tags:
     - test
     - demo

@@ -59,7 +59,7 @@
 #  tags: # or from Prod -> Co-app
 #    - setup
 
-# @ToDo: Import Admin User(s) from Prod -> coapp
+# @ToDo: Import Admin User(s) from Prod -> coapp when coapp.stat.exists == False
 
 - name: Stop Rocket Server (if deploying from co-app bootstrap)
   #service: name=web2py  state=stopped
@@ -72,13 +72,13 @@
 
 # Shouldn't be required but currently is:
 # - to handle cherokee restart
-- name: Reboot
-  command: shutdown -r +1
-  ignore_errors: True
-  become: yes
-  when:
-    - type != 'prod'
-  tags:
-    - demo
-    - test
-    - setup
+#- name: Reboot
+#  command: shutdown -r +1
+#  ignore_errors: True
+#  become: yes
+#  when:
+#    - type != 'prod'
+#  tags:
+#    - demo
+#    - test
+#    - setup
