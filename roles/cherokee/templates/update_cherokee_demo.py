@@ -68,7 +68,7 @@ vserver!#!rule!200!encoder!deflate = allow
 vserver!#!rule!200!encoder!gzip = allow
 vserver!#!rule!200!handler = uwsgi
 vserver!#!rule!200!handler!balancer = round_robin
-vserver!#!rule!200!handler!balancer!source!10 = #
+vserver!#!rule!200!handler!balancer!source!10 =
 vserver!#!rule!200!handler!check_file = 0
 vserver!#!rule!200!handler!error_handler = 1
 vserver!#!rule!200!handler!modifier1 = 0
@@ -89,6 +89,7 @@ source!#!timeout = 1000
 source!#!type = host
 source!#!user = web2py
 """
+
 
 File = open("/etc/cherokee/cherokee.conf", "r")
 file = File.readlines()
