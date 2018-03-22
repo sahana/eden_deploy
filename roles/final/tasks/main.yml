@@ -66,6 +66,12 @@
   command: /etc/init.d/web2py stop
   ignore_errors: True
 
+- name: Stop standalone Scheduler (if deploying from co-app bootstrap)
+  #service: name=web2py-scheduler  state=stopped
+  #command: /etc/init.d/web2py-scheduler stop
+  command: kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')
+  ignore_errors: True
+
 - name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
   command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
   ignore_errors: True
