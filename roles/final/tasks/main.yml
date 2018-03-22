@@ -73,6 +73,8 @@
 - name: Reboot
   command: shutdown -r +1
   ignore_errors: True
+  when:
+    - type != 'prod'
   tags:
     - demo
     - test
