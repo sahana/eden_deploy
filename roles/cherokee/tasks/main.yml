@@ -59,6 +59,7 @@
     - test
     - setup
 
+# @ToDo: Make this idempotent
 - name: Executing update_cherokee
   command: python update_cherokee.py chdir=/tmp/
   become: yes
@@ -70,10 +71,10 @@
 - name: Copy maintenance.html
   copy: src=maintenance.html dest=/var/www/maintenance.html
 
-# @ToDo: Starts ok if not yet started, but doesn't restart if was started earlier
 - name: Start Cherokee
   service: name=cherokee state=restarted
 
+# Starts ok if not yet started, but doesn't restart after stopping. Reload works fine though
 - name: Reload Cherokee
   command: /etc/init.d/cherokee reload
   become: yes
