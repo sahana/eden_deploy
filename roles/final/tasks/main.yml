@@ -71,6 +71,10 @@
 # Shouldn't be required but currently is:
 # - to handle cherokee restart
 # - to allow additional deploys
-- name: Reboot
-  command: shutdown -r +1
-  ignore_errors: True
+#- name: Reboot
+#  command: shutdown -r +1
+#  ignore_errors: True
+#  tags:
+#    - demo
+#    - test
+#    - setup
