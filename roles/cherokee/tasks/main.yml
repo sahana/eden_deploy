@@ -70,7 +70,8 @@
   copy: src=maintenance.html dest=/var/www/maintenance.html
 
 - name: Restart Cherokee
-  service: name=cherokee state=restarted
+  #service: name=cherokee state=restarted
+  command: /etc/init.d/cherokee restart
   become: yes
   tags:
     - test

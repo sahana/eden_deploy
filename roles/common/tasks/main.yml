@@ -297,6 +297,8 @@
 - name: set template_type variable
   set_fact:
     template_type: "{{ template | type_debug }}"
+  tags:
+    - demo
 
 # Coming from Setup module
 - name: Setting Templates (Prod / Demo)
