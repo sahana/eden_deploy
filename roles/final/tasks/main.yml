@@ -59,6 +59,8 @@
 #  tags: # or from Prod -> Co-app
 #    - setup
 
+# @ToDo: Import Admin User(s) from Prod -> coapp
+
 - name: Stop Rocket Server (if deploying from co-app bootstrap)
   #service: name=web2py  state=stopped
   command: /etc/init.d/web2py stop
@@ -73,6 +75,7 @@
 - name: Reboot
   command: shutdown -r +1
   ignore_errors: True
+  become: yes
   when:
     - type != 'prod'
   tags:

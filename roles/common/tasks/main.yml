@@ -8,6 +8,7 @@
     path: "/etc/cloud/cloud.cfg"
     get_attributes: False
     get_checksum:   False
+    # @ToDo: Deprecate when we get to Ansible 2.5.x
     get_md5:        False
     get_mime:       False
   register: cloud_cfg
@@ -70,9 +71,21 @@
 - name: Create symlink
   file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
 
+- name: check if coapp has been installed
+  stat:
+    path: /home/setup/applications/{{ appname }}/models/000_config.py
+    get_attributes: False
+    get_checksum:   False
+    # @ToDo: Deprecate when we get to Ansible 2.5.x
+    get_md5:        False
+    get_mime:       False
+  register: coapp
+
 - name: Clone web2py # recursive by default
   git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}} version=cda35fd
   become: yes
+  when: (type == 'setup' and coapp.stat.exists == False) or 
+        (type != 'setup')
   tags:
     - test
     - demo
@@ -112,6 +125,8 @@
 - name: Copy routes.py
   template: src=routes.py dest=/home/{{ type }}/routes.py
   become: yes
+  when: (type == 'setup' and coapp.stat.exists == False) or 
+        (type != 'setup')
   tags:
     - test
     - demo
@@ -143,6 +158,8 @@
 - name: Clone Eden # recursive by default
   git: repo=git://github.com/sahana/eden.git dest=/home/{{ type }}/applications/{{ appname }}
   become: yes
+  when: (type == 'setup' and coapp.stat.exists == False) or 
+        (type != 'setup')
   tags:
     - test
     - demo
@@ -154,6 +171,8 @@
     dest: /home/{{ type }}/applications/{{ appname }}/models
     remote_src: yes
   become: yes
+  when: (type == 'setup' and coapp.stat.exists == False) or 
+        (type != 'setup')
   tags:
     - demo
     - setup
@@ -226,12 +245,15 @@
 - name: Update crontab
   copy: src=cron dest=/etc/crontab
 
-- stat: path=/home/setup/applications/eden/models/000_config.py
+- stat: path=/home/setup/
   register: setup
   
 - name: Copy read_hmac_key.py
   copy: "src=read_hmac_key.py dest=/tmp/read_hmac_key.py"
-  when: setup.stat.exists == True
+  when: (coapp.stat.exists == True) or
+        (type == 'setup')
+  tags:
+    - setup
 
 - name: Read hmac_key from Setup for Prod
   # Assumes default appname for setup
@@ -241,21 +263,35 @@
   become_user: web2py
   #become_flags: '-H'
   ignore_errors: yes
-  when: setup.stat.exists == True
+  when: coapp.stat.exists == True
+
+- name: Read hmac_key from Prod for Setup
+  # Assumes default appname for prod
+  #command: sudo -H -u web2py python web2py.py -S eden -M -R /tmp/read_hmac_key.py chdir=/home/setup
+  command: python web2py.py -S eden -M -R /tmp/read_hmac_key.py chdir=/home/prod
+  become: yes
+  become_user: web2py
+  #become_flags: '-H'
+  ignore_errors: yes
+  when: (type == 'setup')
+  tags:
+    - setup
 
 - name: Set hmac_key variable
   set_fact:
     hmac_key: "{{ lookup('file', '/tmp/hmac_key') }}"
-  when: setup.stat.exists == True
+  when: (coapp.stat.exists == True) or
+        (type == 'setup')
+  tags:
+    - setup
 
 - name: Generate & set hmac_key variable
   set_fact:
     hmac_key: "{{ lookup('password', '/tmp/hmac_key chars=ascii_letters,digits,.-_,,') }}" # Cannot include : or "
-  when: (type == 'prod' and setup.stat.exists == False) or 
+  when: (type == 'prod' and coapp.stat.exists == False) or 
         (type != 'prod')
   tags:
     - demo
-    - setup
 
 - name: Remove hmac_key file
   file: path=/tmp/hmac_key state=absent
@@ -274,6 +310,8 @@
     - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ hmac_key }}"' }
     - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ protocol }}://{{ sitename }}"' }
     - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
+  when: (type == 'setup' and coapp.stat.exists == False) or 
+        (type != 'setup')
   tags:
     - demo
     - setup
@@ -331,7 +369,7 @@
               line='settings.base.template = "setup"'
               state=present
   when:
-    - type == 'setup'
+    - type == 'setup' and coapp.stat.exists == False
   tags:
     - setup
 
