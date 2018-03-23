@@ -84,8 +84,7 @@
   become: yes
 
 - name: update-rc.d
-  command: insserv uwsgi
-  #command: update-rc.d uwsgi-{{ type }} defaults
+  command: update-rc.d uwsgi-{{ type }} defaults
   become: yes
   tags:
     - test

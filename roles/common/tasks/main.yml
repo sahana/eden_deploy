@@ -9,7 +9,7 @@
     get_attributes: False
     get_checksum:   False
     # @ToDo: Deprecate when we get to Ansible 2.5.x
-    get_md5:        False
+    #get_md5:        False
     get_mime:       False
   register: cloud_cfg
 
@@ -77,7 +77,7 @@
     get_attributes: False
     get_checksum:   False
     # @ToDo: Deprecate when we get to Ansible 2.5.x
-    get_md5:        False
+    #get_md5:        False
     get_mime:       False
   register: coapp
   tags:

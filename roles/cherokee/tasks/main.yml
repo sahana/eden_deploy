@@ -43,7 +43,6 @@
   copy: src=cherokee dest=/etc/init.d/cherokee mode=755
 
 - name: update-rc.d
-  #command: insserv cherokee
   command: update-rc.d cherokee defaults
 
 # @ToDo: Handle SSL
