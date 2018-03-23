@@ -113,7 +113,9 @@
   template: src=pgpass.sql dest=/tmp/pgpass.sql
 
 - name: Create Sahana user & set Password
-  command: su -c - postgres "psql -q -d template1 -f /tmp/pgpass.sql"
+  command: psql -q -d template1 -f /tmp/pgpass.sql
+  become: yes
+  become_user: postgres
 
 - name: Remove pgpass.sql
   file: path=/tmp/pgpass.sql state=absent
