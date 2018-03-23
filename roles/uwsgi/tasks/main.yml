@@ -20,7 +20,14 @@
   copy: src='logrotate' dest='/etc/logrotate.d/uwsgi'
   become: yes
 
-- name: Copy Files
+- name: Create directeory for init support files
+  file:
+    path: /usr/share/uwsgi/init
+    state: directory
+    recurse: yes
+  become: yes
+
+- name: Copy init support files
   copy: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
     - { src: 'do_command', dest: '/usr/share/uwsgi/init/do_command' }
