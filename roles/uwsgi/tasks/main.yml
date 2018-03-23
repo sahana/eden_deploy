@@ -20,45 +20,46 @@
   copy: src='logrotate' dest='/etc/logrotate.d/uwsgi'
   become: yes
 
-- name: Create directeory for init support files
-  file:
-    path: /usr/share/uwsgi/init
-    state: directory
-    recurse: yes
-  become: yes
+#- name: Create directeory for init support files
+#  file:
+#    path: /usr/share/uwsgi/init
+#    state: directory
+#    recurse: yes
+#  become: yes
 
-- name: Copy init files
-  copy: src="{{ item.src }}" dest="{{ item.dest }}"
-  with_items:
-    - { src: 'uwsgi.init.d', dest: '/etc/init.d/uwsgi' }
-    - { src: 'do_command', dest: '/usr/share/uwsgi/init/do_command' }
-    - { src: 'snippets', dest: '/usr/share/uwsgi/init/snippets' }
-    - { src: 'specific_daemon', dest: '/usr/share/uwsgi/init/specific_daemon' }
-  become: yes
+#- name: Copy init files
+#  copy: src="{{ item.src }}" dest="{{ item.dest }}"
+#  with_items:
+#    - { src: 'uwsgi.init.d', dest: '/etc/init.d/uwsgi' }
+#    - { src: 'do_command', dest: '/usr/share/uwsgi/init/do_command' }
+#    - { src: 'snippets', dest: '/usr/share/uwsgi/init/snippets' }
+#    - { src: 'specific_daemon', dest: '/usr/share/uwsgi/init/specific_daemon' }
+#  become: yes
 
-- name: Fix permissions for init.d script
-  #file: path=/etc/init.d/uwsgi-{{ type }} state=file mode=755
-  file: path=/etc/init.d/uwsgi state=file mode=755
-  become: yes
-#  tags:
-#    - test
-#    - demo
-#    - setup
-
-- name: Create directeory for config files
-  file:
-    path: /etc/uwsgi/apps-enabled
-    state: directory
-    recurse: yes
-  become: yes
+#- name: Create directory for config files
+#  file:
+#    path: /etc/uwsgi/apps-enabled
+#    state: directory
+#    recurse: yes
+#  become: yes
 
 - name: Copy Templates
   template: src="{{ item.src }}" dest="{{ item.dest }}"
   with_items:
     - { src: 'scheduler.j2', dest: '/home/{{ type }}/run_scheduler.py' }
-    #- { src: 'uwsgi.ini.j2', dest: '/home/{{ type }}/uwsgi.ini' }
-    - { src: 'uwsgi.ini.j2', dest: '/etc/uwsgi/apps-enabled/{{ type }}.ini' }
+    #- { src: 'uwsgi.ini.j2', dest: '/etc/uwsgi/apps-enabled/{{ type }}.ini' }
+    - { src: 'uwsgi.ini.j2', dest: '/home/{{ type }}/uwsgi.ini' }
     #- { src: 'uwsgi.j2', dest: '/etc/init.d/uwsgi-{{ type }}' }
+    - { src: 'uwsgi-core.init.d.custom.j2', dest: '/etc/init.d/uwsgi-{{ type }}' }
+  become: yes
+  tags:
+    - test
+    - demo
+    - setup
+
+- name: Fix permissions for init.d script
+  file: path=/etc/init.d/uwsgi-{{ type }} state=file mode=755
+  #file: path=/etc/init.d/uwsgi state=file mode=755
   become: yes
   tags:
     - test
@@ -78,9 +79,9 @@
 #    - demo
 #    - setup
 
-#- name: Create log dir
-#  file: path=/var/log/uwsgi state=directory owner=web2py group=web2py
-#  become: yes
+- name: Create log dir
+  file: path=/var/log/uwsgi state=directory owner=web2py group=web2py
+  become: yes
 
 - name: update-rc.d
   command: insserv uwsgi

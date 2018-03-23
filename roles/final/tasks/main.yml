@@ -73,8 +73,8 @@
 
 # Notify doesn't work if we kill the Scheduler task before it can run ;)
 - name: Start uwsgi
-  #service: name=uwsgi-{{type}} state=started
-  service: name=uwsgi state=started
+  service: name=uwsgi-{{type}} state=started
+  #service: name=uwsgi state=started
 
 # Note this needs to be last as it kills us ;)
 - name: Stop standalone Scheduler (if deploying from co-app bootstrap)
