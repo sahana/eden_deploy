@@ -1,13 +1,13 @@
 ---
 - name: Install MySQL
-  apt: name={{ item }} state=latest install_recommends=no
+  apt: name={{ item }} state=present install_recommends=no
   with_items:
     - mysql-server
     - python-mysqldb
     - libmysqlclient-dev
 
 - name: Install phpmyadmin
-  apt: name={{ item }} state=latest install_recommends=no
+  apt: name={{ item }} state=present install_recommends=no
   with_items:
     - php5-cgi
     - php5-mysql

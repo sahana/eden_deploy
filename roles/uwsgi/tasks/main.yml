@@ -14,9 +14,19 @@
     dest: /usr/local/bin/uwsgi
     mode: 0755
     remote_src: yes
+  become: yes
 
 - name: Copy logrotate File
   copy: src='logrotate' dest='/etc/logrotate.d/uwsgi'
+  become: yes
+
+- name: Copy Files
+  copy: src="{{ item.src }}" dest="{{ item.dest }}"
+  with_items:
+    - { src: 'do_command', dest: '/usr/share/uwsgi/init/do_command' }
+    - { src: 'snippets', dest: '/usr/share/uwsgi/init/snippets' }
+    - { src: 'specific_daemon', dest: '/usr/share/uwsgi/init/specific_daemon' }
+  become: yes
 
 - name: Copy Templates
   template: src="{{ item.src }}" dest="{{ item.dest }}"

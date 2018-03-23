@@ -85,8 +85,13 @@
     - demo
     - setup
 
-- name: Clone web2py # recursive by default
-  git: repo=git://github.com/web2py/web2py.git dest=/home/{{ type}} version=cda35fd
+- name: Clone web2py
+  git: # recursive by default
+    repo: git://github.com/web2py/web2py.git
+    dest: /home/{{ type}}
+    version: cda35fd
+    # Don't update unless explicitly desired
+    update: no
   become: yes
   when: (type == 'setup' and coapp.stat.exists == False) or 
         (type != 'setup')
@@ -159,8 +164,13 @@
     - setup
 
 # Eden
-- name: Clone Eden # recursive by default
-  git: repo=git://github.com/sahana/eden.git dest=/home/{{ type }}/applications/{{ appname }}
+- name: Clone Eden
+  git: # recursive by default
+    repo: git://github.com/sahana/eden.git
+    dest: /home/{{ type }}/applications/{{ appname }}
+    #version: cda35fd
+    # Don't update unless explicitly desired
+    update: no
   become: yes
   when: (type == 'setup' and coapp.stat.exists == False) or 
         (type != 'setup')

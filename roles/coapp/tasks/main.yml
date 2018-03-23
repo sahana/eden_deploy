@@ -1,7 +1,7 @@
 ---
 # @ToDo: Split off Debian-specific parts
 - name: Installing Dependencies
-  apt: name={{ item }} state=latest update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
     - python-dateutil
     - python-lxml
@@ -13,8 +13,13 @@
 - name: Create web2py group
   group: name=web2py state=present
 
-- name: Clone Web2py # recursive by default
-  git: repo=git://github.com/web2py/web2py.git dest=/home/setup accept_hostkey=yes version=cda35fd
+- name: Clone Web2py
+  git: # recursive by default
+    repo: git://github.com/web2py/web2py.git
+    dest: /home/setup
+    version: cda35fd
+    # Don't update unless explicitly desired
+    update: no
 
 - name: Configure PyDAL
   command: git submodule update --init --recursive
@@ -24,8 +29,13 @@
 - name: Copy routes.py
   template: src=routes.py.j2 dest=/home/setup/routes.py
 
-- name: Clone Coapp # recursive by default
-  git: repo=git://github.com/sahana/eden dest=/home/setup/applications/{{ appname }} accept_hostkey=yes
+- name: Clone Coapp
+  git: # recursive by default
+    repo: git://github.com/sahana/eden
+    dest: /home/setup/applications/{{ appname }}
+    #version: cda35fd
+    # Don't update unless explicitly desired
+    update: no
 
 - name: Move 000_config.py
   command: cp /home/setup/applications/{{ appname }}/modules/templates/000_config.py /home/setup/applications/{{ appname }}/models

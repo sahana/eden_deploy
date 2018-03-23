@@ -141,10 +141,21 @@
    - test
    - demo
 
-- name: PostGIS DB Config
+- name: Add PostGIS extension to DB
+  command: psql -q -d {{ db_name }} -c 'CREATE EXTENSION postgis;'
+  become: yes
+  become_user: postgres
+  register: psql_result
+  failed_when: >
+    psql_result.rc != 0 and ("already exists" not in psql_result.stderr)
+  changed_when: "psql_result.rc == 0"
+  tags:
+    - demo
+    - test
+
+- name: PostGIS Permissions
   command: "{{ item }}"
   with_items:
-    - psql -q -d {{ db_name }} -c 'CREATE EXTENSION postgis;'
     - psql -q -d {{ db_name }} -c 'grant all on geometry_columns to sahana;'
     - psql -q -d {{ db_name }} -c 'grant all on spatial_ref_sys to sahana;'
   become: yes
@@ -190,6 +201,16 @@
   tags:
     - test
 
+- name: Allow web2py to modify clean script
+  file: 
+    path: /usr/local/bin/clean
+    owner: web2py
+  become: yes
+  when:
+    - type == 'test'
+  tags:
+    - test
+
 - name: Run update_clean
   command: python web2py.py -S {{ appname }} -M -R /tmp/update_clean.py chdir=/home/web2py
   become: yes
@@ -199,3 +220,14 @@
     - type == 'test'
   tags:
     - test
+
+- name: Disallow web2py to modify clean script
+  file: 
+    path: /usr/local/bin/clean
+    owner: root
+  become: yes
+  when:
+    - type == 'test'
+  tags:
+    - test
+

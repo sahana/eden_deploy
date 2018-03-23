@@ -1,7 +1,7 @@
 ---
 # @ToDo: Split-off Debian-specific parts
 - name: Install dependencies
-  apt: name={{ item }} state=latest update_cache=yes
+  apt: name={{ item }} state=present update_cache=yes
   with_items:
     - build-essential
     - autoconf
@@ -11,7 +11,7 @@
     - rrdtool
 
 - name: Install libtool-bin (Debian 8 or 9)
-  apt: name=libtool-bin state=latest
+  apt: name=libtool-bin state=present
   when: ansible_distribution_major_version != '7'
 
 #- name: Clone Repo

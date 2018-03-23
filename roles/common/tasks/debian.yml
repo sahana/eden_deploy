@@ -7,8 +7,9 @@
     - ansible_distribution_major_version != "9"
 
 # Install Admin Tools
+# state=present not state=latest as we don't want to upgrade accidentally
 - name: Install Admin Tools
-  apt: name={{item}} state=latest update_cache=yes # update-cache=yes is the equivalent of apt-get update
+  apt: name={{item}} state=present update_cache=yes # update-cache=yes is the equivalent of apt-get update
   with_items:
     - unzip
     - psmisc
@@ -25,23 +26,23 @@
     - at
 
 - name: Install elinks (Debian 9)
-  apt: name={{item}} state=latest
+  apt: name={{item}} state=present
   when: ansible_distribution_major_version == '9'
   with_items:
     - elinks
     - net-tools
 
 - name: Install elinks (Debian 7 or 8)
-  apt: name=elinks-lite state=latest
+  apt: name=elinks-lite state=present
   when: ansible_distribution_major_version != '9'
 
 # Git
 - name: Install git
-  apt: name=git-core state=latest
+  apt: name=git-core state=present
 
 # Email
 - name: Install Exim4
-  apt: name={{item}} state=latest
+  apt: name={{item}} state=present
   with_items:
     - exim4-config
     - exim4-daemon-light
@@ -51,18 +52,18 @@
 
 # Install Libraries
 - name: Install libodbc1 # Needed for Web2Py
-  apt: name=libodbc1 state=latest
+  apt: name=libodbc1 state=present
 
 - name: Install libgeos (Debian 9)
-  apt: name=libgeos-c1v5 state=latest
+  apt: name=libgeos-c1v5 state=present
   when: ansible_distribution_major_version == '9'
 
 - name: Install libgeos (Debian 7 or 8)
-  apt: name=libgeos-c1 state=latest
+  apt: name=libgeos-c1 state=present
   when: ansible_distribution_major_version != '9'
 
 - name: Install python libs
-  apt: name={{item}} state=latest
+  apt: name={{item}} state=present
   with_items:
     - python-dev
     - python-dateutil
