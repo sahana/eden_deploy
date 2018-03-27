@@ -84,7 +84,7 @@
   become: yes
 
 - name: update-rc.d
-  command: update-rc.d uwsgi-{{ type }} defaults
+  command: update-rc.d -f uwsgi-{{ type }} {{ (start == True) | ternary("defaults", "disabled") }}
   become: yes
   tags:
     - test
