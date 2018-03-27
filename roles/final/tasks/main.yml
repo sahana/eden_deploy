@@ -76,12 +76,12 @@
   service: name=uwsgi-{{type}} state=started
   #service: name=uwsgi state=started
 
-# Note this needs to be last as it kills us ;)
+# Note this needs to actually run after last task as it kills us ;)
 - name: Stop standalone Scheduler (if deploying from co-app bootstrap)
   #service: name=web2py-scheduler  state=stopped
   #command: /etc/init.d/web2py-scheduler stop
   #shell: kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')
-  shell: echo "sleep 10 ; kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')" | at now
+  shell: sleep 10 ; kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}') | at now
   ignore_errors: True
 
 # Shouldn't be required
