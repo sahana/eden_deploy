@@ -83,9 +83,27 @@
   file: path=/var/log/uwsgi state=directory owner=web2py group=web2py
   become: yes
 
+# @ToDo: Make these accessible to modify the setting post-deployment
 - name: update-rc.d
-  command: update-rc.d -f uwsgi-{{ type }} {{ (start == True) | ternary("defaults", "disabled") }}
+  command: update-rc.d uwsgi-{{ type }} {{item}}
   become: yes
+  with_items:
+    - remove
+    - defaults
+  tags:
+    - test
+    - demo
+    - setup
+
+- name: update-rc.d
+  command: update-rc.d uwsgi-{{ type }} {{item}}
+  become: yes
+  when: start != True
+  with_items:
+  - disable 2
+  - disable 3
+  - disable 4
+  - disable 5
   tags:
     - test
     - demo
