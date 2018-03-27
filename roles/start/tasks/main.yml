@@ -1,0 +1,15 @@
+---
+- name: Start instance
+  service: name=uwsgi-{{type}} state=restarted
+  #command: service uwsgi restart {{type}}
+  become: yes
+  when: web_server == "cherokee"
+
+- name: Enable VirtualHost
+  command: a2ensite {{type}}
+  when: web_server == "apache"
+
+- name: Restart Webserver
+  command: apache2ctl restart
+  become: yes
+  when: web_server == "apache"

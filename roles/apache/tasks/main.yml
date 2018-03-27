@@ -33,14 +33,14 @@
 - name: Remove sites-enabled/000-default
   file: path=/etc/apache2/sites-enabled/000-default state=absent
 
-- name: Copy production and maintenance configs
+- name: Copy prod and maintenance configs
   template: src={{ item }} dest=/etc/apache2/sites-available/{{ item }}
   with_items:
-    - production
+    - prod
     - maintenance
 
 - name: Launch Scheduler from rc.local
   lineinfile: "dest=/etc/rc.local insertbefore='exit 0' line='cd /home/web2py && python web2py.py -K eden -Q >/dev/null 2>&1 &'"
 
-- name: Enable production VirtualHost
-  command: a2ensite production
+- name: Enable VirtualHost
+  command: a2ensite {{type}}
