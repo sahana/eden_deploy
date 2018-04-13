@@ -17,5 +17,5 @@
     sitename: # <siteurl>
     template: # <template_name>
     web_server: # cherokee - TODO: Apache
-    eden_ip: # <host_ip>
+    #eden_ip: # <host_ip>
 

@@ -39,5 +39,3 @@ The Ansible Playbooks use some variables to deploy Eden. Descriptions of these v
 | sitename       | URL you want to access Eden from |
 | web_server     | Only "cherokee" allowed for now. TODO: Apache |
 | template       | Eden template to use |
-| eden_ip        | IP of the server hosting Eden |
-

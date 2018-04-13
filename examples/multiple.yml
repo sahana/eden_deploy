@@ -30,7 +30,7 @@
   - cherokee
   #sudo: true
   vars:
-      eden_ip: # the one mentioned above
+      #eden_ip: # the one mentioned above
       type: # prod/test/demo
 
 

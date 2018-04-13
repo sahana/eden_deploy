@@ -35,16 +35,17 @@ cat << EOF > "deploy.yml"
   become_user: root
 
   vars:
+    appname: 'eden'
+    db_ip: '127.0.0.1'
+    db_type: 'postgresql'
     hostname: '$privDNS'
     password: '$password'
-    template: '$template'
-    sitename: '$pubDNS'
     protocol: 'http'
+    sitename: '$pubDNS'
+    template: '$template'
     type: 'prod'
-    appname: 'eden'
+    start: True
     web_server: 'cherokee'
-    db_type: 'postgresql'
-    db_ip: '127.0.0.1'
 
   roles:
     - swap
