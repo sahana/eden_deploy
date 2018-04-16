@@ -48,6 +48,12 @@
 
 # @ToDo: Handle Manual SSL certificates
 #        (currently we only handle Let's Encrypt free/automatic DV certificates)
+- name: Creating SSL symlinks
+  file: src=/etc/letsencrypt/live/{{ sitename }}/{{ item }}.pem dest=/etc/cherokee/{{ item }}.pem state=link
+  with_items:
+    - fullchain
+    - privkey
+
 - name: Copying cherokee.conf
   template: src=cherokee.conf dest=/etc/cherokee/cherokee.conf
 

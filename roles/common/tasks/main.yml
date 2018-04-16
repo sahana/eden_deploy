@@ -422,12 +422,13 @@
   ignore_errors: True
   when: coapp.stat.exists == True
 
+# NB Use --staging when developing
 - name: Use Certbot to request an SSL certificate (Prod)
-  command: certbot certonly -n --agree-tos --email webmaster@{{ sitename }} --staging --standalone -d {{ sitename }}
+  command: certbot certonly -n --agree-tos --email webmaster@{{ sitename }} --standalone -d {{ sitename }}
 
 - name: Use Certbot to request an SSL certificate (post-Prod)
   # We can use the production site's webserver configuration to allow validation
-  command: certonly -n --staging --expand --webroot -w /var/www -d {{ all_sites }}
+  command: certbot certonly -n --expand --webroot -w /var/www -d {{ all_sites }}
   when: type != 'prod'
   tags:
     - test
