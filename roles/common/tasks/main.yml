@@ -423,7 +423,7 @@
   when: coapp.stat.exists == True
 
 - name: Use Certbot to request an SSL certificate (Prod)
-  command: certbot certonly -n --agree-tos --staging --standalone -d {{ sitename }}
+  command: certbot certonly -n --agree-tos --email webmaster@{{ sitename }} --staging --standalone -d {{ sitename }}
 
 - name: Use Certbot to request an SSL certificate (post-Prod)
   # We can use the production site's webserver configuration to allow validation
