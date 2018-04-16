@@ -1,10 +1,9 @@
 ---
-- name: Create repo file
-  file: path=/etc/apt/sources.list.d/pgdg.list state=touch
+- name: Add PostgreSQL repo
+  apt_repository:
+    repo: deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main
+    state: present
 
-- name: Add repo url
-  lineinfile: dest=/etc/apt/sources.list.d/pgdg.list line="deb http://apt.postgresql.org/pub/repos/apt/ {{ ansible_distribution_release }}-pgdg main"
-  
 - name: Add key
   apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
 

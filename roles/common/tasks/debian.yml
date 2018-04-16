@@ -6,6 +6,13 @@
     - ansible_distribution_major_version != "8"
     - ansible_distribution_major_version != "9"
 
+# Add Backports repo (for Certbot)
+- name: Add Backports repo (Debian 8 or 9)
+  apt_repository:
+    repo: deb http://ftp.debian.org/debian {{ ansible_distribution_release }}-backports main
+    state: present
+  when: ansible_distribution_major_version != '7'
+
 # Install Admin Tools
 # state=present not state=latest as we don't want to upgrade accidentally
 - name: Install Admin Tools
@@ -25,6 +32,24 @@
     - curl
     - at
 
+# Certbot
+- name: Install Certbot (Debian 7)
+  # https://certbot.eff.org/lets-encrypt/debianwheezy-other
+  get_url:
+    url: https://dl.eff.org/certbot-auto
+    dest: /usr/local/bin/certbot
+    mode: 0775
+  when: ansible_distribution_major_version == '7'
+
+- name: Schedule Certificate renewals (Debian 7)
+  copy: src=cron_certbot_renew dest=/etc/cron.d/certbot
+  when: ansible_distribution_major_version == '7'
+
+- name: Install Certbot (Debian 8 or 9)
+  apt: name=certbot state=present default_release={{ ansible_distribution_release }}-backports
+  when: ansible_distribution_major_version != '7'
+
+# Elinks
 - name: Install elinks (Debian 9)
   apt: name={{item}} state=present
   when: ansible_distribution_major_version == '9'

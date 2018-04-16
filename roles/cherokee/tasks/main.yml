@@ -8,6 +8,7 @@
     - automake
     - libtool
     - gettext
+    - libssl-dev
     - rrdtool
 
 - name: Install libtool-bin (Debian 8 or 9)
@@ -45,10 +46,13 @@
 - name: update-rc.d
   command: update-rc.d cherokee defaults
 
-# @ToDo: Handle SSL
+# @ToDo: Handle Manual SSL certificates
+#        (currently we only handle Let's Encrypt free/automatic DV certificates)
 - name: Copying cherokee.conf
   template: src=cherokee.conf dest=/etc/cherokee/cherokee.conf
 
+# Includes redirection of http:// to https://
+# http://cherokee-project.com/doc/cookbook_http_to_https.html
 - name: Copying update_cherokee.py
   template: src=update_cherokee_{{ type }}.py dest=/tmp/update_cherokee.py
   # File may exist already & be owned by root
@@ -70,6 +74,7 @@
 - name: Copy maintenance.html
   copy: src=maintenance.html dest=/var/www/maintenance.html
 
+# Prod
 - name: Start Cherokee
   service: name=cherokee state=restarted
 

@@ -62,15 +62,6 @@
 
 # @ToDo: Import Admin User(s) from Prod -> coapp when coapp.stat.exists == False
 
-- name: Stop Rocket Server (if deploying from co-app bootstrap)
-  #service: name=web2py  state=stopped
-  command: /etc/init.d/web2py stop
-  ignore_errors: True
-
-- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
-  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
-  ignore_errors: True
-
 # Notify doesn't work if we kill the Scheduler task before it can run ;)
 - name: Start uwsgi
   service: name=uwsgi-{{type}} state=started
@@ -83,6 +74,7 @@
   #shell: kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')
   shell: sleep 10 ; kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}') | at now
   ignore_errors: True
+  when: coapp.stat.exists == True
 
 # Shouldn't be required
 #- name: Reboot

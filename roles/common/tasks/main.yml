@@ -256,8 +256,8 @@
 - name: Create symlink (eden in home)
   file: src=/home/{{ type }}/applications/{{ appname }} dest=/root/eden state=link
 
-- name: Update crontab
-  copy: src=cron dest=/etc/crontab
+- name: Schedule Backups
+  copy: src=cron_backup dest=/etc/cron.d/sahana
 
 - stat: path=/home/setup/
   register: setup
@@ -404,3 +404,32 @@
     - { src: 'pull', dest: '/usr/local/bin/pull' }
     - { src: 'revert', dest: '/usr/local/bin/revert' }
     - { src: 'w2p', dest: '/usr/local/bin/w2p' }
+
+# SSL certificate
+# - currently we just support the free/automatic DV certificates from Let's Encrypt
+# NB Not using the Ansible module, as this seems overly complex:
+# http://docs.ansible.com/ansible/latest/modules/letsencrypt_module.html
+# @ToDo: Support manually-provided certificates, e.g. to use OV/EV certificates
+
+- name: Stop Rocket Server (if deploying from co-app bootstrap)
+  #service: name=web2py  state=stopped
+  command: /etc/init.d/web2py stop
+  ignore_errors: True
+  when: coapp.stat.exists == True
+
+- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
+  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  ignore_errors: True
+  when: coapp.stat.exists == True
+
+- name: Use Certbot to request an SSL certificate (Prod)
+  command: certbot certonly -n --agree-tos --staging --standalone -d {{ sitename }}
+
+- name: Use Certbot to request an SSL certificate (post-Prod)
+  # We can use the production site's webserver configuration to allow validation
+  command: certonly -n --staging --expand --webroot -w /var/www -d {{ all_sites }}
+  when: type != 'prod'
+  tags:
+    - test
+    - demo
+    - setup
