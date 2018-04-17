@@ -234,6 +234,7 @@
 
 - name: Fix permissions
   file: path=/home/web2py state=directory owner=web2py
+  become: yes
   when: type == 'prod'
 
 - name: Fix permissions
@@ -255,9 +256,11 @@
 
 - name: Create symlink (eden in home)
   file: src=/home/{{ type }}/applications/{{ appname }} dest=/root/eden state=link
+  become: yes
 
 - name: Schedule Backups
   copy: src=cron_backup dest=/etc/cron.d/sahana
+  become: yes
 
 - stat: path=/home/setup/
   register: setup
@@ -324,6 +327,7 @@
     - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ hmac_key }}"' }
     - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ protocol }}://{{ sitename }}"' }
     - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
+  become: yes
   when: (type == 'setup' and coapp.stat.exists == False) or 
         (type != 'setup')
   tags:
@@ -336,6 +340,7 @@
               backrefs=yes
               line='settings.base.prepopulate_demo = 0'
               state=present
+  become: yes
   tags:
     - setup
     
@@ -359,6 +364,7 @@
               backrefs=yes
               line='settings.base.template = ["{{ template | join('", "') }}"]'
               state=present
+  become: yes
   when:
     - template_type == 'list'
   tags:
@@ -371,6 +377,7 @@
               backrefs=yes
               line='settings.base.template = "{{ template }}"'
               state=present
+  become: yes
   when:
     - template_type == 'AnsibleUnicode'
   tags:
@@ -382,6 +389,7 @@
               backrefs=yes
               line='settings.base.template = "setup"'
               state=present
+  become: yes
   when:
     - type == 'setup' and coapp.stat.exists == False
   tags:
@@ -393,12 +401,14 @@
               backrefs=yes
               line='settings.mail.sender = "<{{ sender }}>"'
               state=present
+  become: yes
   when: not((sender is undefined) or (sender is none) or (sender|trim == ''))
 
 # NB These are all designed for a single-host setup
 # @ToDo: Replace with Ansible methods which are multi-host aware
 - name: Copy management scripts
   copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
+  become: yes
   with_items:
     - { src: 'compile', dest: '/usr/local/bin/compile' }
     - { src: 'pull', dest: '/usr/local/bin/pull' }
@@ -414,21 +424,25 @@
 - name: Stop Rocket Server (if deploying from co-app bootstrap)
   #service: name=web2py  state=stopped
   command: /etc/init.d/web2py stop
+  become: yes
   ignore_errors: True
   when: coapp.stat.exists == True
 
 - name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
   command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  become: yes
   ignore_errors: True
   when: coapp.stat.exists == True
 
 # NB Use --staging when developing
 - name: Use Certbot to request an SSL certificate (Prod)
   command: certbot certonly -n --agree-tos --email webmaster@{{ sitename }} --standalone -d {{ sitename }}
+  become: yes
 
 - name: Use Certbot to request an SSL certificate (post-Prod)
   # We can use the production site's webserver configuration to allow validation
   command: certbot certonly -n --expand --webroot -w /var/www -d {{ all_sites }}
+  become: yes
   when: type != 'prod'
   tags:
     - test
