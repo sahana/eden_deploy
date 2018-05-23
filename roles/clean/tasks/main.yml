@@ -1,0 +1,11 @@
+---
+- name: Run clean script
+  command: clean {{ type }}
+  ignore_errors: yes
+  when:
+    - type != 'prod'
+    - db_type == 'postgresql' # MySQL clean script not yet multi-instance
+  become: yes
+  tags:
+    - demo
+    - test
