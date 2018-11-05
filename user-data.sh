@@ -5,10 +5,10 @@ exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 apt-get update
 
 # Install git
-apt-get install git-core
+apt-get install git -y
 
 # Install ansible dependencies
-apt-get install python-pip python-dev git -y
+apt-get install python-pip python-dev -y
 pip install PyYAML jinja2 paramiko
 
 # Install Ansible
