@@ -27,7 +27,7 @@ PIDFILE=$PIDDIR/$NAME.pid
 SCRIPTNAME=/etc/init.d/$NAME
 DAEMON=/usr/bin/python
 DAEMON_DIR=/home/setup
-DAEMON_ARGS="web2py.py --password=<recycle> --pid_filename=$PIDFILE -i 0.0.0.0"
+DAEMON_ARGS="web2py.py --password=<recycle> --pid_filename=$PIDFILE -i 0.0.0.0 -p 80"
 DAEMON_USER=web2py
 
 # Exit if the package is not installed

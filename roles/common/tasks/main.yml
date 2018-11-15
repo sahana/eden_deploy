@@ -13,20 +13,8 @@
     get_mime:       False
   register: cloud_cfg
 
-- name: Disable update_etc_hosts
-  lineinfile: dest=/etc/cloud/cloud.cfg
-              regexp="^ - update_etc_hosts"
-              insertafter="^ - update_etc_hosts"
-              line="# - update_etc_hosts"
-              state=present
-  when: cloud_cfg.stat.exists
-
-- name: Disable update_hostname
-  lineinfile: dest=/etc/cloud/cloud.cfg
-              regexp="^ - update_hostname"
-              insertafter="^ - update_hostname"
-              line="# - update_hostname"
-              state=present
+# Run Amazon EC2-specific tasks
+- import_tasks: ec2.yml
   when: cloud_cfg.stat.exists
 
 - name: Update hostname file
@@ -433,11 +421,11 @@
   ignore_errors: True
   when: coapp.stat.exists == True
 
-- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
-  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
-  become: yes
-  ignore_errors: True
-  when: coapp.stat.exists == True
+#- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
+#  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+#  become: yes
+#  ignore_errors: True
+#  when: coapp.stat.exists == True
 
 # NB Use --staging when developing
 - name: Use Certbot to request an SSL certificate (Prod)
