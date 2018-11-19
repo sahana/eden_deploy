@@ -22,7 +22,9 @@
     # 2.16.1
     #version: 7035398
     # 2.17.1
-    version: 285013a
+    #version: 285013a
+    # 2.17.2
+    version: 95709e5
     # Don't update unless explicitly desired
     update: no
 

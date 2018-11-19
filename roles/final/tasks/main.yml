@@ -72,7 +72,8 @@
   #service: name=web2py-scheduler  state=stopped
   #command: /etc/init.d/web2py-scheduler stop
   #shell: kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')
-  shell: sleep 10 ; kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}') | at now
+  #shell: sleep 10 ; kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}') | at now
+  shell: sleep 10 ; pkill -f python | at now
   become: yes
   ignore_errors: True
   when: coapp.stat.exists == True
