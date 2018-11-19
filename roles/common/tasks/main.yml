@@ -421,11 +421,11 @@
   ignore_errors: True
   when: coapp.stat.exists == True
 
-#- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
-#  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
-#  become: yes
-#  ignore_errors: True
-#  when: coapp.stat.exists == True
+- name: Remove port 80 redirection rule (if deploying from co-app bootstrap)
+  command: iptables -t nat -D PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 8000
+  become: yes
+  ignore_errors: True
+  when: coapp.stat.exists == True
 
 # NB Use --staging when developing
 - name: Use Certbot to request an SSL certificate (Prod)
