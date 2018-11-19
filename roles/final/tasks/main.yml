@@ -73,7 +73,7 @@
   #command: /etc/init.d/web2py-scheduler stop
   #shell: kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}')
   #shell: sleep 10 ; kill $(ps aux | grep '[p]ython web2py.py' | awk '{print $2}') | at now
-  shell: pkill -f python | at now
+  shell: echo "pkill -f python" | at now + 1 minutes
   become: yes
   ignore_errors: True
   when: coapp.stat.exists == True
