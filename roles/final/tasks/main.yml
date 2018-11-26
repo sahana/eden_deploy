@@ -34,7 +34,6 @@
     - setup
 
 - name: Compile
-  #command: sudo -H -u web2py python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
   command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
   become: yes
   become_user: web2py
