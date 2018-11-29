@@ -93,3 +93,8 @@
     - test
     - demo
     - setup
+
+# Modify certbot crontab to add pre-hook & post-hook to ensure that WebServer is restarted when certificate is renewed
+# NB Using the hook directories would be less invasive, however these aren't available in the 0.10.x version of certbot that we use
+- name: Copy init.d script
+  copy: src=cron_certbot_renew dest=/etc/cron.d/certbot mode=644
