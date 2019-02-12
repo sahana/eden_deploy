@@ -35,6 +35,9 @@
    when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 # Python Libraries, where we need a more recent version than that provided by the OS
+- name: Install GeoPy
+  pip: name=geopy
+
 - name: Install Reportlab # Want Percentage support
   pip: name=reportlab
 
