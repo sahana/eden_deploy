@@ -1,0 +1,13 @@
+--- _compat.py	Fri Mar 08 12:11:50 2019
++++ _compat_new.py	Fri Mar 08 12:02:43 2019
+@@ -26,8 +26,9 @@
+     from email.MIMEMultipart import MIMEMultipart
+     from email.MIMEText import MIMEText
+     from email.Charset import add_charset, QP as charset_QP
+-    from urllib import FancyURLopener, urlencode, urlopen
++    from urllib import FancyURLopener, urlencode
+     from urllib import quote as urllib_quote, unquote as urllib_unquote, quote_plus as urllib_quote_plus
++    from urllib2 import urlopen
+     from string import maketrans
+     from types import ClassType
+     import cgi
