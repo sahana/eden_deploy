@@ -26,7 +26,7 @@
               line='autovacuum = on'
               state=present
 
-# 6 for Prod/Demo/Test (4 workers + mule)
+# 6 for Prod (4 workers + mule)
 # 4 each for Demo/Test/Setup (2 workers + mule)
 # superuser reserved connections
 - name: Set max_connections
