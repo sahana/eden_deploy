@@ -121,19 +121,18 @@
     - setup
 
 # https://github.com/web2py/pydal/pull/564
-- name: Copy _compat.patch
-  copy: src=_compat.patch dest=/home/{{ type }}/gluon/packages/dal/pydal/_compat.patch
-  become: yes
-  tags:
-    - test
-    - demo
-    - setup
+#- name: Copy _compat.patch
+#  copy: src=_compat.patch dest=/home/{{ type }}/gluon/packages/dal/pydal/_compat.patch
+#  become: yes
+#  tags:
+#    - test
+#    - demo
+#    - setup
 
 - name: Patch PyDAL in 2.18.3
-  command: patch -p0 < _compat.patch
-  args:
-    chdir: /home/{{ type }}/gluon/packages/dal/pydal
-  become: yes
+  patch:
+    src: _compat.patch
+    basedir: home/setup/gluon/packages/dal/pydal
   tags:
     - test
     - demo

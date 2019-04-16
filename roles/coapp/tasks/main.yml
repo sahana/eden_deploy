@@ -38,14 +38,14 @@
     chdir: /home/setup
   
 # https://github.com/web2py/pydal/pull/564
-- name: Copy _compat.patch
-  copy: src=_compat.patch dest=/home/setup/gluon/packages/dal/pydal/_compat.patch
-  become: yes
+#- name: Copy _compat.patch
+#  copy: src=_compat.patch dest=/home/setup/gluon/packages/dal/pydal/_compat.patch
+#  become: yes
 
 - name: Patch PyDAL in 2.18.3
-  command: patch -p0 < _compat.patch
-  args:
-    chdir: /home/setup/gluon/packages/dal/pydal
+  patch:
+    src: _compat.patch
+    basedir: home/setup/gluon/packages/dal/pydal
   become: yes
 
 - name: Copy routes.py
