@@ -37,7 +37,7 @@
   
 # https://github.com/web2py/pydal/pull/564
 - name: Copy _compat.patch
-  template: src=_compat.patch dest=/home/setup/packages/dal/pydal/_compat.patch
+  copy: src=_compat.patch dest=/home/setup/packages/dal/pydal/_compat.patch
   become: yes
 
 - name: Patch PyDAL in 2.18.3
