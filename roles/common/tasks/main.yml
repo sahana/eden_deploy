@@ -132,7 +132,7 @@
 - name: Patch PyDAL in 2.18.3
   patch:
     src: _compat.patch
-    basedir: home/setup/gluon/packages/dal/pydal
+    basedir: /home/setup/gluon/packages/dal/pydal
   tags:
     - test
     - demo
