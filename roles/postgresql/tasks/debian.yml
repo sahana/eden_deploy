@@ -10,11 +10,11 @@
     #update_cache: yes
 
 - name: Install dependencies and package
-  apt: name={{ item }} state=present
-  with_items:
-    - postgresql-9.6
-    - python-psycopg2
-    - postgresql-9.6-postgis-2.3
-    - ptop
-    - pgtop
-
+  apt:
+    name: ['postgresql-9.6',
+           'python-psycopg2',
+           'postgresql-9.6-postgis-2.3',
+           'ptop',
+           'pgtop',
+           ]
+    state: present

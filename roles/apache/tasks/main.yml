@@ -1,9 +1,11 @@
 ---
+# @ToDo: Split-off Debian-specific parts
 - name: Install apache
-  apt: name={{ item }} state=present
-  with_items:
-    - libapache2-mod-wsgi
-    - apache2.2-common
+  apt:
+    name: ['libapache2-mod-wsgi',
+           'apache2.2-common',
+           ]
+    state: present
 
 - name: a2enmod
   command: "a2enmod {{ item }}"

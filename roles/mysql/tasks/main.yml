@@ -1,18 +1,23 @@
 ---
+# @ToDo: Split-off Debian-specific parts
 - name: Install MySQL
-  apt: name={{ item }} state=present install_recommends=no
-  with_items:
-    - mysql-server
-    - python-mysqldb
-    - libmysqlclient-dev
+  apt:
+    name: ['mysql-server',
+           'python-mysqldb',
+           'libmysqlclient-dev',
+           ]
+    state: present
+    install_recommends: no
 
 - name: Install phpmyadmin
-  apt: name={{ item }} state=present install_recommends=no
-  with_items:
-    - php5-cgi
-    - php5-mysql
-    - phpmyadmin
-    - mytop
+  apt:
+    name: ['php5-cgi',
+           'php5-mysql',
+           'phpmyadmin',
+           'mytop',
+           ]
+    state: present
+    install_recommends: no
 
 - name: Create symbolic link
   file: path=/usr/share/phpmyadmin dest=/var/www/phpmyadmin

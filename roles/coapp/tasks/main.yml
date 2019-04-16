@@ -1,11 +1,13 @@
 ---
 # @ToDo: Split off Debian-specific parts
 - name: Installing Dependencies
-  apt: name={{ item }} state=present update_cache=yes
-  with_items:
-    - python-dateutil
-    - python-lxml
-    - libodbc1 # Needed for Web2Py
+  apt:
+    name: ['python-dateutil',
+           'python-lxml',
+           'libodbc1', # Needed for Web2Py
+           ]
+    state: present
+    update_cache: yes # update-cache=yes is the equivalent of apt-get update
 
 - name: Create web2py user
   command: adduser --system --disabled-password web2py
