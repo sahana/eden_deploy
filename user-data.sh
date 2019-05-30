@@ -12,7 +12,7 @@ apt-get install python-pip python-dev -y
 pip install PyYAML jinja2 paramiko
 
 # Install Ansible
-pip install ansible
+pip install ansible==2.7.11
 
 # Clone Ansible Playbooks
 git clone https://github.com/sahana/eden_deploy
