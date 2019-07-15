@@ -66,7 +66,7 @@ cd /home/$INSTANCE
 python web2py.py -S eden -M -R applications/eden/static/scripts/tools/compile.py
 /etc/init.d/uwsgi-$INSTANCE start
 # Post-pop
-#if [[ "$1" = "test"]]; then
+#if [[ "$1" = "test" ]]; then
 #    echo >&2 "pass"
 #else
 #    cd /home/$INSTANCE
