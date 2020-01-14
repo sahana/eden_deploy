@@ -59,9 +59,6 @@
 - name: Allow web2py user to use sudo w/o password
   copy: src=sudoers dest=/etc/sudoers.d/95-web2py-user
 
-- name: Create symlink
-  file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
-
 - name: check if coapp has been installed
   stat:
     path: /home/setup/applications/{{ appname }}/models/000_config.py
@@ -189,6 +186,15 @@
 
 # - name: Edit matplotlibrc
 #   lineinfile: dest=/etc/matplotlibrc state=present backref=yes regexp='backend      : TkAgg' line='backend      : Agg'
+
+- name: Remove old web2py folder
+  file:
+    src: /home/web2py
+    state: absent
+
+- name: Create symlink
+  #file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
+  file: src=/home/prod dest=/home/web2py state=link owner=web2py group=web2py
 
 - name: Create symlink
   file: src=/home/{{ type }} dest=/root/{{ type }} state=link
