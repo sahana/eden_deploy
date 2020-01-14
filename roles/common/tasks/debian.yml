@@ -104,7 +104,7 @@
            'python3-lxml',
            'python3-setuptools',
            'python3-serial',
-           'python3-imaging',
+           'python3-pil',
            #'python3-reportlab', # Now using PIP version for Percentage support
            #'python3-matplotlib', # Only used by deprecated survey module
            'python3-requests',
