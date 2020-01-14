@@ -57,13 +57,14 @@
     replace: 'if getattr(func, ''validate'', None) is not Validator.validate:'
   become: yes
 
-- name: Patch PyDAL in 2.18.5 (MySQL)
-  replace:
-    path: /home/setup/gluon/packages/dal/pydal/adapters/mysql.py
-    regexp: '\[''password''\]'
-    replace: '[''passwd'']'
-  when: db_type == 'mysql'
-  become: yes
+# No Database selected for co-app
+#- name: Patch PyDAL in 2.18.5 (MySQL)
+#  replace:
+#    path: /home/setup/gluon/packages/dal/pydal/adapters/mysql.py
+#    regexp: '\[''password''\]'
+#    replace: '[''passwd'']'
+#  when: db_type == 'mysql'
+#  become: yes
 
 - name: Copy routes.py
   template: src=routes.py.j2 dest=/home/setup/routes.py
