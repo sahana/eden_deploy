@@ -1,7 +1,7 @@
 server {
     listen      80;
     server_name {{ sitename }};
-    return 301 https://\$server_name\$request_uri;
+    return 301 https://$server_name$request_uri;
 }
 server {
     listen          443 ssl;
@@ -47,8 +47,8 @@ server {
         uwsgi_pass      127.0.0.1:59028;
 {% endif %}
         include         /etc/nginx/uwsgi_params;
-        uwsgi_param     UWSGI_SCHEME \$scheme;
-        uwsgi_param     SERVER_SOFTWARE    nginx/\$nginx_version;
+        uwsgi_param     UWSGI_SCHEME $scheme;
+        uwsgi_param     SERVER_SOFTWARE    nginx/$nginx_version;
         ### remove the comments if you use uploads (max 10 MB)
         client_max_body_size 10m;
         ###

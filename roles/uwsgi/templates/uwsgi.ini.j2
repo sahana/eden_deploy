@@ -1,6 +1,6 @@
 [uwsgi]
-;uid = web2py
-;gid = web2py
+uid = web2py
+gid = web2py
 chdir = /home/{{ type }}/
 module = wsgihandler
 mule = run_scheduler.py
@@ -20,3 +20,7 @@ socket = 127.0.0.1:59027
 socket = 127.0.0.1:59028
 {% endif %}
 master = true
+{% if web_server == 'nginx' %}
+chmod-socket = 666
+chown-socket = web2py:nginx
+{% endif %}
