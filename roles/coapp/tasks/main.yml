@@ -28,7 +28,9 @@
     # 2.17.2
     #version: 95709e5
     # 2.18.3
-    version: 6128d03
+    #version: 6128d03
+    # 2.18.5
+    version: 59700b8
     # Don't update unless explicitly desired
     update: no
 
@@ -42,10 +44,25 @@
 #  copy: src=_compat.patch dest=/home/setup/gluon/packages/dal/pydal/_compat.patch
 #  become: yes
 
-- name: Patch PyDAL in 2.18.3
-  patch:
-    src: _compat.patch
-    basedir: /home/setup/gluon/packages/dal/pydal
+#- name: Patch PyDAL in 2.18.3
+#  patch:
+#    src: _compat.patch
+#    basedir: /home/setup/gluon/packages/dal/pydal
+#  become: yes
+
+- name: Patch PyDAL in 2.18.5
+  replace:
+    path: /home/setup/gluon/packages/dal/pydal/validators.py
+    regexp: 'if getattr\(func, ''validate'', None\) is Validator\.validate:'
+    replace: 'if getattr(func, ''validate'', None) is not Validator.validate:'
+  become: yes
+
+- name: Patch PyDAL in 2.18.5 (MySQL)
+  replace:
+    path: /home/setup/gluon/packages/dal/pydal/adapters/mysql.py
+    regexp: '\[''password''\]'
+    replace: '[''passwd'']'
+  when: db_type == 'mysql'
   become: yes
 
 - name: Copy routes.py

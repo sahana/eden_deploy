@@ -1,0 +1,58 @@
+server {
+    listen      80;
+    server_name {{ sitename }};
+    return 301 https://\$server_name\$request_uri;
+}
+server {
+    listen          443 ssl;
+    server_name     {{ sitename }};
+    ssl_certificate /etc/letsencrypt/live/{{ sitename }}/fullchain.pem; # managed by Certbot
+    ssl_certificate_key /etc/letsencrypt/live/{{ sitename }}/privkey.pem; # managed by Certbot
+    ssl_protocols       TLSv1 TLSv1.1 TLSv1.2;
+    ssl_ciphers         HIGH:!aNULL:!MD5;
+    location /crossdomain.xml {
+        alias /home/{{ type }}/applications/{{ appname }}/static/crossdomain.xml;
+        expires max;
+    }
+    location /favicon.ico {
+        alias /home/{{ type }}/applications/{{ appname }}/static/favicon.ico;
+        expires max;
+    }
+    location /robots.txt {
+        alias /home/{{ type }}/applications/{{ appname }}/static/robots.txt;
+        expires max;
+    }
+    location /{{ appname }}/static/ {
+        alias /home/{{ type }}/applications/{{ appname }}/static/;
+        expires max;
+    }
+    location /{{ appname }}/static/img/ {
+        alias /home/{{ type }}/applications/{{ appname }}/static/img/;
+        gzip off;
+        expires max;
+    }
+    # to enable correct use of response.static_version?
+    location /static/ {
+        alias /home/{{ type }}/applications/{{ appname }}/static/;
+        expires max;
+    }
+    location / {
+{% if type == 'prod' %}
+        uwsgi_pass      127.0.0.1:59025;
+{% elif type == 'test' %}
+        uwsgi_pass      127.0.0.1:59026;
+{% elif type == 'demo' %}
+        uwsgi_pass      127.0.0.1:59027;
+{% elif type == 'setup' %}
+        uwsgi_pass      127.0.0.1:59028;
+{% endif %}
+        include         /etc/nginx/uwsgi_params;
+        uwsgi_param     UWSGI_SCHEME \$scheme;
+        uwsgi_param     SERVER_SOFTWARE    nginx/\$nginx_version;
+        ### remove the comments if you use uploads (max 10 MB)
+        client_max_body_size 10m;
+        ###
+    port_in_redirect off;
+    proxy_redirect off;
+    }
+}

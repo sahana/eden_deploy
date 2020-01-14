@@ -9,7 +9,19 @@
     # Default:
     #update_cache: yes
 
-- name: Install dependencies and package
+- name: Install dependencies and packages (Debian 10)
+  apt:
+    name: ['postgresql-11',
+           'python-psycopg2',
+           'postgresql-11-postgis-2.5',
+           #'ptop',
+           'pgtop',
+           ]
+    state: present
+  when: ansible_distribution_major_version == '10'
+
+# Psycopg2 versions in stretch/jessie can have problems with PG10+
+- name: Install dependencies and packages (Debian < 10)
   apt:
     name: ['postgresql-9.6',
            'python-psycopg2',
@@ -18,3 +30,14 @@
            'pgtop',
            ]
     state: present
+  when: ansible_distribution_major_version != '10'
+
+- name: Set $PG_HOME (Debian 10)
+  set_fact:
+    PG_HOME: /etc/postgresql/11
+  when: ansible_distribution_major_version == '10'
+
+- name: Set $PG_HOME (Debian < 10)
+  set_fact:
+    PG_HOME: /etc/postgresql/9.6
+  when: ansible_distribution_major_version != '10'

@@ -1,0 +1,9 @@
+#!/bin/sh
+
+sed -i 's|#kernel.shmmax = 279134208|kernel.shmmax = 279134208|' /etc/sysctl.conf
+sed -i 's|kernel.shmmax = 552992768|#kernel.shmmax = 552992768|' /etc/sysctl.conf
+sysctl -w kernel.shmmax=279134208
+sed -i 's|shared_buffers = 256MB|shared_buffers = 128MB|' {{ PG_HOME }}/main/postgresql.conf
+sed -i 's|effective_cache_size = 512MB|effective_cache_size = 256MB|' {{ PG_HOME }}/main/postgresql.conf
+sed -i 's|work_mem = 8MB|work_mem = 4MB|' {{ PG_HOME }}/main/postgresql.conf
+/etc/init.d/postgresql restart

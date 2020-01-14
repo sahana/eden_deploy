@@ -89,7 +89,9 @@
     # 2.17.2
     #version: 95709e5
     # 2.18.3
-    version: 6128d03
+    #version: 6128d03
+    # 2.18.5
+    version: 59700b8
     # Don't update unless explicitly desired
     update: no
   become: yes
@@ -129,14 +131,29 @@
 #    - demo
 #    - setup
 
-- name: Patch PyDAL in 2.18.3
-  patch:
-    src: _compat.patch
-    basedir: /home/setup/gluon/packages/dal/pydal
-  tags:
-    - test
-    - demo
-    - setup
+#- name: Patch PyDAL in 2.18.3
+#  patch:
+#    src: _compat.patch
+#    basedir: /home/setup/gluon/packages/dal/pydal
+#  tags:
+#    - test
+#    - demo
+#    - setup
+
+- name: Patch PyDAL in 2.18.5
+  replace:
+    path: /home/{{ type }}/gluon/packages/dal/pydal/validators.py
+    regexp: 'if getattr\(func, ''validate'', None\) is Validator\.validate:'
+    replace: 'if getattr(func, ''validate'', None) is not Validator.validate:'
+  become: yes
+
+- name: Patch PyDAL in 2.18.5 (MySQL)
+  replace:
+    path: /home/{{ type }}/gluon/packages/dal/pydal/adapters/mysql.py
+    regexp: '\[''password''\]'
+    replace: '[''passwd'']'
+  when: db_type == 'mysql'
+  become: yes
 
 - name: Copy wsgihandler
   copy:
@@ -451,18 +468,3 @@
   become: yes
   ignore_errors: True
   when: coapp.stat.exists == True
-
-# NB Use --staging when developing
-- name: Use Certbot to request an SSL certificate (Prod)
-  command: certbot certonly -n --agree-tos --email webmaster@{{ sitename }} --standalone -d {{ sitename }}
-  become: yes
-
-- name: Use Certbot to request an SSL certificate (post-Prod)
-  # We can use the production site's webserver configuration to allow validation
-  command: certbot certonly -n --expand --webroot -w /var/www -d {{ all_sites }}
-  become: yes
-  when: type != 'prod'
-  tags:
-    - test
-    - demo
-    - setup

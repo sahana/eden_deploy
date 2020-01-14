@@ -1,6 +1,6 @@
 ---
 - name: Run clean script
-  command: clean {{type}}
+  command: clean {{ type }}
   ignore_errors: yes
   when:
     - type != 'prod'

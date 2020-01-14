@@ -50,6 +50,21 @@
 
 # @ToDo: Handle Manual SSL certificates
 #        (currently we only handle Let's Encrypt free/automatic DV certificates)
+# NB Use --staging when developing
+- name: Use Certbot to request an SSL certificate (Prod)
+  command: certbot certonly -n --agree-tos --email webmaster@{{ sitename }} --standalone -d {{ sitename }}
+  become: yes
+
+- name: Use Certbot to request an SSL certificate (post-Prod)
+  # We can use the production site's webserver configuration to allow validation
+  command: certbot certonly -n --expand --webroot -w /var/www -d {{ all_sites }}
+  become: yes
+  when: type != 'prod'
+  tags:
+    - test
+    - demo
+    - setup
+
 - name: Creating SSL symlinks
   file: src=/etc/letsencrypt/live/{{ sitename }}/{{ item }}.pem dest=/etc/cherokee/{{ item }}.pem state=link
   with_items:

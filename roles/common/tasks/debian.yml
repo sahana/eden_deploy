@@ -1,17 +1,19 @@
 ---
 # Check for correct Version
-- fail: msg="Exiting as this deployment method currently only supports Debian 7, 8 or 9"
+- fail: msg="Exiting as this deployment method currently only supports Debian 7, 8, 9 or 10"
   when:
-    - ansible_distribution_major_version != "7"
-    - ansible_distribution_major_version != "8"
-    - ansible_distribution_major_version != "9"
+    - ansible_distribution_major_version != '7'
+    - ansible_distribution_major_version != '8'
+    - ansible_distribution_major_version != '9'
+    - ansible_distribution_major_version != '10'
 
 # Add Backports repo (for Certbot)
 - name: Add Backports repo (Debian 8 or 9)
   apt_repository:
     repo: deb http://ftp.debian.org/debian {{ ansible_distribution_release }}-backports main
     state: present
-  when: ansible_distribution_major_version != '7'
+  when: (ansible_distribution_major_version == '8') or 
+        (ansible_distribution_major_version == '9')
 
 # Install Admin Tools
 # state=present not state=latest as we don't want to upgrade accidentally
@@ -49,19 +51,22 @@
 
 - name: Install Certbot (Debian 8 or 9)
   apt: name=certbot state=present default_release={{ ansible_distribution_release }}-backports
-  when: ansible_distribution_major_version != '7'
+  when: (ansible_distribution_major_version == '8') or 
+        (ansible_distribution_major_version == '9')
 
 # Elinks
-- name: Install elinks (Debian 9)
+- name: Install elinks (Debian 9, 10)
   apt: name={{item}} state=present
-  when: ansible_distribution_major_version == '9'
+  when: (ansible_distribution_major_version == '9') or 
+        (ansible_distribution_major_version == '10')
   with_items:
     - elinks
     - net-tools
 
 - name: Install elinks (Debian 7 or 8)
   apt: name=elinks-lite state=present
-  when: ansible_distribution_major_version != '9'
+  when: (ansible_distribution_major_version == '7') or 
+        (ansible_distribution_major_version == '8')
 
 # Git
 - name: Install git
@@ -82,13 +87,15 @@
 - name: Install libodbc1 # Needed for Web2Py
   apt: name=libodbc1 state=present
 
-- name: Install libgeos (Debian 9)
+- name: Install libgeos (Debian 9 or 10)
   apt: name=libgeos-c1v5 state=present
-  when: ansible_distribution_major_version == '9'
+  when: (ansible_distribution_major_version == '9') or 
+        (ansible_distribution_major_version == '10')
 
 - name: Install libgeos (Debian 7 or 8)
   apt: name=libgeos-c1 state=present
-  when: ansible_distribution_major_version != '9'
+  when: (ansible_distribution_major_version == '7') or 
+        (ansible_distribution_major_version == '8')
 
 - name: Install python libs
   apt:

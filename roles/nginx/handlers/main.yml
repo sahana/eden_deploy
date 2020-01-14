@@ -1,0 +1,7 @@
+---
+- name: Restart Webserver
+  service: name=uwsgi-{{type}} state=restarted
+  #command: service uwsgi restart {{type}}
+  become: yes
+  # Needs to be explicit as otherwise inherits from the caller
+  become_user: root

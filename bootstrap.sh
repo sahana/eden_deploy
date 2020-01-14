@@ -45,13 +45,13 @@ cat << EOF > "deploy.yml"
     template: '$template'
     type: 'prod'
     start: True
-    web_server: 'cherokee'
+    web_server: 'nginx'
 
   roles:
     - swap
     - ansible
     - common
-    - cherokee
+    - nginx
     - uwsgi
     - postgresql
     - final

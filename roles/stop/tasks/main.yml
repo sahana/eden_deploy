@@ -1,12 +1,13 @@
 ---
 - name: Start instance
-  service: name=uwsgi-{{type}} state=stopped
-  #command: service uwsgi restart {{type}}
+  service: name=uwsgi-{{ type }} state=stopped
+  #command: service uwsgi stop {{ type }}
   become: yes
-  when: web_server == "cherokee"
+  when: (web_server == "cherokee") or 
+        (web_server == "nginx")
 
 - name: Enable VirtualHost
-  command: a2dissite {{type}}
+  command: a2dissite {{ type }}
   when: web_server == "apache"
 
 - name: Restart Webserver
