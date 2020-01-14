@@ -12,7 +12,7 @@
         (ansible_distribution_major_version == '9')
 
 - name: Install certbot's nginx plugin (Debian 10)
-  apt: name=python-certbot-nginx state=present
+  apt: name=python3-certbot-nginx state=present
   when: ansible_distribution_major_version == '10'
 
 # @ToDo: Handle Manual SSL certificates

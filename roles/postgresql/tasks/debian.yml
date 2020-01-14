@@ -12,7 +12,7 @@
 - name: Install dependencies and packages (Debian 10)
   apt:
     name: ['postgresql-11',
-           'python-psycopg2',
+           'python3-psycopg2',
            'postgresql-11-postgis-2.5',
            #'ptop',
            'pgtop',
