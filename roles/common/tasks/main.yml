@@ -189,7 +189,7 @@
 
 - name: Remove old web2py folder
   file:
-    src: /home/web2py
+    path: /home/web2py
     state: absent
 
 - name: Create symlink
