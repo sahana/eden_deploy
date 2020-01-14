@@ -54,7 +54,7 @@
 - name: Cross-instance Configuration (gzip_types)
   replace:
     path: /etc/nginx/nginx.conf
-    regexp: '# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;'
+    regexp: '# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml\+rss text/javascript;'
     replace: 'gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;'
   become: yes
 
@@ -62,7 +62,7 @@
   lineinfile:
     path: /etc/nginx/nginx.conf
     insertbefore: '^\sgzip_proxied'
-    line: '\tgzip_min_length 10240;'
+    line: "\tgzip_min_length 10240;" # Double quotes to get the tab working
   become: yes
 
 - name: Creating instance configuration
