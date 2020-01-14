@@ -37,28 +37,28 @@
     path: /etc/nginx/sites-enabled/default
     state: absent
 
-- name: Cross-instance Configuration: gzip_vary
+- name: Cross-instance Configuration (gzip_vary)
   replace:
     path: /etc/nginx/nginx.conf
     regexp: '# gzip_vary on;'
     replace: 'gzip_vary on;'
   become: yes
 
-- name: Cross-instance Configuration: gzip_proxied
+- name: Cross-instance Configuration (gzip_proxied)
   replace:
     path: /etc/nginx/nginx.conf
     regexp: '# gzip_proxied any;'
     replace: 'gzip_proxied expired no-cache no-store private auth;'
   become: yes
 
-- name: Cross-instance Configuration: gzip_types
+- name: Cross-instance Configuration (gzip_types)
   replace:
     path: /etc/nginx/nginx.conf
     regexp: '# gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;'
     replace: 'gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;'
   become: yes
 
-- name: Cross-instance Configuration: gzip_min_length
+- name: Cross-instance Configuration (gzip_min_length)
   lineinfile:
     path: /etc/nginx/nginx.conf
     insertbefore: '^\sgzip_proxied'
