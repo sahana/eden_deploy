@@ -18,6 +18,16 @@
     line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
     regexp: "^github\\.com"
 
+# @ToDo: Separate to debian.yml
+- name: Uninstall OS' Boto package
+  apt:
+    name: ['python-boto',
+           'python3-boto',
+           'python3-botocore',
+           ]
+    state: absent
+    autoremove: yes
+
 - name: Install Boto # Want latest version to know about all regions
   pip: name=boto
 
