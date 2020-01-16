@@ -21,7 +21,8 @@ fi
 pip install PyYAML jinja2 paramiko
 
 # Install Ansible
-pip install ansible==2.7.11
+#pip install ansible==2.7.11
+pip install ansible==2.7.16
 
 # Clone Ansible Playbooks
 git clone https://github.com/sahana/eden_deploy
