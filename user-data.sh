@@ -20,8 +20,7 @@ fi
 
 pip install PyYAML jinja2 paramiko
 
-# Install Ansible (Fixed version to current incompatibilities with 2.8)
-#pip install ansible~=2.7.16
+# Install Ansible
 pip install ansible
 
 # Clone Ansible Playbooks

@@ -31,3 +31,6 @@
 - name: Install Boto # Want latest version to know about all regions
   pip: name=boto
 
+- name: Install Boto3
+  pip: name=boto3
+
