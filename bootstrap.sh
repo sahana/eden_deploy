@@ -30,7 +30,7 @@ EOF
 cat << EOF > "deploy.yml"
 ---
 - hosts: 127.0.0.1
-  connection: local
+  #connection: local
   become_method: sudo
   become_user: root
 

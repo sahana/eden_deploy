@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
+# Script to update the setup_ database with details of a newly-deployed Amazon EC2 instance
+#
 # Run as:
 #   python web2py.py -S eden -M -R applications/eden/private/eden_deploy/tools/update_server.py -A server_id instance_id public_ip private_key
 
