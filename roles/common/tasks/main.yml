@@ -1,8 +1,4 @@
 ---
-# Since we gather_facts: no
-- name: Gather facts
-  setup:
-
 # Check for correct OS
 -  fail: msg="Exiting as this deployment method currently only supports Debian"
    when: ansible_distribution != "Debian" # Doesn't include Ubuntu (ansible_os_family does))
