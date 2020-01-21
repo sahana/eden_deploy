@@ -48,6 +48,7 @@
 
 - name: Creating instance configuration
   template: src=conf.j2 dest=/etc/nginx/sites-enabled/{{ type }}.conf
+  become: yes
   tags:
     - test
     - demo
@@ -55,6 +56,7 @@
 
 - name: Restart nginx
   service: name=nginx state=restarted
+  become: yes
   tags:
     - test
     - demo
