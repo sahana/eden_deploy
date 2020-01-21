@@ -1,38 +1,7 @@
 ---
-# @ToDo: Split-off Debian-specific parts
-- name: Install MySQL
-  apt:
-    name: ['mysql-server',
-           'libmysqlclient-dev',
-           ]
-    state: present
-    install_recommends: no
-
-- name: Install MySQL Python Driver (Debian 10)
-  apt:
-    name: ['python3-mysqldb',
-           ]
-    state: present
-    install_recommends: no
-  when: ansible_distribution_major_version == '10'
-
-- name: Install MySQL Python Driver (Debian 7, 8 or 9)
-  apt:
-    name: ['python-mysqldb',
-           ]
-    state: present
-    install_recommends: no
-  when: ansible_distribution_major_version != '10'
-
-- name: Install phpmyadmin
-  apt:
-    name: ['php5-cgi',
-           'php5-mysql',
-           'phpmyadmin',
-           'mytop',
-           ]
-    state: present
-    install_recommends: no
+# Run Debian-specific tasks
+-  import_tasks: debian.yml
+   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 - name: Create symbolic link
   file: path=/usr/share/phpmyadmin dest=/var/www/phpmyadmin

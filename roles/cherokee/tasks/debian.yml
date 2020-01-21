@@ -1,0 +1,18 @@
+---
+- name: Install dependencies
+  apt:
+    name: ['build-essential',
+           'autoconf',
+           'automake',
+           'libtool',
+           'gettext',
+           'libssl-dev',
+           'rrdtool',
+           ]
+    state: present
+    update_cache: yes # update-cache=yes is the equivalent of apt-get update
+
+- name: Install libtool-bin (Debian 8 or 9)
+  apt: name=libtool-bin state=present
+  when: ansible_distribution_major_version != '7'
+

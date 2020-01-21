@@ -1,21 +1,7 @@
 ---
-# @ToDo: Split-off Debian-specific parts
-- name: Install dependencies
-  apt:
-    name: ['build-essential',
-           'autoconf',
-           'automake',
-           'libtool',
-           'gettext',
-           'libssl-dev',
-           'rrdtool',
-           ]
-    state: present
-    update_cache: yes # update-cache=yes is the equivalent of apt-get update
-
-- name: Install libtool-bin (Debian 8 or 9)
-  apt: name=libtool-bin state=present
-  when: ansible_distribution_major_version != '7'
+# Run Debian-specific tasks
+-  import_tasks: debian.yml
+   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 #- name: Clone Repo
 #  git: repo=http://github.com/cherokee/webserver.git dest=/tmp/webserver

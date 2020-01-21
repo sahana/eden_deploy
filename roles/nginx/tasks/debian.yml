@@ -1,0 +1,16 @@
+---
+- name: Install nginx
+  apt: name=nginx state=present
+
+- name: Install certbot's nginx plugin (Debian 8 or 9)
+  apt:
+    name: python-certbot-nginx
+    state: present
+    default_release: "{{ ansible_distribution_release }}-backports"
+  when: (ansible_distribution_major_version == '8') or 
+        (ansible_distribution_major_version == '9')
+
+- name: Install certbot's nginx plugin (Debian 10)
+  apt: name=python3-certbot-nginx state=present
+  when: ansible_distribution_major_version == '10'
+

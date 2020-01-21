@@ -1,29 +1,7 @@
 ---
-# @ToDo: Split off Debian-specific parts
-- name: Installing Dependencies
-  apt:
-    name: ['libodbc1', # Needed for Web2Py
-           ]
-    state: present
-    update_cache: yes # update-cache=yes is the equivalent of apt-get update
-
-- name: Installing Dependencies (Debian 10)
-  apt:
-    name: ['python3-dateutil',
-           'python3-lxml',
-           ]
-    state: present
-    update_cache: yes
-  when: ansible_distribution_major_version == '10'
-
-- name: Installing Dependencies (Debian 7, 8 or 9)
-  apt:
-    name: ['python-dateutil',
-           'python-lxml',
-           ]
-    state: present
-    update_cache: yes
-  when: ansible_distribution_major_version != '10'
+# Run Debian-specific tasks
+-  import_tasks: debian.yml
+   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 - name: Create web2py user
   command: adduser --system --disabled-password web2py
