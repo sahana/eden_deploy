@@ -3,12 +3,16 @@
 -  import_tasks: debian.yml
    when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
-# Configure nginx
-- name: Deleting default configuration
-  file:
-    path: /etc/nginx/sites-enabled/default
-    state: absent
+# SSL Certificate
+# @ToDo: Handle Manual SSL certificates
+#        (currently we only handle Let's Encrypt free/automatic DV certificates)
+# NB Use --staging when developing
+# Needs to be before prod.conf replaces default, otherwise nginx fails to start
+- name: Use Certbot to request an SSL certificate (Prod)
+  command: certbot --nginx -n --agree-tos --email webmaster@{{ sitename }} -d {{ sitename }}
+  become: yes
 
+# Configure nginx
 - name: Cross-instance Configuration (gzip_vary)
   replace:
     path: /etc/nginx/nginx.conf
@@ -37,6 +41,11 @@
     line: "\tgzip_min_length 10240;" # Double quotes to get the tab working
   become: yes
 
+- name: Deleting default configuration
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+
 - name: Creating instance configuration
   template: src=conf.j2 dest=/etc/nginx/sites-enabled/{{ type }}.conf
   tags:
@@ -50,16 +59,8 @@
     - test
     - demo
     - setup
-#
-# SSL
-#
-# @ToDo: Handle Manual SSL certificates
-#        (currently we only handle Let's Encrypt free/automatic DV certificates)
-# NB Use --staging when developing
-- name: Use Certbot to request an SSL certificate (Prod)
-  command: certbot --nginx -n --agree-tos --email webmaster@{{ sitename }} -d {{ sitename }}
-  become: yes
 
+# Needs to be after instance.conf in-place
 - name: Use Certbot to request an SSL certificate (post-Prod)
   # We can use the production site's webserver configuration to allow validation
   command: certbot --nginx -n --expand -d {{ all_sites }}
