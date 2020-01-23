@@ -25,6 +25,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  become: yes
   with_items:
     - { regexp: '^#settings.base.prepopulate = 0', line: 'settings.base.prepopulate = 0' }
     - { regexp: '^settings.base.migrate = True', line: 'settings.base.migrate = False' }
@@ -64,6 +65,7 @@
 # Notify doesn't work if we kill the Scheduler task before it can run ;)
 - name: Start uwsgi
   service: name=uwsgi-{{type}} state=started
+  become: yes
   #service: name=uwsgi state=started
 
 # Note this needs to actually run after last task as it kills us ;)

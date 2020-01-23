@@ -26,9 +26,11 @@
               insertafter="^127.0.0.1 localhost"
               line="127.0.0.1 {{ sitename }} {{ hostname }} localhost"
               state=present
+  become: yes
 
 - name: Update mailname file
   template: src=mailname dest=/etc/mailname
+  become: yes
 
 # Run Debian-specific tasks
 -  import_tasks: debian.yml
@@ -37,20 +39,25 @@
 # Python Libraries, where we need a more recent version than that provided by the OS
 - name: Install GeoPy
   pip: name=geopy
+  become: yes
 
 - name: Install Reportlab # Want Percentage support
   pip: name=reportlab
+  become: yes
 
 - name: Install Shapely # Want Simplify enhancements
   pip: name=Shapely
+  become: yes
 
 - name: Install XLRD # XLS import support
   pip: name=xlrd
+  become: yes
 
 # Web2Py
 - name: Create web2py user
   #user: name=web2py system=true
   command: adduser --system --group --disabled-password web2py
+  become: yes
 
 #- name: Create web2py group
 #  group: name=web2py state=present
@@ -58,6 +65,7 @@
 # Needed for ability to use Ansible to do system stuff 
 - name: Allow web2py user to use sudo w/o password
   copy: src=sudoers dest=/etc/sudoers.d/95-web2py-user
+  become: yes
 
 - name: check if coapp has been installed
   stat:
@@ -191,6 +199,7 @@
   file:
     path: /home/web2py
     state: absent
+  become: yes
 
 - name: Create symlink
   #file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py

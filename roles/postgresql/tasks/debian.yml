@@ -1,6 +1,7 @@
 ---
 - name: Add key
   apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
+  become: yes
 
 - name: Add PostgreSQL repo
   apt_repository:
@@ -8,6 +9,7 @@
     state: present
     # Default:
     #update_cache: yes
+  become: yes
 
 - name: Install dependencies and packages (Debian 10)
   apt:
@@ -18,6 +20,7 @@
            'pgtop',
            ]
     state: present
+  become: yes
   when: ansible_distribution_major_version == '10'
 
 # Psycopg2 versions in stretch/jessie can have problems with PG10+
@@ -30,6 +33,7 @@
            'pgtop',
            ]
     state: present
+  become: yes
   when: ansible_distribution_major_version != '10'
 
 - name: Set $PG_HOME (Debian 10)

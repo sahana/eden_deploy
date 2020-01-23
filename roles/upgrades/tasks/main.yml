@@ -3,12 +3,15 @@
 # @ToDo: Replace with individual control
 - name: Update System Packages
   apt: name={{ item }} state=latest
+  become: yes
   with_items: system_packages
 
 - name: Update pip Packages
   pip: name={{ item }} extra_args='--upgrade'
+  become: yes
   with_items: pip_packages
 
 - name: Pull from git remote
   command: git pull chdir={{ item.chdir }}
+  become: yes
   with_items: git_packages

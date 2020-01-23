@@ -12,6 +12,7 @@
   apt_repository:
     repo: deb http://ftp.debian.org/debian {{ ansible_distribution_release }}-backports main
     state: present
+  become: yes
   when: (ansible_distribution_major_version == '8') or 
         (ansible_distribution_major_version == '9')
 
@@ -35,6 +36,7 @@
            ]
     state: present
     update_cache: yes # update-cache=yes is the equivalent of apt-get update
+  become: yes
 
 # Certbot
 - name: Install Certbot (Debian 7)
@@ -43,20 +45,24 @@
     url: https://dl.eff.org/certbot-auto
     dest: /usr/local/bin/certbot
     mode: 0775
+  become: yes
   when: ansible_distribution_major_version == '7'
 
 - name: Schedule Certificate renewals (Debian 7)
   copy: src=cron_certbot_renew dest=/etc/cron.d/certbot
+  become: yes
   when: ansible_distribution_major_version == '7'
 
 - name: Install Certbot (Debian 8 or 9)
   apt: name=certbot state=present default_release={{ ansible_distribution_release }}-backports
+  become: yes
   when: (ansible_distribution_major_version == '8') or 
         (ansible_distribution_major_version == '9')
 
 # Elinks
 - name: Install elinks (Debian 9, 10)
   apt: name={{item}} state=present
+  become: yes
   when: (ansible_distribution_major_version == '9') or 
         (ansible_distribution_major_version == '10')
   with_items:
@@ -65,24 +71,29 @@
 
 - name: Install elinks (Debian 7 or 8)
   apt: name=elinks-lite state=present
+  become: yes
   when: (ansible_distribution_major_version == '7') or 
         (ansible_distribution_major_version == '8')
 
 # Git
 - name: Install git
   apt: name=git-core state=present
+  become: yes
 
 # Install Libraries
 - name: Install libodbc1 # Needed for Web2Py
   apt: name=libodbc1 state=present
+  become: yes
 
 - name: Install libgeos (Debian 9 or 10)
   apt: name=libgeos-c1v5 state=present
+  become: yes
   when: (ansible_distribution_major_version == '9') or 
         (ansible_distribution_major_version == '10')
 
 - name: Install libgeos (Debian 7 or 8)
   apt: name=libgeos-c1 state=present
+  become: yes
   when: (ansible_distribution_major_version == '7') or 
         (ansible_distribution_major_version == '8')
 
@@ -103,6 +114,7 @@
            'python3-pip',
            ]
     state: present
+  become: yes
   when: ansible_distribution_major_version == '10'
 
 - name: Install python libs (Debian 7, 8 or 9)
@@ -122,4 +134,5 @@
            'python-pip',
            ]
     state: present
+  become: yes
   when: ansible_distribution_major_version != '10'

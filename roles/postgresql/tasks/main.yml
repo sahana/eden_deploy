@@ -5,12 +5,14 @@
 
 - name: Copy management scripts
   copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
+  become: yes
   with_items:
     - { src: 'backup', dest: '/usr/local/bin/backup' }
     - { src: 'clean', dest: '/usr/local/bin/clean' }
 
 - name: Copy management scripts
   template: "src={{ item.src }} dest={{ item.dest }} mode=755"
+  become: yes
   with_items:
     - { src: 'pg512', dest: '/usr/local/bin/pg512' }
     - { src: 'pg1024', dest: '/usr/local/bin/pg1024' }
@@ -22,6 +24,7 @@
               insertafter='^#track_counts = on'
               line='track_counts = on'
               state=present
+  become: yes
 
 - name: Set autovacuum=on
   lineinfile: dest={{ PG_HOME }}/main/postgresql.conf
@@ -29,6 +32,7 @@
               insertafter='^autovacuum = on'
               line='autovacuum = on'
               state=present
+  become: yes
 
 # 6 for Prod (4 workers + mule)
 # 4 each for Demo/Test/Setup (2 workers + mule)
@@ -39,6 +43,7 @@
               insertafter='^max_connections = 100'
               line='max_connections = 20'
               state=present
+  become: yes
 
 # @ToDo: Provide more granular tuning & vary if dedicated DB host vs shared
 # Levels we want to support are:
@@ -52,6 +57,7 @@
               insertafter='^#effective_cache_size = 4GB'
               line='effective_cache_size = 512MB'
               state=present
+  become: yes
   when: ansible_memtotal_mb|int > 1023
     
 - name: Tune for 512Mb RAM. effective_cache_size
@@ -60,6 +66,7 @@
               insertafter='^#effective_cache_size = 4GB'
               line='effective_cache_size = 256MB'
               state=present
+  become: yes
   when: ansible_memtotal_mb|int < 1023
 
 - name: Tune for 1024Mb RAM. shared_buffers
@@ -68,6 +75,7 @@
               insertafter='^shared_buffers = 128MB'
               line='shared_buffers = 256MB'
               state=present
+  become: yes
   when: ansible_memtotal_mb|int > 1023
     
 #- name: Tune for 512Mb RAM. shared_buffers
@@ -76,6 +84,7 @@
 #              insertafter='^#shared_buffers = 128MB'
 #              line='shared_buffers = 128MB'
 #              state=present
+#  become: yes
 #  when: ansible_memtotal_mb|int < 1023
 
 - name: Tune for 1024Mb RAM. work_mem
@@ -84,6 +93,7 @@
               insertafter='^#work_mem = 4MB'
               line='work_mem = 8MB'
               state=present
+  become: yes
   when: ansible_memtotal_mb|int > 1023
     
 - name: Tune for 512Mb RAM. work_mem
@@ -92,6 +102,7 @@
               insertafter='^#work_mem = 4MB'
               line='work_mem = 4MB'
               state=present
+  become: yes
   when: ansible_memtotal_mb|int < 1023
 
 - name: Listen externally
@@ -100,6 +111,7 @@
               backrefs=yes
               line="listen_addresses = '*'"
               state=present
+  become: yes
   when: db_ip != '127.0.0.1'
 
 - name: Allow external connections
@@ -107,10 +119,12 @@
               insertafter=EOF
               line="host all all 0.0.0.0/0 md5"
               state=present
+  become: yes
   when: db_ip != '127.0.0.1'
 
 - name: Restart service
   service: name=postgresql state=restarted
+  become: yes
 
 # Create Sahana user & set Password
 - name: Transfer pgpass.sql
@@ -176,6 +190,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  become: yes
   with_items:
     - { regexp: '^#settings.database.db_type = \"postgres\"', line: 'settings.database.db_type = "postgres"' }
     - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.host = "{{ db_ip }}"' }
@@ -192,6 +207,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  become: yes
   with_items:
     - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
     - { regexp: '^settings.database.database = \"sahana\"', line: 'settings.database.database = "{{ db_name }}"' }

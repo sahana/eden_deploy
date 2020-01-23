@@ -6,6 +6,7 @@
            ]
     state: present
     install_recommends: no
+  become: yes
 
 - name: Install MySQL Python Driver (Debian 10)
   apt:
@@ -13,6 +14,7 @@
            ]
     state: present
     install_recommends: no
+  become: yes
   when: ansible_distribution_major_version == '10'
 
 - name: Install MySQL Python Driver (Debian 7, 8 or 9)
@@ -21,6 +23,7 @@
            ]
     state: present
     install_recommends: no
+  become: yes
   when: ansible_distribution_major_version != '10'
 
 - name: Install phpmyadmin
@@ -32,4 +35,5 @@
            ]
     state: present
     install_recommends: no
+  become: yes
 

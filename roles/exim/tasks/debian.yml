@@ -5,7 +5,9 @@
            'exim4-daemon-light',
            ]
     state: present
+  become: yes
 
 - name: Configure for Internet Mail Delivery
   command: dpkg-reconfigure -f noninteractive exim4-config
+  become: yes
 

@@ -8,6 +8,7 @@
 
 - name: Enable VirtualHost
   command: a2dissite {{ type }}
+  become: yes
   when: web_server == "apache"
 
 - name: Restart Webserver

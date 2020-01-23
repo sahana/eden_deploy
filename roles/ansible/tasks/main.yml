@@ -1,9 +1,11 @@
 ---
 - name: Create ansible cfg dir
   file: path=/etc/ansible state=directory
+  become: yes
 
 - name: Copy ansible.cfg
   copy: src=ansible.cfg dest=/etc/ansible/ansible.cfg
+  become: yes
 
 # Not writable by Web2Py user & anyway we have it in syslog
 #- name: Create ansible logfile
@@ -17,6 +19,7 @@
     state: present
     line: "{{ lookup('pipe', 'ssh-keyscan -t rsa github.com') }}"
     regexp: "^github\\.com"
+  become: yes
 
 # @ToDo: Separate to debian.yml
 - name: Uninstall OS' Boto package
@@ -27,14 +30,18 @@
            ]
     state: absent
     autoremove: yes
+  become: yes
 
 - name: Install Boto # Want latest version to know about all regions
   pip: name=boto
+  become: yes
 
 - name: Install Boto3
   pip: name=boto3
+  become: yes
 
 # Needed for 'dig' lookup
 - name: Install DNSPython
   pip: name=dnspython
+  become: yes
 

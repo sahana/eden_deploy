@@ -6,9 +6,11 @@
            'apache2.2-common',
            ]
     state: present
+  become: yes
 
 - name: a2enmod
   command: "a2enmod {{ item }}"
+  become: yes
   with_items:
     - rewrite
     - deflate
@@ -17,6 +19,7 @@
 
 - name: Update wsgi.conf
   lineinfile: dest=/etc/apache2/mods-enabled/wsgi.conf insertbefore='</IfModule>' line='WSGIPassAuthorization On'
+  become: yes
 
 - name: Update apache2.conf
   lineinfile: dest=/etc/apache2/apache2.conf
@@ -24,6 +27,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  become: yes
   with_items:
     - { regexp: 'MaxRequestsPerChild   0', line: 'MaxRequestsPerChild 300' }
     - { regexp: 'MinSpareServers       5', line: 'MinSpareServers 3' }
@@ -31,18 +35,23 @@
 
 - name: Copy maintenance.html
   copy: src=maintenance.html dest=/var/www/maintenance.html
+  become: yes
 
 - name: Remove sites-enabled/000-default
   file: path=/etc/apache2/sites-enabled/000-default state=absent
+  become: yes
 
 - name: Copy prod and maintenance configs
   template: src={{ item }} dest=/etc/apache2/sites-available/{{ item }}
+  become: yes
   with_items:
     - prod
     - maintenance
 
 - name: Launch Scheduler from rc.local
   lineinfile: "dest=/etc/rc.local insertbefore='exit 0' line='cd /home/web2py && python web2py.py -K eden -Q >/dev/null 2>&1 &'"
+  become: yes
 
 - name: Enable VirtualHost
   command: a2ensite {{type}}
+  become: yes

@@ -5,6 +5,7 @@
 
 - name: Create symbolic link
   file: path=/usr/share/phpmyadmin dest=/var/www/phpmyadmin
+  become: yes
   when: web_server == "cherokee"
 
 - name: Editing my.cnf
@@ -13,6 +14,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  become: yes
   with_items:
     - { regexp: '^query_cache_size        = 16M', line: 'query_cache_size = 1M' }
     - { regexp: '^key_buffer              = 16M', line: 'key_buffer = 1M' }
@@ -20,21 +22,27 @@
 
 - name: Restarting MySQL
   service: name=mysql state=restarted
+  become: yes
 
 - name: Copy backup script
   copy: src=backup dest=/usr/local/bin/backup mode=755
+  become: yes
 
 - name: Copy clean script
   copy: src=clean dest=/usr/local/bin/clean mode=755
+  become: yes
 
 - name: Copy my.cnf for root user
   template: src=my.cnf dest=/root/.my.cnf owner=root mode=600
+  become: yes
 
 - name: Create Database (Prod)
   mysql_db: name=sahana state=present
+  become: yes
 
 - name: Create Database (Demo / Test)
   mysql_db: name=sahana-{{ type }} state=present
+  become: yes
   when: type != 'prod'
   tags:
     - demo
@@ -42,6 +50,7 @@
 
 - name: Create sahana db user
   mysql_user: "name=sahana password={{ password }} priv=*.*:ALL host=localhost state=present"
+  become: yes
 
 - name: Configure Eden to access Database (Common)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
@@ -49,6 +58,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  become: yes
   with_items:
     - { regexp: '^#settings.database.db_type = \"mysql\"', line: 'settings.database.db_type = "mysql"' }
     - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.db_type = "{{ db_ip }}"' }
@@ -63,6 +73,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  become: yes
   with_items:
     - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "sahana-{{ type }}"' }
   when: type != 'prod'
