@@ -368,12 +368,21 @@
     - demo
     - setup
 
-- name: Prepare for DNS check so that we know whether it's safe to go SSL - 1 (Prod)
+# Prepare for DNS check so that we know whether it's safe to go SSL
+- name: Define running_type (Prod being installed from co-app)
   set_fact:
     running_type: setup
   #when: type == "prod"
+  when: coapp.stat.exists == True
 
-- name: Prepare for DNS check so that we know whether it's safe to go SSL - 1 (Test/Demo/Setup)
+# @ToDo: There is no web_server running, so how do we serve this file?
+- name: Define running_type (Prod being installed remotely)
+  set_fact:
+    running_type: prod
+  #when: type == "prod"
+  when: coapp.stat.exists == False
+
+- name: Define running_type (Test/Demo/Setup)
   set_fact:
     running_type: prod
   when: type != "prod"
@@ -382,7 +391,7 @@
     - test
     - setup
 
-- name: Prepare for DNS check so that we know whether it's safe to go SSL - 2
+- name: Create sitename file in static
   copy:
     content: "{{ sitename }}"
     dest: /home/{{ running_type }}/applications/{{ appname }}/static/sitename
@@ -393,10 +402,16 @@
     - test
     - setup
 
+- name: Launch simple web server (Prod being installed remotely)
+  command: python3 -m http.server 80 -d /home/{{ running_type }}/applications
+  become: yes
+  #when: type == "prod"
+  when: coapp.stat.exists == False
+
 # We check the IP not the name, as prod installs would otherwise check localhost
 # (1) This will fail unless we add :8000
 # (2) This doesn't achieve our aim!
-- name: DNS check so that we know whether it's safe to go SSL
+- name: Connect to resolved IP to see if we can find the sitename file we created
   uri:
     url: http://{{ lookup('dig', sitename + '.') }}/{{ appname }}/static/sitename
     return_content: yes
@@ -417,6 +432,12 @@
     - demo
     - test
     - setup
+
+- name: Stop simple web server (Prod being installed remotely)
+  command: killall python3
+  become: yes
+  #when: type == "prod"
+  when: coapp.stat.exists == False
 
 - name: Edit 000_config.py (Prod / Demo / Setup)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
