@@ -1,5 +1,5 @@
 server {
-    listen      80;
+    listen      80{% if type == 'prod' %} default_server{% endif %};
     server_name {{ sitename }};
     location /crossdomain.xml {
         alias /home/{{ type }}/applications/{{ appname }}/static/crossdomain.xml;

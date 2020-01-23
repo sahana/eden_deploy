@@ -1,10 +1,10 @@
 server {
-    listen      80;
+    listen      80{% if type == 'prod' %} default_server{% endif %};
     server_name {{ sitename }};
     return 301 https://$server_name$request_uri;
 }
 server {
-    listen          443 ssl;
+    listen          443 ssl{% if type == 'prod' %} default_server{% endif %};
     server_name     {{ sitename }};
     ssl_certificate /etc/letsencrypt/live/{{ sitename_prod }}/fullchain.pem; # managed by Certbot
     ssl_certificate_key /etc/letsencrypt/live/{{ sitename_prod }}/privkey.pem; # managed by Certbot

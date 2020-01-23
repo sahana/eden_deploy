@@ -381,11 +381,14 @@
     - test
     - setup
 
+# We check the IP not the name, as prod installs would otherwise check localhost
+# (1) This will fail unless we add :8000
+# (2) This doesn't achieve our aim!
 - name: DNS check so that we know whether it's safe to go SSL
   uri:
-    url: http://{{ sitename }}/{{ appname }}/static/sitename
+    url: http://{{ lookup('dig', sitename + '.') }}/{{ appname }}/static/sitename
     return_content: yes
-  register: this_sitename
+  register: sitename_read
   ignore_errors: yes
   when: protocol == "https"
   tags:
@@ -397,7 +400,7 @@
   set_fact:
     protocol: http
   when: (protocol == "https") and
-        (sitename not in this_sitename.content)
+        (sitename not in sitename_read.content)
   tags:
     - demo
     - test
