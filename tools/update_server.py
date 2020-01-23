@@ -30,3 +30,5 @@ def main(argv):
     # Update AWS Server record with the Instance ID
     table = s3db.setup_aws_server
     db(table.server_id == server_id).update(instance_id = instance_id)
+
+    db.commit()

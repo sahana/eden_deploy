@@ -205,6 +205,7 @@
 - name: Create symlink
   #file: src=/home/web2py dest=/home/prod state=link owner=web2py group=web2py
   file: src=/home/prod dest=/home/web2py state=link owner=web2py group=web2py
+  become: yes
 
 - name: Create symlink
   file: src=/home/{{ type }} dest=/root/{{ type }} state=link
