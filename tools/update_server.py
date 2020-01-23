@@ -13,18 +13,22 @@ def main(argv):
     public_ip = argv[2]
     private_key = argv[3] # Name of file in /tmp
 
-    # Update Server record with the IP Address
+    # Update Server record
     table = s3db.setup_server
-    db(table.id == server_id).update(host_ip = public_ip)
 
     if private_key is not None:
         # Upload SSH Private Key to the Server record
         private_key_path = os.path.join("/", "tmp", private_key)
+        field = table.private_key
         with open(private_key_path, "r") as private_key_file:
-            field = table.private_key
-            field.store(private_key_file,
-                        "%s.pem" % private_key,
-                        field.uploadfolder)
+            newfilename = field.store(private_key_file,
+                                      "%s.pem" % private_key,
+                                      field.uploadfolder)
+        db(table.id == server_id).update(host_ip = public_ip,
+                                         private_key = newfilename,
+                                         )
+    else:
+        db(table.id == server_id).update(host_ip = public_ip)
 
     # Update AWS Server record with the Instance ID
     table = s3db.setup_aws_server
