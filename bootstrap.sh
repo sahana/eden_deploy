@@ -47,9 +47,10 @@ cat << EOF > "deploy.yml"
     - swap
     - ansible
     - common
-    - nginx
-    - uwsgi
+    - exim
     - postgresql
+    - uwsgi
+    - nginx
     - final
 EOF
 

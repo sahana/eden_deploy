@@ -1,0 +1,7 @@
+---
+# Run Debian-specific tasks
+-  import_tasks: debian.yml
+   when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
+
+# @ToDo: SmartHost configuration
+# e.g. AWS SES

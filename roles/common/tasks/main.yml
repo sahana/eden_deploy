@@ -357,6 +357,52 @@
     - demo
     - setup
 
+- name: Prepare for DNS check so that we know whether it's safe to go SSL - 1 (Prod)
+  set_fact:
+    running_type: setup
+  #when: type == "prod"
+
+- name: Prepare for DNS check so that we know whether it's safe to go SSL - 1 (Test/Demo/Setup)
+  set_fact:
+    running_type: prod
+  when: type != "prod"
+  tags:
+    - demo
+    - test
+    - setup
+
+- name: Prepare for DNS check so that we know whether it's safe to go SSL - 2
+  copy:
+    content: "{{ sitename }}"
+    dest: /home/{{ running_type }}/applications/{{ appname }}/static/sitename
+  when: protocol == "https"
+  tags:
+    - demo
+    - test
+    - setup
+
+- name: DNS check so that we know whether it's safe to go SSL
+  uri:
+    url: http://{{ sitename }}/{{ appname }}/static/sitename
+    return_content: yes
+  register: this_sitename
+  ignore_errors: yes
+  when: protocol == "https"
+  tags:
+    - demo
+    - test
+    - setup
+
+- name: DNS check failed, so reverting to 'http' as not safe to go SSL
+  set_fact:
+    protocol: http
+  when: (protocol == "https") and
+        (sitename not in this_sitename.content)
+  tags:
+    - demo
+    - test
+    - setup
+
 - name: Edit 000_config.py (Prod / Demo / Setup)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp="{{ item.regexp }}"
