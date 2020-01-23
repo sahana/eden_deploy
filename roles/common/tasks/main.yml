@@ -19,6 +19,7 @@
 
 - name: Update hostname file
   template: src=hostname dest=/etc/hostname
+  become: yes
 
 - name: Update hosts file
   lineinfile: dest=/etc/hosts
