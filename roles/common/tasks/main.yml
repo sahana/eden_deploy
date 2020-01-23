@@ -376,6 +376,7 @@
     content: "{{ sitename }}"
     dest: /home/{{ running_type }}/applications/{{ appname }}/static/sitename
   when: protocol == "https"
+  become: yes
   tags:
     - demo
     - test
