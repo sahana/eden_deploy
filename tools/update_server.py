@@ -13,10 +13,11 @@ def main(argv):
     public_ip = argv[2]
     private_key = argv[3] # Name of file in /tmp
 
-    # Debug
-    log_path = os.path.join("/", "tmp", "update_server.log")
-    with open(log_path, "w") as log_file:
-        log_file.write("server_id: %s\ninstance_id: %s\nspublic_ip: %s\nprivate_key: %s\n" % (server_id, instance_id, public_ip, private_key))
+    # Debug to stdout
+    print("server_id: " % server_id)
+    print("instance_id: " % instance_id)
+    print("public_ip: " % public_ip)
+    print("private_key: " % private_key)
 
     # Update Server record
     table = s3db.setup_server

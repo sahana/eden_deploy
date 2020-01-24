@@ -46,6 +46,7 @@
   file:
     path: /etc/nginx/sites-enabled/default
     state: absent
+  become: yes
 
 - name: Creating instance configuration
   template: src=conf.j2 dest=/etc/nginx/sites-enabled/{{ type }}.conf
