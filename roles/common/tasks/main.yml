@@ -257,6 +257,8 @@
 - name: Fix permissions
   file: path=/home/{{item}} state=directory owner=web2py
   become: yes
+  # @ToDo: Migrate to loop
+  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
   with_items:
     - "{{ type }}/applications"
     - "{{ type }}/applications/admin/cache"
@@ -450,6 +452,8 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
+  # @ToDo: Migrate to loop
+  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
   with_items:
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
     - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ hmac_key }}"' }
@@ -537,6 +541,8 @@
 - name: Copy management scripts
   copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
   become: yes
+  # @ToDo: Migrate to loop
+  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
   with_items:
     - { src: 'compile', dest: '/usr/local/bin/compile' }
     - { src: 'pull', dest: '/usr/local/bin/pull' }
