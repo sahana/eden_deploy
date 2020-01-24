@@ -48,6 +48,7 @@
 
 - name: Create script to Import Admin User from coapp -> Prod
   template: src="import_admin_user.py.j2" dest="/tmp/import_admin_user.py"
+  when: coapp.stat.exists == True
 #  tags: # or from Prod -> Co-app
 #    - setup
 
@@ -57,6 +58,7 @@
   become: yes
   become_user: web2py
   #become_flags: '-H'
+  when: coapp.stat.exists == True
 #  tags: # or from Prod -> Co-app
 #    - setup
 
