@@ -404,9 +404,9 @@
 
 - name: Launch simple web server (Prod being installed remotely)
   # Python 3.5 (i.e. Debian 9) doesn't support -d option
-  #command: python3 -m http.server 80 -d /home/{{ running_type }}/applications
+  #command: python3 -m http.server 80 -d /home/{{ running_type }}/applications &
   command:
-    cmd: python3 -m http.server 80
+    cmd: python3 -m http.server 80 &
     chdir: /home/{{ running_type }}/applications
   become: yes
   #when: type == "prod"
