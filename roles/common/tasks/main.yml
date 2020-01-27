@@ -46,6 +46,10 @@
   pip: name=reportlab
   become: yes
 
+- name: Install Requests # APT package fails to import on Debian 9
+  pip: name=requests
+  become: yes
+
 - name: Install Shapely # Want Simplify enhancements
   pip: name=Shapely
   become: yes

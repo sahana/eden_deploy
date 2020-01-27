@@ -105,9 +105,9 @@
            'python3-setuptools',
            'python3-serial',
            'python3-pil',
-           #'python3-reportlab', # Now using PIP version for Percentage support
-           #'python3-matplotlib', # Only used by deprecated survey module
-           'python3-requests',
+           #'python3-reportlab',    # Now using PIP version for Percentage support
+           #'python3-matplotlib',   # Only used by deprecated survey module
+           #'python3-requests',
            'python3-xlwt',
            'build-essential',
            'libgeos-dev',
@@ -125,9 +125,9 @@
            'python-setuptools',
            'python-serial',
            'python-imaging',
-           #'python-reportlab', # Now using PIP version for Percentage support
-           #'python-matplotlib', # Only used by deprecated survey module
-           'python-requests',
+           #'python-reportlab',     # Now using PIP version for Percentage support
+           #'python-matplotlib',    # Only used by deprecated survey module
+           #'python-requests',      # APT package fails to import on Debian 9
            'python-xlwt',
            'build-essential',
            'libgeos-dev',
