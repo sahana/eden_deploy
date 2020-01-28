@@ -487,35 +487,73 @@
               line='settings.base.public_url = "{{ protocol }}://{{ sitename }}"'
               state=present
 
-- name: set template_type variable
+# @ToDo: Could also check for presence of __init__.py & config.py
+- name: Seeing if there is a Sub-Template for this Country (Prod / Demo) - coming from Setup module
+  stat:
+    path: /home/{{ type }}/applications/{{ appname }}/modules/templates/{{ template }}/{{ country }}
+  when: country is defined and country|length > 0
+  register: sub_folder
+  tags:
+    - demo
+
+- name: Append Sub-Template to list of Templates
+  set_fact: template="[ '{{ template }}', '{{ template }}.{{ country }}' ]"
+  when: sub_folder.stat.isdir is defined and sub_folder.stat.isdir
+
+- name: Set template_type variable
   set_fact:
     template_type: "{{ template | type_debug }}"
   tags:
     - demo
 
-# Coming from Setup module
-- name: Setting Templates (Prod / Demo)
+# @ToDo: Could also check for presence of __init__.py & config.py
+- name: Seeing if there is a locale template for this Country (Prod / Demo) - coming from Setup module
+  stat:
+    path: /home/{{ type }}/applications/{{ appname }}/modules/templates/locations/{{ country }}
+  when: country is defined and country|length > 0
+  register: locale_folder
+  tags:
+    - demo
+
+- name: Prepend locale to list of Templates (No Sub-Template)
+  set_fact: template="[ 'locations.{{ country }}', '{{ template }}' ]"
+  when:
+    - locale_folder.stat.isdir is defined
+    - locale_folder.stat.isdir
+    - template_type == 'AnsibleUnicode'
+
+- name: Prepend locale to list of Templates (Sub-Template exists)
+  set_fact: template="[ 'locations.{{ country }}' ] + {{ template }}"
+  when:
+    - locale_folder.stat.isdir is defined
+    - locale_folder.stat.isdir
+    - template_type == 'list'
+
+- name: Set template_type variable
+  set_fact:
+    template_type: "{{ template | type_debug }}"
+  tags:
+    - demo
+
+- name: Setting Templates (Prod / Demo) - coming from Setup module with locale folder(s) available
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^settings.base.template = \"default\"'
               backrefs=yes
               line='settings.base.template = ["{{ template | join('", "') }}"]'
               state=present
   become: yes
-  when:
-    - template_type == 'list'
+  when: template_type == 'list'
   tags:
     - demo
 
-# Coming from bootstrap
-- name: Setting Template (Prod / Demo)
+- name: Setting Template (Prod / Demo) - coming from bootstrap or no locale folders available
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^settings.base.template = \"default\"'
               backrefs=yes
               line='settings.base.template = "{{ template }}"'
               state=present
   become: yes
-  when:
-    - template_type == 'AnsibleUnicode'
+  when: template_type == 'AnsibleUnicode'
   tags:
     - demo
 
