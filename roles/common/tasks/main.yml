@@ -520,7 +520,7 @@
   when:
     - locale_folder.stat.isdir is defined
     - locale_folder.stat.isdir
-    - template_type == 'AnsibleUnicode'
+    - template_type == 'str'
 
 - name: Prepend locale to list of Templates (Sub-Template exists)
   set_fact: template="[ 'locations.{{ country }}' ] + {{ template }}"
@@ -553,7 +553,7 @@
               line='settings.base.template = "{{ template }}"'
               state=present
   become: yes
-  when: template_type == 'AnsibleUnicode'
+  when: template_type == 'str' or template_type == 'AnsibleUnicode'
   tags:
     - demo
 
