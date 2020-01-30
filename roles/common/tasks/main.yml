@@ -112,16 +112,6 @@
     - demo
     - setup
 
-# 2.14.6
-#- name: Checkout stable release of Web2Py
-#  command: git reset --hard cda35fd
-#  args:
-#    chdir: /home/{{ type }}
-#  tags:
-#    - test
-#    - demo
-#    - setup
-
 - name: Configure PyDAL & YATL
   command: git submodule update --init --recursive
   args:
@@ -222,7 +212,7 @@
 # Eden
 - name: Clone Eden
   git: # recursive by default
-    repo: git://github.com/sahana/eden.git
+    repo: "{{ repo_url }}"
     dest: /home/{{ type }}/applications/{{ appname }}
     #version: cda35fd
     # Don't update unless explicitly desired
@@ -487,11 +477,19 @@
               line='settings.base.public_url = "{{ protocol }}://{{ sitename }}"'
               state=present
 
-# @ToDo: Could also check for presence of __init__.py & config.py
+- name: Set template_type variable
+  set_fact:
+    template_type: "{{ template | type_debug }}"
+  tags:
+    - demo
+
+# @ToDo: Could also x-check for presence of __init__.py & config.py
 - name: Seeing if there is a Sub-Template for this Country (Prod / Demo) - coming from Setup module
   stat:
     path: /home/{{ type }}/applications/{{ appname }}/modules/templates/{{ template }}/{{ country }}
-  when: country is defined and country|length > 0
+  when:
+    - country is defined and country|length > 0
+    - template_type == 'str'
   register: sub_folder
   tags:
     - demo
@@ -506,7 +504,7 @@
   tags:
     - demo
 
-# @ToDo: Could also check for presence of __init__.py & config.py
+# @ToDo: Could also x-check for presence of __init__.py & config.py
 - name: Seeing if there is a locale template for this Country (Prod / Demo) - coming from Setup module
   stat:
     path: /home/{{ type }}/applications/{{ appname }}/modules/templates/locations/{{ country }}
