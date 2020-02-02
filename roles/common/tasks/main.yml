@@ -497,6 +497,7 @@
     path: /home/{{ type }}/applications/{{ appname }}/modules/templates/{{ template }}/{{ country }}
   when:
     country is defined and
+    country and
     country|length > 0 and
     template_type == 'str'
   register: sub_folder
@@ -517,7 +518,7 @@
 - name: Seeing if there is a locale template for this Country (Prod / Demo) - coming from Setup module
   stat:
     path: /home/{{ type }}/applications/{{ appname }}/modules/templates/locations/{{ country }}
-  when: country is defined and country|length > 0
+  when: country is defined and country and country|length > 0
   register: locale_folder
   tags:
     - demo
