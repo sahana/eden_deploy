@@ -496,7 +496,8 @@
   stat:
     path: /home/{{ type }}/applications/{{ appname }}/modules/templates/{{ template }}/{{ country }}
   when:
-    - country is defined and country|length > 0
+    - country is defined
+    - country|length > 0
     - template_type == 'str'
   register: sub_folder
   tags:
