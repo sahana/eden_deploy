@@ -112,6 +112,14 @@
     - demo
     - setup
 
+- name: Update Scheduler 2.18.5
+  patch: src=scheduler.diff dest=/home/{{ type }}/gluon/scheduler.py
+  become: yes
+  tags:
+    - test
+    - demo
+    - setup
+
 - name: Configure PyDAL & YATL
   command: git submodule update --init --recursive
   args:
