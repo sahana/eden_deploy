@@ -17,7 +17,7 @@
   args:
     #chdir: /tmp/webserver
     chdir: /tmp/webserver-master
-  with_items:
+  loop:
     - ./autogen.sh --prefix=/usr --localstatedir=/var --sysconfdir=/etc
     - make
     - make install
@@ -53,7 +53,7 @@
 
 - name: Creating SSL symlinks
   file: src=/etc/letsencrypt/live/{{ sitename }}/{{ item }}.pem dest=/etc/cherokee/{{ item }}.pem state=link
-  with_items:
+  loop:
     - fullchain
     - privkey
 
@@ -100,4 +100,7 @@
 # Modify certbot crontab to add pre-hook & post-hook to ensure that WebServer is restarted when certificate is renewed
 # NB Using the hook directories would be less invasive, however these aren't available in the 0.10.x version of certbot that we use
 - name: Copy cron script
-  copy: src=cron_certbot_renew dest=/etc/cron.d/certbot mode=644
+  copy:
+    src: cron_certbot_renew
+    dest: /etc/cron.d/certbot
+    mode: 644

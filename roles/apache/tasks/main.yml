@@ -11,7 +11,7 @@
 - name: a2enmod
   command: "a2enmod {{ item }}"
   become: yes
-  with_items:
+  loop:
     - rewrite
     - deflate
     - headers
@@ -28,7 +28,7 @@
               line="{{ item.line }}"
               state=present
   become: yes
-  with_items:
+  loop:
     - { regexp: 'MaxRequestsPerChild   0', line: 'MaxRequestsPerChild 300' }
     - { regexp: 'MinSpareServers       5', line: 'MinSpareServers 3' }
     - { regexp: 'MaxSpareServers      10', line: 'MaxSpareServers 6' }
@@ -44,7 +44,7 @@
 - name: Copy prod and maintenance configs
   template: src={{ item }} dest=/etc/apache2/sites-available/{{ item }}
   become: yes
-  with_items:
+  loop:
     - prod
     - maintenance
 

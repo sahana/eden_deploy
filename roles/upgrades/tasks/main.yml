@@ -4,14 +4,14 @@
 - name: Update System Packages
   apt: name={{ item }} state=latest
   become: yes
-  with_items: system_packages
+  loop: "{{ system_packages|flatten(levels=1) }}"
 
 - name: Update pip Packages
   pip: name={{ item }} extra_args='--upgrade'
   become: yes
-  with_items: pip_packages
+  loop: "{{ pip_packages|flatten(levels=1) }}"
 
 - name: Pull from git remote
   command: git pull chdir={{ item.chdir }}
   become: yes
-  with_items: git_packages
+  loop: "{{ git_packages|flatten(levels=1) }}"

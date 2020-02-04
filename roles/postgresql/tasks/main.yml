@@ -6,18 +6,14 @@
 - name: Copy management scripts
   copy: "src={{ item.src }} dest={{ item.dest }} mode=755"
   become: yes
-  # @ToDo: Migrate to loop
-  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
-  with_items:
+  loop:
     - { src: 'backup', dest: '/usr/local/bin/backup' }
     - { src: 'clean', dest: '/usr/local/bin/clean' }
 
 - name: Copy management scripts
   template: "src={{ item.src }} dest={{ item.dest }} mode=755"
   become: yes
-  # @ToDo: Migrate to loop
-  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
-  with_items:
+  loop:
     - { src: 'pg512', dest: '/usr/local/bin/pg512' }
     - { src: 'pg1024', dest: '/usr/local/bin/pg1024' }
 
@@ -179,9 +175,7 @@
 
 - name: PostGIS Permissions
   command: "{{ item }}"
-  # @ToDo: Migrate to loop
-  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
-  with_items:
+  loop:
     - psql -q -d {{ db_name }} -c 'grant all on geometry_columns to sahana;'
     - psql -q -d {{ db_name }} -c 'grant all on spatial_ref_sys to sahana;'
   become: yes
@@ -197,9 +191,7 @@
               line="{{ item.line }}"
               state=present
   become: yes
-  # @ToDo: Migrate to loop
-  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
-  with_items:
+  loop:
     - { regexp: '^#settings.database.db_type = \"postgres\"', line: 'settings.database.db_type = "postgres"' }
     - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.host = "{{ db_ip }}"' }
     - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = "{{ password }}"' }
@@ -216,9 +208,7 @@
               line="{{ item.line }}"
               state=present
   become: yes
-  # @ToDo: Migrate to loop
-  # https://docs.ansible.com/ansible/latest/user_guide/playbooks_loops.html#with-items
-  with_items:
+  loop:
     - { regexp: '^settings.base.migrate = False', line: 'settings.base.migrate = True' }
     - { regexp: '^settings.database.database = \"sahana\"', line: 'settings.database.database = "{{ db_name }}"' }
   when: type != 'prod'

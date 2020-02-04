@@ -87,7 +87,7 @@
               backrefs=yes
               line="{{ item.line }}"
               state=present
-  with_items:
+  loop:
     - { regexp: '^settings.base.template = \"default\"', line: 'settings.base.template = "setup"' }
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
     - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ hmac_key }}"' }
@@ -102,13 +102,13 @@
 
 # - name: update-rc.d
 #   command: update-rc.d {{ item }} defaults
-#   with_items:
+#   loop:
 #     - web2py
 #     - web2py-scheduler
 
 - name: Fix permissions
   file: path=/home/{{item}} state=directory owner=web2py
-  with_items:
+  loop:
     - setup
     - setup/applications
     - setup/applications/admin/cache

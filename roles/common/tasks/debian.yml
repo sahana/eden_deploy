@@ -65,7 +65,7 @@
   become: yes
   when: (ansible_distribution_major_version == '9') or 
         (ansible_distribution_major_version == '10')
-  with_items:
+  loop:
     - elinks
     - net-tools
 

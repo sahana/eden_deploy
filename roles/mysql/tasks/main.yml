@@ -15,7 +15,7 @@
               line="{{ item.line }}"
               state=present
   become: yes
-  with_items:
+  loop:
     - { regexp: '^query_cache_size        = 16M', line: 'query_cache_size = 1M' }
     - { regexp: '^key_buffer              = 16M', line: 'key_buffer = 1M' }
     - { regexp: 'max_allowed_packet      = 16M', line: 'max_allowed_packet = 1M' }
@@ -59,7 +59,7 @@
               line="{{ item.line }}"
               state=present
   become: yes
-  with_items:
+  loop:
     - { regexp: '^#settings.database.db_type = \"mysql\"', line: 'settings.database.db_type = "mysql"' }
     - { regexp: '^#settings.database.host = \"localhost\"', line: 'settings.database.db_type = "{{ db_ip }}"' }
     - { regexp: '^#settings.database.password = \"password\"', line: 'settings.database.password = "{{ password }}"' }
@@ -74,7 +74,7 @@
               line="{{ item.line }}"
               state=present
   become: yes
-  with_items:
+  loop:
     - { regexp: '^#settings.database.database = \"sahana\"', line: 'settings.database.database = "sahana-{{ type }}"' }
   when: type != 'prod'
   tags:

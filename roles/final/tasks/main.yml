@@ -26,7 +26,7 @@
               line="{{ item.line }}"
               state=present
   become: yes
-  with_items:
+  loop:
     - { regexp: '^#settings.base.prepopulate = 0', line: 'settings.base.prepopulate = 0' }
     - { regexp: '^settings.base.migrate = True', line: 'settings.base.migrate = False' }
   tags:
@@ -37,7 +37,7 @@
 - name: Compile
   command: python web2py.py -S {{ appname }} -M -R applications/{{ appname }}/static/scripts/tools/compile.py chdir=/home/{{ type }}
   become: yes
-  become_user: web2py
+  #become_user: web2py
   #become_flags: '-H'
   # Notify doesn't work if we kill the Scheduler task before it can run ;)
   notify: Restart Webserver

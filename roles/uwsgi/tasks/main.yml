@@ -29,7 +29,7 @@
 
 #- name: Copy init files
 #  copy: src="{{ item.src }}" dest="{{ item.dest }}"
-#  with_items:
+#  loop:
 #    - { src: 'uwsgi.init.d', dest: '/etc/init.d/uwsgi' }
 #    - { src: 'do_command', dest: '/usr/share/uwsgi/init/do_command' }
 #    - { src: 'snippets', dest: '/usr/share/uwsgi/init/snippets' }
@@ -45,7 +45,7 @@
 
 - name: Copy Templates
   template: src="{{ item.src }}" dest="{{ item.dest }}"
-  with_items:
+  loop:
     - { src: 'scheduler.j2', dest: '/home/{{ type }}/run_scheduler.py' }
     #- { src: 'uwsgi.ini.j2', dest: '/etc/uwsgi/apps-enabled/{{ type }}.ini' }
     - { src: 'uwsgi.ini.j2', dest: '/home/{{ type }}/uwsgi.ini' }
@@ -80,14 +80,18 @@
 #    - setup
 
 - name: Create log dir
-  file: path=/var/log/uwsgi state=directory owner=web2py group=web2py
+  file:
+    path: /var/log/uwsgi
+    state: directory
+    owner: web2py
+    group: web2py
   become: yes
 
-# @ToDo: Make these accessible to modify the setting post-deployment
+# Add Boot Startup Files
 - name: update-rc.d
   command: update-rc.d uwsgi-{{ type }} {{item}}
   become: yes
-  with_items:
+  loop:
     - remove
     - defaults
   tags:
@@ -99,7 +103,7 @@
   command: update-rc.d uwsgi-{{ type }} {{item}}
   become: yes
   when: start != True
-  with_items:
+  loop:
   - disable 2
   - disable 3
   - disable 4
@@ -108,3 +112,18 @@
     - test
     - demo
     - setup
+    - stop_at_boot
+
+- name: update-rc.d
+  command: update-rc.d uwsgi-{{ type }} {{item}}
+  become: yes
+  when: start == True
+  loop:
+  - enable 2
+  - enable 3
+  - enable 4
+  - enable 5
+  tags:
+    # Only run if the Tag present
+    - never
+    - start_at_boot
