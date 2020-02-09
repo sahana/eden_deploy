@@ -33,25 +33,11 @@
   args:
     chdir: /home/setup
   
-# https://github.com/web2py/pydal/pull/564
-#- name: Copy _compat.patch
-#  copy: src=_compat.patch dest=/home/setup/gluon/packages/dal/pydal/_compat.patch
-#  become: yes
-
 - name: Patch Web2py + PyDAL in 2.18.5
   patch:
     src: _compat.patch
     basedir: /home/setup
   become: yes
-
-# No Database selected for co-app
-#- name: Patch PyDAL in 2.18.5 (MySQL)
-#  replace:
-#    path: /home/setup/gluon/packages/dal/pydal/adapters/mysql.py
-#    regexp: '\[''password''\]'
-#    replace: '[''passwd'']'
-#  when: db_type == 'mysql'
-#  become: yes
 
 - name: Copy routes.py
   template: src=routes.py.j2 dest=/home/setup/routes.py
