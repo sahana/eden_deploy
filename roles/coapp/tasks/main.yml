@@ -38,17 +38,10 @@
 #  copy: src=_compat.patch dest=/home/setup/gluon/packages/dal/pydal/_compat.patch
 #  become: yes
 
-#- name: Patch PyDAL in 2.18.3
-#  patch:
-#    src: _compat.patch
-#    basedir: /home/setup/gluon/packages/dal/pydal
-#  become: yes
-
-- name: Patch PyDAL in 2.18.5
-  replace:
-    path: /home/setup/gluon/packages/dal/pydal/validators.py
-    regexp: 'if getattr\(func, ''validate'', None\) is Validator\.validate:'
-    replace: 'if getattr(func, ''validate'', None) is not Validator.validate:'
+- name: Patch Web2py + PyDAL in 2.18.5
+  patch:
+    src: _compat.patch
+    basedir: /home/setup
   become: yes
 
 # No Database selected for co-app
