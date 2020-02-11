@@ -1,4 +1,15 @@
 ---
+- name: Uncomment Locale
+  replace:
+    path: /etc/locale.gen
+    regexp: '# en_US.UTF-8'
+    replace: 'en_US.UTF-8'
+  become: yes
+
+- name: Generate Locales
+  command: /usr/sbin/locale-gen
+  become: yes
+
 - name: Add key
   apt_key: url=https://www.postgresql.org/media/keys/ACCC4CF8.asc state=present
   become: yes
