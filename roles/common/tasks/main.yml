@@ -133,7 +133,7 @@
 - name: Patch Web2py + PyDAL in 2.18.5
   patch:
     src: _compat.patch
-    basedir: /home/setup
+    basedir: /home/{{ type }}
   become: yes
   tags:
     - test
