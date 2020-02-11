@@ -10,7 +10,8 @@
 - name: Set Python 3 as default
   alternatives:
     name: python
-    path: /usr/bin/python python /usr/bin/python3.7
+    path: /usr/bin/python3.7
+  become: yes
   when: ansible_distribution_major_version == '10'
 
 # Add Backports repo (for Certbot)
