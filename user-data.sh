@@ -13,6 +13,8 @@ apt-get install git -y
 # Install ansible dependencies
 
 if [ $DEBIAN == '10' ]; then
+    update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
     apt-get install python-pip python3-pip python3-dev -y
 else
     apt-get install python-pip python-dev -y

@@ -10,6 +10,7 @@
 - name: Set Python 3 as default
   alternatives:
     name: python
+    link: /usr/bin/python
     path: /usr/bin/python3.7
   become: yes
   when: ansible_distribution_major_version == '10'
