@@ -19,7 +19,7 @@ cd /home/$INSTANCE/applications/$APPNAME
 sed -i 's/settings.base.migrate = False/settings.base.migrate = True/g' models/000_config.py
 git reset --hard HEAD
 git pull
-git submodule update --init --recursive
+git submodule update --recursive
 rm -rf compiled
 cd /home/$INSTANCE
 sudo -H -u web2py python web2py.py -S $APPNAME -M -R applications/$APPNAME/static/scripts/tools/noop.py

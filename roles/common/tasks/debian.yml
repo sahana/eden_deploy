@@ -7,6 +7,12 @@
     - ansible_distribution_major_version != '9'
     - ansible_distribution_major_version != '10'
 
+- name: Set Python 3 as default
+  alternatives:
+    name: python
+    path: /usr/bin/python python /usr/bin/python3.7
+    when: ansible_distribution_major_version == '10'
+
 # Add Backports repo (for Certbot)
 - name: Add Backports repo (Debian 8 or 9)
   apt_repository:
