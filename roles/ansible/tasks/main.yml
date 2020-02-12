@@ -24,12 +24,12 @@
 # @ToDo: Separate to debian.yml
 - name: Uninstall OS' Python packages
   apt:
-    name: ['ansible',
-           'python-boto',
+    name: ['python-boto',
            'python3-boto',
            'python3-botocore',
-           'python3-jinja2',
-           'python3-yaml',
+           # Done in user-data.sh
+           #'python3-jinja2',
+           #'python3-yaml',
            ]
     state: absent
     autoremove: yes
@@ -48,15 +48,11 @@
   pip: name=dnspython
   become: yes
 
-- name: Install YAML # full_load method
-  pip: name=PyYAML>5.1
-  become: yes
+# Done in user-data.sh
+#- name: Install YAML # full_load method
+#  pip: name=PyYAML>5.1
+#  become: yes
 
-- name: Install Jinja2 # for Ansible
-  pip: name=jinja2
-  become: yes
-
-- name: Install Ansible
-  pip: name=ansible>2.9.3
-  become: yes
-
+#- name: Install Jinja2 # for Ansible
+#  pip: name=jinja2
+#  become: yes
