@@ -1,30 +1,11 @@
 #!/bin/bash
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
-# Which OS are we running?
-read -d . DEBIAN < /etc/debian_version
-
 # Update
 apt-get update
 
 # Install git
-apt-get install git -y
-
-# Install ansible dependencies
-
-if [ $DEBIAN == '10' ]; then
-    update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
-    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
-    apt-get remove python3-jinja2 python3-yaml -qy
-    apt-get install python-pip python3-pip python3-dev -qy
-else
-    apt-get install python-pip python-dev -qy
-fi
-
-pip install PyYAML jinja2 paramiko
-
-# Install Ansible
-pip install ansible
+apt-get install git -qy
 
 # Clone Ansible Playbooks
 git clone https://github.com/sahana/eden_deploy
