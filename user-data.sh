@@ -1,4 +1,7 @@
 #!/bin/bash
+# Copy user-data log into main system log
+# NB This won't catch any final timeout in cloud-init
+# see that with systemctl status cloud-final.service
 exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
 
 # Update
