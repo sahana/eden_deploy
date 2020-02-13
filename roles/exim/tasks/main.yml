@@ -5,4 +5,4 @@
 
 # SmartHost configuration
 -  import_tasks: smart_host.yml
-   when: smart_host is not None
+   when: not((smart_host is undefined) or (smart_host is none) or (smart_host|trim == ''))
