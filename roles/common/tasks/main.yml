@@ -58,6 +58,10 @@
   pip: name=xlrd
   become: yes
 
+- name: Install Arrow
+  pip: name=arrow
+  become: yes
+
 # Web2Py
 - name: Create web2py user
   #user: name=web2py system=true
