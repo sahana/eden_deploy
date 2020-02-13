@@ -21,13 +21,13 @@
 - name: Rename exim.conf
   copy:
     src: /etc/exim4/example.conf
-    dest: /etc/exim4/exim.conf
+    dest: /etc/exim4/exim4.conf
     remote_src: yes
   become: yes
 
 - name: Set primary_hostname & set some options to empty value to avoid warnings
   lineinfile:
-    path: /etc/exim4/exim.conf
+    path: /etc/exim4/exim4.conf
     regexp: "{{ item.regexp }}"
     line: "{{ item.line }}"
     state: present
@@ -41,7 +41,7 @@
 
 - name: Configure Router
   blockinfile:
-    path: /etc/exim4/exim.conf
+    path: /etc/exim4/exim4.conf
     insertafter: 'begin routers'
     marker: "# {mark} ANSIBLE MANAGED BLOCK Router"
     block: |
@@ -54,7 +54,7 @@
 
 - name: Configure Transport
   blockinfile:
-    path: /etc/exim4/exim.conf
+    path: /etc/exim4/exim4.conf
     insertafter: 'begin transports'
     marker: "# {mark} ANSIBLE MANAGED BLOCK Transport"
     block: |
@@ -67,7 +67,7 @@
 
 - name: Configure Authenticator
   blockinfile:
-    path: /etc/exim4/exim.conf
+    path: /etc/exim4/exim4.conf
     insertafter: 'begin authenticators'
     marker: "# {mark} ANSIBLE MANAGED BLOCK Authenticator"
     block: |
