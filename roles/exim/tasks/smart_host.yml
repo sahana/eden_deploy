@@ -35,7 +35,7 @@
   loop:
     - { regexp: '^# primary_hostname =', line: 'primary_hostname = {{ sitename }}' }
     # Set options to empty value to avoid warnings
-    - { regexp: '^# keep_environment = ^LDAP', line: 'keep_environment =' }
+    - { regexp: '^# keep_environment = \^LDAP', line: 'keep_environment =' }
     - { regexp: '^# tls_advertise_hosts = *', line: 'tls_advertise_hosts =' }
   become: yes
 
@@ -43,6 +43,7 @@
   blockinfile:
     path: /etc/exim4/exim.conf
     insertafter: 'begin routers'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK Router"
     block: |
       send_via_smart_host:
         driver = manualroute
@@ -55,6 +56,7 @@
   blockinfile:
     path: /etc/exim4/exim.conf
     insertafter: 'begin transports'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK Transport"
     block: |
       smart_host_smtp:
         driver = smtp
@@ -67,9 +69,14 @@
   blockinfile:
     path: /etc/exim4/exim.conf
     insertafter: 'begin authenticators'
+    marker: "# {mark} ANSIBLE MANAGED BLOCK Authenticator"
     block: |
       smarthost_login:
         driver = plaintext
         public_name = LOGIN
         client_send = : {{ smtp_username }} : {{ smtp_password }}
+  become: yes
+
+- name: Restart Exim Service
+  service: name=exim4 state=restarted
   become: yes
