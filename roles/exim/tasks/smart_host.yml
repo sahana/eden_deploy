@@ -5,8 +5,15 @@
 
 # We start with the default upstream config rather than the Debian one
 # https://wiki.debian.org/Exim
+- name: Copy upstream exim.conf
+  copy:
+    src: /usr/share/doc/exim4-base/examples/example.conf.gz
+    dest: /etc/exim4/example.conf.gz
+    remote_src: yes
+  become: yes
+
 - name: Extract upstream exim.conf
-  command: gunzip /usr/share/doc/exim4-base/examples/example.conf.gz
+  command: gunzip /etc/exim4/example.conf.gz
   args:
     chdir: /etc/exim4
   become: yes
