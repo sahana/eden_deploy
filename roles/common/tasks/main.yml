@@ -438,9 +438,9 @@
 - name: Edit 000_config.py (Prod / Demo / Setup)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp="{{ item.regexp }}"
-              backrefs=yes
               line="{{ item.line }}"
               state=present
+              backrefs=yes
   loop:
     - { regexp: '^FINISHED_EDITING_CONFIG_FILE = False', line: 'FINISHED_EDITING_CONFIG_FILE = True' }
     - { regexp: 'akeytochange', line: 'settings.auth.hmac_key = "{{ hmac_key }}"' }
