@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-# Script to update the setup_ database with details of a newly-deployed Cloud instance (suitable for OpenStack, but not AWS)
+# Script to update the setup_ database with details of a newly-deployed Amazon EC2 instance
 #
 # Run as:
-#   python web2py.py -S eden -M -R applications/eden/private/eden_deploy/tools/update_os_server.py -A server_id private_key public_ip
+#   python web2py.py -S eden -M -R applications/eden/private/eden_deploy/tools/update_aws_server.py -A server_id private_key public_ip instance_id
 #
 # NB A generic way to find out the Public IP is https://docs.ansible.com/ansible/latest/modules/ipify_facts_module.html
 #
@@ -28,6 +28,11 @@ try:
 except IndexError:
     print("No public_ip supplied")
     sys.exit(2)
+try:
+    instance_id = sys.argv[4]
+except IndexError:
+    print("No instance_id supplied")
+    sys.exit(2)
 
 # Update Server record
 table = s3db.setup_server
@@ -41,5 +46,9 @@ with open(private_key_path, "rb") as private_key_file:
 db(table.id == server_id).update(host_ip = public_ip,
                                  private_key = newfilename,
                                  )
+
+# Update AWS Server record with the Instance ID
+atable = s3db.setup_aws_server
+db(atable.server_id == server_id).update(instance_id = instance_id)
 
 db.commit()
