@@ -14,7 +14,7 @@ INSTANCE=$1
 #    APPNAME=eden
 #fi
 APPNAME=eden
-/etc/init.d/uwsgi-$INSTANCE stop
+#/etc/init.d/uwsgi-$INSTANCE stop
 cd /home/$INSTANCE/applications/$APPNAME
 sed -i 's/settings.base.migrate = False/settings.base.migrate = True/g' models/000_config.py
 rm -rf compiled
@@ -24,4 +24,4 @@ cd /home/$INSTANCE/applications/$APPNAME
 sed -i 's/settings.base.migrate = True/settings.base.migrate = False/g' models/000_config.py
 cd /home/$INSTANCE
 python web2py.py -S $APPNAME -M -R applications/$APPNAME/static/scripts/tools/compile.py
-/etc/init.d/uwsgi-$INSTANCE start
+/etc/init.d/uwsgi-$INSTANCE reload

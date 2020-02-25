@@ -15,6 +15,6 @@ INSTANCE=$1
 #fi
 APPNAME=eden
 cd /home/$INSTANCE
-/etc/init.d/uwsgi-$INSTANCE stop
+#/etc/init.d/uwsgi-$INSTANCE stop
 python web2py.py -S $APPNAME -M -R applications/$APPNAME/static/scripts/tools/compile.py
-/etc/init.d/uwsgi-$INSTANCE start
+/etc/init.d/uwsgi-$INSTANCE reload
