@@ -48,11 +48,14 @@
   pip: name=dnspython
   become: yes
 
-# Done in user-data.sh
-#- name: Install YAML # full_load method
-#  pip: name=PyYAML>5.1
-#  become: yes
+- name: Install YAML # full_load method
+  pip: name=PyYAML>5.1
+  become: yes
 
-#- name: Install Jinja2 # for Ansible
-#  pip: name=jinja2
-#  become: yes
+- name: Install Jinja2
+  pip: name=jinja2
+  become: yes
+
+- name: Install Ansible
+  pip: name=ansible
+  become: yes
