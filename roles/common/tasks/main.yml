@@ -578,6 +578,7 @@
   become: yes
   loop:
     - { src: 'compile', dest: '/usr/local/bin/compile' }
+    - { src: 'migrate', dest: '/usr/local/bin/migrate' }
     - { src: 'pull', dest: '/usr/local/bin/pull' }
     - { src: 'revert', dest: '/usr/local/bin/revert' }
     - { src: 'w2p', dest: '/usr/local/bin/w2p' }
