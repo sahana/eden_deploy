@@ -1,6 +1,11 @@
 #!/bin/sh
-NOW=\$(date +"%Y-%m-%d")
-mysqldump sahana > /root/backup-\$NOW.sql
-gzip -9 /root/backup-\$NOW.sql
-OLD=\$(date --date='7 day ago' +"%Y-%m-%d")
-rm -f /root/backup-\$OLD.sql.gz
+mkdir /var/backups/eden
+NOW=$(date +"%Y-%m-%d")
+mysqldump sahana > /var/backups/eden/sahana-\$NOW.sql
+bzip2 /var/backups/eden/sahana-$NOW.sql
+OLD=$(date --date='7 day ago' +"%Y-%m-%d")
+rm -f /var/backups/eden/sahana-$OLD.sql
+mkdir /var/backups/eden/uploads
+tar -cf /var/backups/eden/uploads/uploadsprod-$NOW.tar -C /home/web2py/applications/eden  ./uploads
+bzip2 /var/backups/eden/uploads/uploadsprod-$NOW.tar
+rm -f /var/backups/eden/uploads/uploadsprod-$OLD.tar.bz2
