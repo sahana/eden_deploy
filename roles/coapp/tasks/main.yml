@@ -44,7 +44,7 @@
 
 - name: Clone Coapp
   git: # recursive by default
-    repo: git://github.com/sahana/eden
+    repo: git://github.com/sahana/eden-stable
     dest: /home/setup/applications/{{ appname }}
     #version: cda35fd
     # Don't update unless explicitly desired
