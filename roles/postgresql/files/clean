@@ -42,7 +42,7 @@ if [[ "$1" = "test" ]]; then
     set -e
     cp -pr /home/prod/applications/eden/databases/* /home/$INSTANCE/applications/eden/databases/
     cd /home/$INSTANCE/applications/eden/databases
-    for i in *.table; do mv "$i" "${i/PROD_TABLE_STRING/TEST_TABLE_STRING}"; done
+    #for i in *.table; do mv "$i" "${i/PROD_TABLE_STRING/TEST_TABLE_STRING}"; done
 else
     echo >&2 "Migrating/Populating database: $DATABASE"
     #su -c - postgres "createlang plpgsql -d $DATABASE"

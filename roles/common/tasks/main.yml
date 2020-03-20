@@ -42,6 +42,9 @@
   pip: name=geopy
   become: yes
 
+# GDAL
+# pip install gdal==$(gdal-config --version)
+
 - name: Install Reportlab # Want Percentage support
   pip: name=reportlab
   become: yes

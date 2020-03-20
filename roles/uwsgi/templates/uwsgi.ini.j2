@@ -1,6 +1,6 @@
 [uwsgi]
-uid = web2py
-gid = web2py
+;uid = web2py
+;gid = web2py
 chdir = /home/{{ type }}/
 module = wsgihandler
 mule = run_scheduler.py
@@ -8,7 +8,7 @@ workers = {{ (type == "prod") | ternary(4,2) }}
 cheap = true
 idle = 1000
 harakiri = 1000
-;pidfile = /var/run/uwsgi-{{ type }}.pid
+;pidfile = /var/run/uwsgi/{{ type }}/pid
 ;daemonize = /var/log/uwsgi/{{ type }}.log
 {% if type == 'prod' %}
 socket = 127.0.0.1:59025
