@@ -37,32 +37,38 @@
   become: yes
 
 - name: Install Boto # Want latest version to know about all regions
-  pip: name=boto
-  extra_args: --upgrade
+  pip:
+    name: boto
+    extra_args: --upgrade
   become: yes
 
 - name: Install Boto3
-  pip: name=boto3
-  extra_args: --upgrade
+  pip:
+    name: boto3
+    extra_args: --upgrade
   become: yes
 
 # Needed for 'dig' lookup
 - name: Install DNSPython
-  pip: name=dnspython
-  extra_args: --upgrade
+  pip:
+    name: dnspython
+    extra_args: --upgrade
   become: yes
 
 - name: Install YAML # full_load method
-  pip: name=PyYAML>5.1
-  extra_args: --upgrade
+  pip:
+    name: PyYAML>5.1
+    extra_args: --upgrade
   become: yes
 
 - name: Install Jinja2
-  pip: name=jinja2
-  extra_args: --upgrade
+  pip:
+    name: jinja2
+    extra_args: --upgrade
   become: yes
 
 - name: Install Ansible
-  pip: name=ansible
-  extra_args: --upgrade
+  pip:
+    name: ansible
+    extra_args: --upgrade
   become: yes
