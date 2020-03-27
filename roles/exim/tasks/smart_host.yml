@@ -13,7 +13,7 @@
   become: yes
 
 - name: Extract upstream exim.conf
-  command: gunzip /etc/exim4/example.conf.gz
+  command: gunzip -f /etc/exim4/example.conf.gz
   args:
     chdir: /etc/exim4
   become: yes
