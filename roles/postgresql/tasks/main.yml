@@ -216,49 +216,49 @@
     - test
 
 # Clean tasks (Test)
-#- name: Copy update_clean (Py 3)
-#  copy: src=update_clean.py dest=/tmp/update_clean.py
-#  when:
-#    - type == 'test'
-#    - python_major_version == '3'
-#  tags:
-#    - test
+- name: Copy update_clean (Py 3)
+  copy: src=update_clean.py dest=/tmp/update_clean.py
+  when:
+    - type == 'test'
+    - python_major_version == '3'
+  tags:
+    - test
 
-#- name: Copy update_clean (Py 2.7)
-#  copy: src=update_clean27.py dest=/tmp/update_clean.py
-#  when:
-#    - type == 'test'
-#    - python_major_version != '3'
-#  tags:
-#    - test
+- name: Copy update_clean (Py 2.7)
+  copy: src=update_clean27.py dest=/tmp/update_clean.py
+  when:
+    - type == 'test'
+    - python_major_version != '3'
+  tags:
+    - test
 
-#- name: Allow web2py to modify clean script
-#  file: 
-#    path: /usr/local/bin/clean
-#    owner: web2py
-#  become: yes
-#  when:
-#    - type == 'test'
-#  tags:
-#    - test
+- name: Allow web2py to modify clean script
+  file: 
+    path: /usr/local/bin/clean
+    owner: web2py
+  become: yes
+  when:
+    - type == 'test'
+  tags:
+    - test
 
-#- name: Run update_clean
-#  command: python web2py.py -S {{ appname }} -M -R /tmp/update_clean.py chdir=/home/web2py
-#  become: yes
-#  become_user: web2py
-#  #become_flags: '-H'
-#  when:
-#    - type == 'test'
-#  tags:
-#    - test
+- name: Run update_clean
+  command: python web2py.py -S {{ appname }} -M -R /tmp/update_clean.py chdir=/home/web2py
+  become: yes
+  become_user: web2py
+  #become_flags: '-H'
+  when:
+    - type == 'test'
+  tags:
+    - test
 
-#- name: Disallow web2py to modify clean script
-#  file: 
-#    path: /usr/local/bin/clean
-#    owner: root
-#  become: yes
-#  when:
-#    - type == 'test'
-#  tags:
-#    - test
+- name: Disallow web2py to modify clean script
+  file: 
+    path: /usr/local/bin/clean
+    owner: root
+  become: yes
+  when:
+    - type == 'test'
+  tags:
+    - test
 
