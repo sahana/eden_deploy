@@ -48,7 +48,6 @@
      import cookielib
      from xmlrpclib import ProtocolError
      BytesIO = StringIO
-Only in web2py: gluon/packages/dal/pydal/_compat.py.orig
 --- gluon/packages/dal/pydal/adapters/oracle.py
 +++ gluon/packages/dal/pydal/adapters/oracle.py
 @@ -96,7 +96,7 @@
@@ -60,7 +59,6 @@ Only in web2py: gluon/packages/dal/pydal/_compat.py.orig
              r_values[':' + field._rname] = self.expand(value, field.type)
              return ':' + field._rname
          return self.expand(value, field.type)
-Only in web2py: gluon/packages/dal/pydal/adapters/oracle.py.orig
 --- gluon/packages/dal/pydal/contrib/portalocker.py
 +++ gluon/packages/dal/pydal/contrib/portalocker.py
 @@ -193,6 +193,9 @@
@@ -73,6 +71,30 @@ Only in web2py: gluon/packages/dal/pydal/adapters/oracle.py.orig
      def readline(self):
          return self.file.readline()
  
+--- gluon/packages/dal/pydal/dialects/postgre.py
++++ gluon/packages/dal/pydal/dialects/postgre.py
+@@ -130,8 +130,8 @@
+         return rv
+ 
+     def st_asgeojson(self, first, second, query_env={}):
+-        return 'ST_AsGeoJSON(%s,%s,%s,%s)' % (
+-            second['version'], self.expand(first, query_env=query_env),
++        return 'ST_AsGeoJSON(%s,%s,%s)' % (
++            self.expand(first, query_env=query_env),
+             second['precision'], second['options'])
+ 
+     def st_astext(self, first, query_env={}):
+@@ -258,8 +258,8 @@
+         return 'ST_AsText(%s)' % self.expand(first, query_env=query_env)
+     
+     def st_asgeojson(self, first, second, query_env={}):
+-        return 'ST_AsGeoJSON(%s,%s,%s,%s)' % (
+-            second['version'], self.expand(first, query_env=query_env),
++        return 'ST_AsGeoJSON(%s,%s,%s)' % (
++            self.expand(first, query_env=query_env),
+             second['precision'], second['options'])
+ 
+     def json_key(self, first, key, query_env=None):
 --- gluon/packages/dal/pydal/helpers/classes.py
 +++ gluon/packages/dal/pydal/helpers/classes.py
 @@ -532,6 +532,9 @@
@@ -132,4 +154,3 @@ Only in web2py: gluon/packages/dal/pydal/adapters/oracle.py.orig
                  if len(all_number) > 0:
                      failures.append(self.translator("May not include any numbers"))
          if len(failures) == 0:
-Only in web2py: gluon/validators.py.orig
