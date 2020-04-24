@@ -468,7 +468,7 @@
     
 - name: Edit 000_config.py (Test)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
-              regexp='^#settings.base.public_url = \"http://127.0.0.1:8000\"'
+              regexp='^settings.base.public_url'
               backrefs=yes
               line='settings.base.public_url = "{{ protocol }}://{{ sitename }}"'
               state=present
