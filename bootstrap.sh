@@ -36,6 +36,8 @@ else
     apt-get install python-pip python-dev -qy
 fi
 
+apt-get install -qy sudo
+
 pip install PyYAML jinja2 paramiko -q
 
 # Install Ansible
@@ -61,6 +63,7 @@ cat << EOF > "deploy.yml"
     type: 'prod'
     start: True
     web_server: 'nginx'
+    url_repo: 'https://github.com/sahana/eden-stable.git'
 
   roles:
     - swap
