@@ -63,7 +63,7 @@ cat << EOF > "deploy.yml"
     type: 'prod'
     start: True
     web_server: 'nginx'
-    url_repo: 'https://github.com/sahana/eden-stable.git'
+    repo_url: 'https://github.com/sahana/eden-stable.git'
 
   roles:
     - swap
