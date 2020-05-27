@@ -3,6 +3,10 @@
 -  import_tasks: debian.yml
    when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
+- name: Copy maintenance.html
+  copy: src=maintenance.html dest=/var/www/maintenance.html
+  become: yes
+
 # SSL Certificate
 # @ToDo: Handle Manual SSL certificates
 #        (currently we only handle Let's Encrypt free/automatic DV certificates)
@@ -49,7 +53,7 @@
   become: yes
 
 - name: Creating instance configuration
-  template: src=conf.j2 dest=/etc/nginx/sites-enabled/{{ type }}.conf
+  template: src=conf.j2 dest=/etc/nginx/sites-available/{{ type }}.conf
   become: yes
   when: protocol == 'https'
   tags:
@@ -58,9 +62,20 @@
     - setup
 
 - name: Creating instance configuration
-  template: src=conf_nossl.j2 dest=/etc/nginx/sites-enabled/{{ type }}.conf
+  template: src=conf_nossl.j2 dest=/etc/nginx/sites-available/{{ type }}.conf
   become: yes
   when: protocol == 'http'
+  tags:
+    - test
+    - demo
+    - setup
+
+- name: Enabling Site
+  file:
+    src: /etc/nginx/sites-available/{{ type }}.conf
+    dest: /etc/nginx/sites-enabled/{{ type }}.conf
+    state: link
+  become: yes
   tags:
     - test
     - demo

@@ -14,6 +14,11 @@ server {
         alias /home/{{ type }}/applications/{{ appname }}/static/crossdomain.xml;
         expires max;
     }
+    location /maintenance.html {
+        internal;
+        alias /var/www/maintenance.html;
+        expires 15s;
+    }
     location /favicon.ico {
         alias /home/{{ type }}/applications/{{ appname }}/static/favicon.ico;
         expires max;
@@ -37,6 +42,7 @@ server {
         expires max;
     }
     location / {
+        error_page 502 = /maintenance.html;
 {% if type == 'prod' %}
         uwsgi_pass      127.0.0.1:59025;
 {% elif type == 'test' %}
