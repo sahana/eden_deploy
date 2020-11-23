@@ -13,18 +13,8 @@
   git: # recursive by default
     repo: git://github.com/web2py/web2py.git
     dest: /home/setup
-    # 2.14.6
-    #version: cda35fd
-    # 2.16.1
-    #version: 7035398
-    # 2.17.1
-    #version: 285013a
-    # 2.17.2
-    #version: 95709e5
-    # 2.18.3
-    #version: 6128d03
-    # 2.18.5
-    version: 59700b8
+    # 2.20.4
+    version: 777c305
     # Don't update unless explicitly desired
     update: no
 
@@ -32,12 +22,6 @@
   command: git submodule update --init --recursive
   args:
     chdir: /home/setup
-  
-- name: Patch Web2py + PyDAL in 2.18.5
-  patch:
-    src: _compat.patch
-    basedir: /home/setup
-  become: yes
 
 - name: Copy routes.py
   template: src=routes.py.j2 dest=/home/setup/routes.py
@@ -46,7 +30,6 @@
   git: # recursive by default
     repo: git://github.com/sahana/eden-stable
     dest: /home/setup/applications/{{ appname }}
-    #version: cda35fd
     # Don't update unless explicitly desired
     update: no
 
