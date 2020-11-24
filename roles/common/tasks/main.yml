@@ -74,7 +74,7 @@
 #- name: Create web2py group
 #  group: name=web2py state=present
 
-# Needed for ability to use Ansible to do system stuff 
+# Needed for ability to use Ansible to do system stuff
 - name: Allow web2py user to use sudo w/o password
   copy: src=sudoers dest=/etc/sudoers.d/95-web2py-user
   become: yes
@@ -97,31 +97,13 @@
   git: # recursive by default
     repo: git://github.com/web2py/web2py.git
     dest: /home/{{ type}}
-    # 2.14.6
-    #version: cda35fd
-    # 2.16.1
-    #version: 7035398
-    # 2.17.1
-    #version: 285013a
-    # 2.17.2
-    #version: 95709e5
-    # 2.18.3
-    #version: 6128d03
-    # 2.18.5
-    version: 59700b8
+    # 2.20.4
+    version: 777c305
     # Don't update unless explicitly desired
     update: no
   become: yes
-  when: (type == 'setup' and coapp.stat.exists == False) or 
+  when: (type == 'setup' and coapp.stat.exists == False) or
         (type != 'setup')
-  tags:
-    - test
-    - demo
-    - setup
-
-- name: Update Scheduler 2.18.5
-  patch: src=scheduler.diff dest=/home/{{ type }}/gluon/scheduler.py
-  become: yes
   tags:
     - test
     - demo
@@ -137,24 +119,6 @@
     - demo
     - setup
 
-- name: Patch Web2py + PyDAL in 2.18.5
-  patch:
-    src: _compat.patch
-    basedir: /home/{{ type }}
-  become: yes
-  tags:
-    - test
-    - demo
-    - setup
-
-- name: Patch PyDAL in 2.18.5 (MySQL)
-  replace:
-    path: /home/{{ type }}/gluon/packages/dal/pydal/adapters/mysql.py
-    regexp: '\[''password''\]'
-    replace: '[''passwd'']'
-  when: db_type == 'mysql'
-  become: yes
-
 - name: Copy wsgihandler
   copy:
     src: /home/{{ type }}/handlers/wsgihandler.py
@@ -169,7 +133,7 @@
 - name: Copy routes.py
   template: src=routes.py dest=/home/{{ type }}/routes.py
   become: yes
-  when: (type == 'setup' and coapp.stat.exists == False) or 
+  when: (type == 'setup' and coapp.stat.exists == False) or
         (type != 'setup')
   tags:
     - test
@@ -218,7 +182,7 @@
     # Don't update unless explicitly desired
     update: no
   become: yes
-  when: (type == 'setup' and coapp.stat.exists == False) or 
+  when: (type == 'setup' and coapp.stat.exists == False) or
         (type != 'setup')
   tags:
     - test
@@ -231,7 +195,7 @@
     dest: /home/{{ type }}/applications/{{ appname }}/models
     remote_src: yes
   become: yes
-  when: (type == 'setup' and coapp.stat.exists == False) or 
+  when: (type == 'setup' and coapp.stat.exists == False) or
         (type != 'setup')
   tags:
     - demo
@@ -310,7 +274,7 @@
 
 - stat: path=/home/setup/
   register: setup
-  
+
 - name: Copy read_hmac_key.py
   copy: "src=read_hmac_key.py dest=/tmp/read_hmac_key.py"
   when: (coapp.stat.exists == True) or
@@ -351,7 +315,7 @@
 - name: Generate & set hmac_key variable
   set_fact:
     hmac_key: "{{ lookup('password', '/tmp/hmac_key chars=ascii_letters,digits,.-_,,') }}" # Cannot include : or "
-  when: (type == 'prod' and coapp.stat.exists == False) or 
+  when: (type == 'prod' and coapp.stat.exists == False) or
         (type != 'prod')
   tags:
     - demo
@@ -450,7 +414,7 @@
     - { regexp: '^#settings.base.public_url = \"http://127.0.0.1:8000\"', line: 'settings.base.public_url = "{{ protocol }}://{{ sitename }}"' }
     - { regexp: '^#settings.base.cdn = True', line: 'settings.base.cdn = True' }
   become: yes
-  when: (type == 'setup' and coapp.stat.exists == False) or 
+  when: (type == 'setup' and coapp.stat.exists == False) or
         (type != 'setup')
   tags:
     - demo
@@ -465,7 +429,7 @@
   become: yes
   tags:
     - setup
-    
+
 - name: Edit 000_config.py (Test)
   lineinfile: dest=/home/{{ type }}/applications/{{ appname }}/models/000_config.py
               regexp='^settings.base.public_url'
