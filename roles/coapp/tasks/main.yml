@@ -13,8 +13,8 @@
   git: # recursive by default
     repo: git://github.com/web2py/web2py.git
     dest: /home/setup
-    # 2.20.4
-    version: 777c305
+    # 2.21.1
+    version: 6da8479
     # Don't update unless explicitly desired
     update: no
 
