@@ -97,8 +97,8 @@
   git: # recursive by default
     repo: git://github.com/web2py/web2py.git
     dest: /home/{{ type}}
-    # 2.21.1
-    version: 6da8479
+    # 2.21.2
+    version: 31905858b
     # Don't update unless explicitly desired
     update: no
   become: yes
