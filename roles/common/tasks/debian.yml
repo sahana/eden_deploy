@@ -12,7 +12,7 @@
   set_fact:
     python_major_version: "3"
   when: (ansible_distribution_major_version == '10') or 
-        (ansible_distribution_major_version == '11)
+        (ansible_distribution_major_version == '11')
   tags:
     - demo
     - setup
@@ -22,7 +22,7 @@
   set_fact:
     python_major_version: "2"
   when: (ansible_distribution_major_version == '7') or 
-        (ansible_distribution_major_version == '8) or
+        (ansible_distribution_major_version == '8') or
         (ansible_distribution_major_version == '9')
   tags:
     - demo
@@ -177,5 +177,5 @@
     state: present
   become: yes
   when: (ansible_distribution_major_version == '7') or 
-        (ansible_distribution_major_version == '8) or
+        (ansible_distribution_major_version == '8') or
         (ansible_distribution_major_version == '9')
