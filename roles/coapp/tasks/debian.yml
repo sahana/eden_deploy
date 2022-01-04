@@ -6,14 +6,15 @@
     state: present
     update_cache: yes # update-cache=yes is the equivalent of apt-get update
 
-- name: Installing Dependencies (Debian 10)
+- name: Installing Dependencies (Debian 10 or 11)
   apt:
     name: ['python3-dateutil',
            'python3-lxml',
            ]
     state: present
     update_cache: yes
-  when: ansible_distribution_major_version == '10'
+  when: (ansible_distribution_major_version == '10') or 
+        (ansible_distribution_major_version == '11)
 
 - name: Installing Dependencies (Debian 7, 8 or 9)
   apt:
@@ -22,5 +23,7 @@
            ]
     state: present
     update_cache: yes
-  when: ansible_distribution_major_version != '10'
+  when: (ansible_distribution_major_version == '7') or 
+        (ansible_distribution_major_version == '8) or
+        (ansible_distribution_major_version == '9')
 
