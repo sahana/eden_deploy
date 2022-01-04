@@ -38,12 +38,20 @@
    when: ansible_distribution == "Debian" # Doesn't include Ubuntu (ansible_os_family does))
 
 # Python Libraries, where we need a more recent version than that provided by the OS
-- name: Install GeoPy
-  pip: name=geopy
+- name: Install lxml
+  pip: name=lxml
+  become: yes
+
+- name: Install dateutil
+  pip: name=python-dateutil
   become: yes
 
 # GDAL
 # pip install gdal==$(gdal-config --version)
+
+- name: Install pillow
+  pip: name=pillow
+  become: yes
 
 - name: Install Reportlab # Want Percentage support
   pip: name=reportlab
@@ -59,6 +67,18 @@
 
 - name: Install XLRD # XLS import support
   pip: name=xlrd
+  become: yes
+
+- name: Install OpenPyXL # XLSX import support
+  pip: name=openpyxl
+  become: yes
+
+- name: Install XLWT
+  pip: name=xlwt
+  become: yes
+
+- name: Install GeoPy
+  pip: name=geopy
   become: yes
 
 #- name: Install Arrow

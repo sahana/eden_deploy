@@ -1,16 +1,18 @@
 ---
 # Check for correct Version
-- fail: msg="Exiting as this deployment method currently only supports Debian 7, 8, 9 or 10"
+- fail: msg="Exiting as this deployment method currently only supports Debian 7, 8, 9, 10 or 11"
   when:
     - ansible_distribution_major_version != '7'
     - ansible_distribution_major_version != '8'
     - ansible_distribution_major_version != '9'
     - ansible_distribution_major_version != '10'
+    - ansible_distribution_major_version != '11'
 
 - name: Set python_major_version variable to 3
   set_fact:
     python_major_version: "3"
-  when: ansible_distribution_major_version == '10'
+  when: (ansible_distribution_major_version == '10') or 
+        (ansible_distribution_major_version == '11)
   tags:
     - demo
     - setup
@@ -19,7 +21,9 @@
 - name: Set python_major_version variable to 2
   set_fact:
     python_major_version: "2"
-  when: ansible_distribution_major_version != '10'
+  when: (ansible_distribution_major_version == '7') or 
+        (ansible_distribution_major_version == '8) or
+        (ansible_distribution_major_version == '9')
   tags:
     - demo
     - setup
@@ -31,7 +35,15 @@
     link: /usr/bin/python
     path: /usr/bin/python3.7
   become: yes
-  when: python_major_version == '3'
+  when: ansible_distribution_major_version == '10'
+
+- name: Set Python 3 as default
+  alternatives:
+    name: python
+    link: /usr/bin/python
+    path: /usr/bin/python3.9
+  become: yes
+  when: ansible_distribution_major_version == '11'
 
 # Add Backports repo (for Certbot)
 - name: Add Backports repo (Debian 8 or 9)
@@ -90,7 +102,8 @@
   apt: name={{item}} state=present
   become: yes
   when: (ansible_distribution_major_version == '9') or 
-        (ansible_distribution_major_version == '10')
+        (ansible_distribution_major_version == '10') or 
+        (ansible_distribution_major_version == '11')
   loop:
     - elinks
     - net-tools
@@ -115,7 +128,8 @@
   apt: name=libgeos-c1v5 state=present
   become: yes
   when: (ansible_distribution_major_version == '9') or 
-        (ansible_distribution_major_version == '10')
+        (ansible_distribution_major_version == '10') or 
+        (ansible_distribution_major_version == '11')
 
 - name: Install libgeos (Debian 7 or 8)
   apt: name=libgeos-c1 state=present
@@ -126,39 +140,42 @@
 - name: Install python libs (Debian 10)
   apt:
     name: ['python3-dev',
-           'python3-dateutil',
-           'python3-lxml',
+           #'python3-dateutil',
+           #'python3-lxml',
            'python3-setuptools',
            'python3-serial',
-           'python3-pil',
+           #'python3-pil',
            #'python3-reportlab',    # Now using PIP version for Percentage support
            #'python3-matplotlib',   # Only used by deprecated survey module
            #'python3-requests',
-           'python3-xlwt',
+           #'python3-xlwt',
            'build-essential',
            'libgeos-dev',
            'python3-pip',
            ]
     state: present
   become: yes
-  when: ansible_distribution_major_version == '10'
+  when: (ansible_distribution_major_version == '10') or 
+        (ansible_distribution_major_version == '11')
 
 - name: Install python libs (Debian 7, 8 or 9)
   apt:
     name: ['python-dev',
-           'python-dateutil',
-           'python-lxml',
+           #'python-dateutil',
+           #'python-lxml',
            'python-setuptools',
            'python-serial',
-           'python-imaging',
+           #'python-imaging',
            #'python-reportlab',     # Now using PIP version for Percentage support
            #'python-matplotlib',    # Only used by deprecated survey module
            #'python-requests',      # APT package fails to import on Debian 9
-           'python-xlwt',
+           #'python-xlwt',
            'build-essential',
            'libgeos-dev',
            'python-pip',
            ]
     state: present
   become: yes
-  when: ansible_distribution_major_version != '10'
+  when: (ansible_distribution_major_version == '7') or 
+        (ansible_distribution_major_version == '8) or
+        (ansible_distribution_major_version == '9')
