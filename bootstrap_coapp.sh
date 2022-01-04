@@ -6,7 +6,12 @@ pubDNS=`wget --quiet -O - http://169.254.169.254/latest/meta-data/public-hostnam
 read -d . DEBIAN < /etc/debian_version
 
 # Install ansible dependencies
-if [ $DEBIAN == '10' ]; then
+if [ $DEBIAN == '11' ]; then
+    update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
+    update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
+    apt-get remove python3-jinja2 python3-yaml -qy
+    apt-get install python-pip python3-pip python3-dev -qy
+elif [ $DEBIAN == '10' ]; then
     update-alternatives --install /usr/bin/python python /usr/bin/python2.7 1
     update-alternatives --install /usr/bin/python python /usr/bin/python3.7 2
     apt-get remove python3-jinja2 python3-yaml -qy
