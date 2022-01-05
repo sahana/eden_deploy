@@ -22,6 +22,18 @@
     #update_cache: yes
   become: yes
 
+- name: Install dependencies and packages (Debian 11)
+  apt:
+    name: ['postgresql-13',
+           'python3-psycopg2',
+           'postgresql-13-postgis-3',
+           #'ptop',
+           'pgtop',
+           ]
+    state: present
+  become: yes
+  when: ansible_distribution_major_version == '11'
+
 - name: Install dependencies and packages (Debian 10)
   apt:
     name: ['postgresql-11',
@@ -45,7 +57,14 @@
            ]
     state: present
   become: yes
-  when: ansible_distribution_major_version != '10'
+  when: (ansible_distribution_major_version == '7') or 
+        (ansible_distribution_major_version == '8') or
+        (ansible_distribution_major_version == '9')
+
+- name: Set $PG_HOME (Debian 11)
+  set_fact:
+    PG_HOME: /etc/postgresql/13
+  when: ansible_distribution_major_version == '11'
 
 - name: Set $PG_HOME (Debian 10)
   set_fact:
@@ -55,4 +74,6 @@
 - name: Set $PG_HOME (Debian < 10)
   set_fact:
     PG_HOME: /etc/postgresql/9.6
-  when: ansible_distribution_major_version != '10'
+  when: (ansible_distribution_major_version == '7') or 
+        (ansible_distribution_major_version == '8') or
+        (ansible_distribution_major_version == '9')
