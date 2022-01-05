@@ -13,9 +13,10 @@
         ((ansible_distribution_major_version == '8') or 
          (ansible_distribution_major_version == '9'))
 
-- name: Install certbot's nginx plugin (Debian 10)
+- name: Install certbot's nginx plugin (Debian 10 or 11)
   apt: name=python3-certbot-nginx state=present
   become: yes
   when: (protocol == 'https') and
-        (ansible_distribution_major_version == '10')
+        ((ansible_distribution_major_version == '11') or
+         (ansible_distribution_major_version == '10'))
 
