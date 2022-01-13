@@ -58,19 +58,20 @@
 # state=present not state=latest as we don't want to upgrade accidentally
 - name: Install Admin Tools
   apt:
-    name: ['unzip',
-           'psmisc',
-           'mlocate',
-           'telnet',
-           'lrzsz',
-           'vim',
-           'rcconf',
-           'htop',
-           'sudo',
-           'p7zip',
-           'dos2unix',
+    name: ['at',
            'curl',
-           'at',
+           'dos2unix',
+           'htop',
+           'iptables',
+           'lrzsz',
+           'mlocate',
+           'p7zip',
+           'psmisc',
+           'rcconf',
+           'sudo',
+           'telnet',
+           'unzip',
+           'vim',
            ]
     state: present
     update_cache: yes # update-cache=yes is the equivalent of apt-get update
