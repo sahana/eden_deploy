@@ -1,4 +1,15 @@
 ---
+# Install Admin Tools
+# state=present not state=latest as we don't want to upgrade accidentally
+- name: Install Admin Tools
+  apt:
+    name: ['iptables',
+           'sudo',
+           ]
+    state: present
+    update_cache: yes # update-cache=yes is the equivalent of apt-get update
+  become: yes
+
 - name: Installing Dependencies
   apt:
     name: ['libodbc1', # Needed for Web2Py

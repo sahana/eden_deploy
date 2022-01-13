@@ -62,7 +62,6 @@
            'curl',
            'dos2unix',
            'htop',
-           'iptables',
            'lrzsz',
            'mlocate',
            'p7zip',
