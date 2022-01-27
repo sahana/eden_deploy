@@ -1,16 +1,16 @@
 ---
 - name: Download & Unzip
   unarchive:
-    src: https://projects.unbit.it/downloads/uwsgi-2.0.18.tar.gz
+    src: https://projects.unbit.it/downloads/uwsgi-2.0.20.tar.gz
     dest: /tmp
     remote_src: yes
 
 - name: Build
-  command: python uwsgiconfig.py --build pyonly chdir=/tmp/uwsgi-2.0.18
+  command: python uwsgiconfig.py --build pyonly chdir=/tmp/uwsgi-2.0.20
 
 - name: Copy uwsgi bin
   copy:
-    src: /tmp/uwsgi-2.0.18/uwsgi
+    src: /tmp/uwsgi-2.0.20/uwsgi
     dest: /usr/local/bin/uwsgi
     mode: 0755
     remote_src: yes
