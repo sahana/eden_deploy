@@ -115,7 +115,7 @@
 
 - name: Clone web2py
   git: # recursive by default
-    repo: git://github.com/web2py/web2py.git
+    repo: https://github.com/web2py/web2py.git
     dest: /home/{{ type}}
     # 2.21.2
     version: 31905858b

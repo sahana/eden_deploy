@@ -11,7 +11,7 @@
 
 - name: Clone Web2py
   git: # recursive by default
-    repo: git://github.com/web2py/web2py.git
+    repo: https://github.com/web2py/web2py.git
     dest: /home/setup
     # 2.21.2
     version: 31905858b
@@ -28,7 +28,7 @@
 
 - name: Clone Coapp
   git: # recursive by default
-    repo: git://github.com/sahana/eden-stable
+    repo: https://github.com/sahana/eden-stable
     dest: /home/setup/applications/{{ appname }}
     # Don't update unless explicitly desired
     update: no
